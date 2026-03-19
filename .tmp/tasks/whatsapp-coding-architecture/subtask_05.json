@@ -1,0 +1,34 @@
+{
+  "id": "whatsapp-coding-architecture-05",
+  "seq": "05",
+  "title": "Architectural Design",
+  "status": "pending",
+  "depends_on": ["04"],
+  "parallel": false,
+  "suggested_agent": "general",
+  "context_files": [
+    "docs/architecture/requirements-mapping.md",
+    "docs/architecture/gap-analysis.md",
+    "docs/review/nanobot-extension-points.md"
+  ],
+  "reference_files": [],
+  "acceptance_criteria": [
+    "Complete system architecture diagram",
+    "Component boundaries defined",
+    "Data flow documented (WhatsApp -> Nanobot -> Middleware -> Coding Env)",
+    "API contracts defined (REST, WebSocket)",
+    "Security boundaries defined",
+    "Error handling strategy documented",
+    "State management documented"
+  ],
+  "deliverables": [
+    "docs/architecture/system-architecture.md",
+    "docs/architecture/component-boundaries.md",
+    "docs/architecture/data-flows.md",
+    "docs/architecture/api-contracts.md"
+  ],
+  "description": "Create detailed architectural design including: (1) System architecture diagram with all three layers (WhatsApp/Nanobot, Middleware, Coding Environment), (2) Component boundaries - what each component is responsible for, (3) Data flow - how messages/commands flow through the system, (4) API contracts - REST endpoints, WebSocket message formats, (5) Security boundaries - where authentication/authorization happens, (6) Error handling strategy - how errors propagate, (7) State management - sessions, file states, terminal states. Include diagrams (ASCII or Mermaid) and detailed specifications.",
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

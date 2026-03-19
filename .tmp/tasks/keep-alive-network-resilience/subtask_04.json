@@ -1,0 +1,27 @@
+{
+  "id": "keep-alive-network-resilience-04",
+  "seq": "04",
+  "title": "M2-02b: Add max reconnect attempts and error message",
+  "status": "completed",
+  "depends_on": ["03"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx",
+    "src/web/frontend/src/components/Toast.tsx"
+  ],
+  "acceptance_criteria": [
+    "After 5 failed reconnect attempts, shows error: 'Unable to reconnect. Please refresh.'",
+    "Uses Toast component to show error",
+    "Stops attempting reconnection after max attempts",
+    "Provides way for user to manually retry (refresh button)"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with max attempts logic",
+    "Error toast displayed after 5 failed attempts"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx lines 215-220"
+}

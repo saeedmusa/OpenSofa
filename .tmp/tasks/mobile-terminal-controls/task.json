@@ -1,0 +1,25 @@
+{
+  "id": "mobile-terminal-controls",
+  "name": "M1: Mobile Terminal Controls",
+  "status": "completed",
+  "objective": "Add mobile-friendly terminal controls: Send button, Stop button, New Line button, and Quick Commands palette for touch devices.",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx",
+    "src/web/frontend/src/providers/WebSocketProvider.tsx",
+    "src/web/frontend/src/components/ActivityFeed.tsx"
+  ],
+  "exit_criteria": [
+    "Send button submits messages to agent via WebSocket",
+    "Stop button sends Ctrl+C to interrupt agent",
+    "New Line button inserts newline at cursor position",
+    "Quick Commands palette shows common actions (/approve, /reject, /stop, /help)",
+    "All buttons work on mobile viewport (393px width)",
+    "Button states (disabled, loading) work correctly"
+  ],
+  "subtask_count": 8,
+  "completed_count": 8,
+  "completed_at": "2026-02-19T00:00:00.000Z"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "mobile-terminal-controls-06",
+  "seq": "06",
+  "title": "M1-02c: Add Stop button toast confirmation and debounce",
+  "status": "completed",
+  "depends_on": ["05"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx",
+    "src/web/frontend/src/components/Toast.tsx"
+  ],
+  "acceptance_criteria": [
+    "Shows 'Agent interrupted' toast after Stop is clicked",
+    "Button becomes disabled for 1 second after click to prevent double-sends",
+    "Uses existing Toast component for notification",
+    "Uses useCallback and useRef for debounce logic"
+  ],
+  "deliverables": [
+    "Updated Terminal.tsx with toast and debounce logic"
+  ],
+  "completed_summary": "Implemented in Terminal.tsx handleInterrupt with debounce (lines 249-268)"
+}

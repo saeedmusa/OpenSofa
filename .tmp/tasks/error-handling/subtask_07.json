@@ -1,0 +1,25 @@
+{
+  "id": "error-handling-07",
+  "seq": "07",
+  "title": "M3-03b: Implement client-side queue limit (20 messages max)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "Client maintains message queue with max 20 messages",
+    "Queue structure: { id, sessionId, content, timestamp }[]",
+    "On reconnection, queue is flushed in FIFO order",
+    "If queue exceeds max, oldest messages are dropped with warning",
+    "Queue persists to localStorage across page refreshes"
+  ],
+  "deliverables": [
+    "Modified: WebSocketProvider with client-side message queue"
+  ]
+}

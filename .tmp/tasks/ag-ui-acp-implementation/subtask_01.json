@@ -1,0 +1,26 @@
+{
+  "id": "ag-ui-acp-implementation-01",
+  "seq": "01",
+  "title": "Add --experimental-acp flag to agent-registry.ts",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/agent-registry.ts"
+  ],
+  "acceptance_criteria": [
+    "AgentAPI spawn args include '--experimental-acp' flag",
+    "Flag is added in buildSpawnArgs() method",
+    "Code compiles without errors"
+  ],
+  "deliverables": [
+    "src/agent-registry.ts (modified)"
+  ],
+  "started_at": "2026-03-18T00:00:00Z",
+  "completed_at": "2026-03-19T00:00:00Z",
+  "completion_summary": "Verified: --experimental-acp flag present at line 293 in agent-registry.ts buildSpawnArgs()"
+}

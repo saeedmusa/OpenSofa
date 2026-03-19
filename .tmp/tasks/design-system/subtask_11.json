@@ -1,0 +1,29 @@
+{
+  "id": "design-system-11",
+  "seq": "11",
+  "title": "Enhance Responsive Hooks",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "docs/OPENSOFAB_WEB_PRODUCT_SPEC.md",
+    "src/web/frontend/src/hooks/useResponsive.ts"
+  ],
+  "acceptance_criteria": [
+    "use-responsive.ts enhanced with isTablet (768px-1023px) breakpoint",
+    "Breakpoints: mobile (<768px), tablet (768-1023px), desktop (>=1024px)",
+    "Includes currentWidth and currentHeight for advanced use",
+    "use-haptic.ts created for vibration feedback",
+    "use-haptic supports success, error, warning vibration patterns",
+    "use-haptic checks navigator.vibrate availability",
+    "Both hooks have proper TypeScript types"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/hooks/use-responsive.ts",
+    "src/web/frontend/src/hooks/use-haptic.ts"
+  ]
+}

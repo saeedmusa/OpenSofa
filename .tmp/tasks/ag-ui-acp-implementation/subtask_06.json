@@ -1,0 +1,28 @@
+{
+  "id": "ag-ui-acp-implementation-06",
+  "seq": "06",
+  "title": "Remove parseTerminalOutput() from activity-parser.ts",
+  "status": "completed",
+  "depends_on": ["05"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/web/activity-parser.ts",
+    "src/web/event-parser/jsonl-parser.ts"
+  ],
+  "acceptance_criteria": [
+    "parseTerminalOutput() function removed",
+    "PATTERNS object removed",
+    "ActivityParser class removed or simplified",
+    "ActivityEvent interface and related types kept"
+  ],
+  "deliverables": [
+    "src/web/activity-parser.ts (modified)"
+  ],
+  "started_at": "2026-03-18T00:00:00Z",
+  "completed_at": "2026-03-19T00:00:00Z",
+  "completion_summary": "Verified: parseTerminalOutput removed - activity-parser.ts only contains ActivityEvent interface and a comment noting removal"
+}

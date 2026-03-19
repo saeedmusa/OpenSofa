@@ -1,0 +1,27 @@
+{
+  "id": "keep-alive-network-resilience-06",
+  "seq": "06",
+  "title": "M2-03a: Create offline message queue in localStorage",
+  "status": "completed",
+  "depends_on": ["05"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "When WebSocket is disconnected, new messages stored in localStorage",
+    "Queue structure: { id, sessionId, content, timestamp }[]",
+    "Queue key: 'opensofa_message_queue' in localStorage",
+    "Messages stored as JSON string",
+    "Queue created with empty array if not exists"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with localStorage queue",
+    "Helper functions for queue management (add, get, clear)"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx lines 6-44"
+}

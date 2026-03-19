@@ -1,0 +1,27 @@
+{
+  "id": "design-system-09",
+  "seq": "09",
+  "title": "Implement Tabs Primitive",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "tabs.tsx exports Tabs, TabsList, TabsTrigger, TabsContent components",
+    "Uses @radix-ui/react-tabs for accessibility",
+    "Designed for bottom navigation use case on mobile",
+    "Includes animated underline indicator",
+    "Keyboard navigation with arrow keys",
+    "Tokens applied from design system"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/primitives/tabs.tsx"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "architecture-refinements-02",
+  "seq": "02",
+  "title": "M5-02: Verify Session.pid field exists in types",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/types.ts"
+  ],
+  "acceptance_criteria": [
+    "Session interface has pid: number field",
+    "pid is set during session creation (from tmux spawn)",
+    "pid used in AgentRecoveryManager.cleanupProcesses()",
+    "Frontend Session type also includes pid"
+  ],
+  "deliverables": [
+    "Verify: src/types.ts Session.pid exists (already present)",
+    "Modified: src/web/frontend/src/types/index.ts - add pid field to Session"
+  ]
+}

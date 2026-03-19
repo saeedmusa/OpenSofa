@@ -1,0 +1,25 @@
+{
+  "id": "keep-alive-network-resilience-01",
+  "seq": "01",
+  "title": "M2-01a: Add visibilitychange event listener",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "App listens to 'visibilitychange' event",
+    "When visibilityState === 'hidden', logs 'App backgrounded - connection may be dropped'",
+    "When visibilityState === 'visible', triggers reconnection check",
+    "Does NOT forcibly disconnect - lets socket handle naturally"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with visibilitychange listener"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx lines 258-269"
+}

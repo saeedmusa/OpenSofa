@@ -1,0 +1,27 @@
+{
+  "id": "mobile-ux-enhancements-06",
+  "seq": "06",
+  "title": "M4-03a: Create PreChangePreview modal component",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/DiffViewer.tsx",
+    "src/web/frontend/src/types/index.ts"
+  ],
+  "acceptance_criteria": [
+    "Modal shows when agent proposes file changes",
+    "Preview displays: list of file paths with diff summary (+X lines, -Y lines)",
+    "Each file has checkbox for selection",
+    "'Approve All' button commits all changes",
+    "'Reject All' button rolls back all changes",
+    "Per-file granularity: approve some, reject others"
+  ],
+  "deliverables": [
+    "New file: src/web/frontend/src/components/PreChangePreview.tsx"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "keep-alive-network-resilience-08",
+  "seq": "08",
+  "title": "M2-03c: Add queue limit and offline indicator UI",
+  "status": "completed",
+  "depends_on": ["07"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx",
+    "src/web/frontend/src/components/ConnectionStatus.tsx"
+  ],
+  "acceptance_criteria": [
+    "Queue has max 20 messages (per target spec)",
+    "If queue exceeds max, oldest messages dropped with warning",
+    "UI shows indicator: 'X messages pending' when offline",
+    "Indicator appears in ConnectionStatus or similar component"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with queue limit logic",
+    "Modified ConnectionStatus.tsx with pending messages indicator"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx with pendingCount and showOfflineBanner"
+}

@@ -1,0 +1,26 @@
+{
+  "id": "error-handling-05",
+  "seq": "05",
+  "title": "M3-02c: Add cleanup of zombie processes before restart",
+  "status": "pending",
+  "depends_on": ["03", "04"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/types.ts",
+    "src/agent-recovery.ts"
+  ],
+  "acceptance_criteria": [
+    "cleanupProcesses(sessionName) function kills process by Session.pid",
+    "Uses process.kill(pid, 'SIGKILL') to ensure termination",
+    "Logs zombie cleanup action",
+    "Called before each restart attempt",
+    "Session.pid field exists and is used for process identification"
+  ],
+  "deliverables": [
+    "Modified: src/agent-recovery.ts with cleanupProcesses method"
+  ]
+}

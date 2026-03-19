@@ -1,0 +1,25 @@
+{
+  "id": "mobile-terminal-controls-03",
+  "seq": "03",
+  "title": "M1-01c: Add Send button disabled/loading states",
+  "status": "completed",
+  "depends_on": ["02"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx"
+  ],
+  "acceptance_criteria": [
+    "Send button is disabled when terminal input is empty",
+    "Send button shows loading state while message is being sent",
+    "Loading state uses spinner or similar indicator",
+    "Button re-enables after message is sent"
+  ],
+  "deliverables": [
+    "Updated MobileTerminalBar with state management for Send button"
+  ],
+  "completed_summary": "Implemented in InputBar.tsx with disabled and loading states (lines 61-75)"
+}

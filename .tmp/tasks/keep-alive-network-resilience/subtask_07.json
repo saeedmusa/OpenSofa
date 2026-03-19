@@ -1,0 +1,25 @@
+{
+  "id": "keep-alive-network-resilience-07",
+  "seq": "07",
+  "title": "M2-03b: Implement queue flush on reconnection",
+  "status": "completed",
+  "depends_on": ["06"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "On reconnection, queue is flushed in FIFO order",
+    "Each queued message sent via WebSocket 'message:send' event",
+    "Queue cleared after all messages sent successfully",
+    "Queue persists across page refreshes (already in localStorage)"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with flush logic"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx lines 101-113, 202-206"
+}

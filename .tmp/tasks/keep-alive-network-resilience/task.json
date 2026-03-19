@@ -1,0 +1,26 @@
+{
+  "id": "keep-alive-network-resilience",
+  "name": "M2: Keep-Alive & Network Resilience",
+  "status": "completed",
+  "objective": "Implement network resilience for mobile: visibility detection, exponential backoff reconnection, offline message queue, and session state recovery.",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx",
+    "src/web/frontend/src/components/Terminal.tsx",
+    "src/web/frontend/src/stores/sessionStore.ts"
+  ],
+  "exit_criteria": [
+    "App detects page visibility changes (visibilitychange, pagehide events)",
+    "WebSocket implements exponential backoff (1s → 2s → 4s → 8s → 16s max)",
+    "Offline messages queued in localStorage (max 20)",
+    "Queue flushed on reconnection with FIFO ordering",
+    "Session state recovery with sequence numbers and sync:request",
+    "UI shows 'X messages pending' when offline",
+    "UI shows banner when reconnecting after offline"
+  ],
+  "subtask_count": 12,
+  "completed_count": 12,
+  "completed_at": "2026-02-19T00:00:00.000Z"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "design-system-01",
+  "seq": "01",
+  "title": "Create Token System",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "docs/OPENSOFAB_WEB_PRODUCT_SPEC.md",
+    "src/web/frontend/src/index.css"
+  ],
+  "acceptance_criteria": [
+    "colors.ts defines sunset palette with semantic names (coral, peach, rose)",
+    "typography.ts defines font scales for mobile/tablet/desktop",
+    "spacing.ts uses 4px grid system",
+    "radii.ts defines border radius tokens",
+    "shadows.ts defines float shadows for glassmorphism",
+    "animations.ts exports Framer Motion presets (not CSS keyframes)",
+    "index.ts exports all tokens + CSS variable generator function",
+    "All tokens match existing index.css @theme values"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/tokens/colors.ts",
+    "src/web/frontend/src/design-system/tokens/typography.ts",
+    "src/web/frontend/src/design-system/tokens/spacing.ts",
+    "src/web/frontend/src/design-system/tokens/radii.ts",
+    "src/web/frontend/src/design-system/tokens/shadows.ts",
+    "src/web/frontend/src/design-system/tokens/animations.ts",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ]
+}

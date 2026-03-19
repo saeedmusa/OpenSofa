@@ -1,0 +1,28 @@
+{
+  "id": "design-system-07",
+  "seq": "07",
+  "title": "Implement Dialog Primitive",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "dialog.tsx exports Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription components",
+    "Uses @radix-ui/react-dialog for accessibility",
+    "Includes glassmorphism backdrop with blur",
+    "Animates in/out with scale and fade",
+    "Trap focus within dialog",
+    "Close on escape key and backdrop click",
+    "Mobile-friendly: full-screen on small devices, centered modal on desktop"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/primitives/dialog.tsx"
+  ]
+}

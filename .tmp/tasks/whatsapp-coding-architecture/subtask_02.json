@@ -1,0 +1,25 @@
+{
+  "id": "whatsapp-coding-architecture-02",
+  "seq": "02",
+  "title": "Document Non-Functional Requirements",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "general",
+  "context_files": [],
+  "reference_files": [],
+  "acceptance_criteria": [
+    "Performance requirements defined",
+    "Security requirements defined",
+    "Reliability requirements defined",
+    "Usability requirements defined",
+    "Scalability requirements defined"
+  ],
+  "deliverables": [
+    "docs/requirements/non-functional.md"
+  ],
+  "description": "Document non-functional requirements for the system: performance (response times, latency), security (authentication, authorization, path restrictions), reliability (error handling, reconnection), usability (WhatsApp message formatting, error messages), scalability (concurrent users, resource limits), maintainability (logging, monitoring).",
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

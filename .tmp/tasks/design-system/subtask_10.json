@@ -1,0 +1,27 @@
+{
+  "id": "design-system-10",
+  "seq": "10",
+  "title": "Implement Scroll-Area Primitive",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "scroll-area.tsx exports ScrollArea, ScrollBar components",
+    "Uses @radix-ui/react-scroll-area for cross-browser consistency",
+    "Custom styled scrollbar matching design system",
+    "Supports vertical and horizontal scrolling",
+    "Hide scrollbar on mobile, visible on desktop",
+    "Tokens applied from design system"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/primitives/scroll-area.tsx"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "mobile-ux-enhancements-04",
+  "seq": "04",
+  "title": "M4-02a: Enhance ActivityFeed with timeline format and timestamps",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/ActivityFeed.tsx",
+    "src/web/frontend/src/types/index.ts"
+  ],
+  "acceptance_criteria": [
+    "Events show timestamp in format: 'HH:MM' or relative time",
+    "Event types displayed with distinct icons: message, approval, command, error, completion",
+    "Timeline shows chronological order (newest first)",
+    "Auto-scroll to latest event with toggle to disable",
+    "Group events by time period (Now, X minutes ago, X hours ago)"
+  ],
+  "deliverables": [
+    "Modified: ActivityFeed.tsx with enhanced timeline display"
+  ]
+}

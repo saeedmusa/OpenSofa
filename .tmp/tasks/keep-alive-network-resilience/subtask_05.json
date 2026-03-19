@@ -1,0 +1,25 @@
+{
+  "id": "keep-alive-network-resilience-05",
+  "seq": "05",
+  "title": "M2-02c: Reset backoff delay on successful connection",
+  "status": "completed",
+  "depends_on": ["04"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "On successful reconnect, logs 'Reconnected'",
+    "Resets backoff delay to initial value (1s) after successful connection",
+    "Resets attempt counter to 0",
+    "Allows subsequent disconnects to use fresh backoff sequence"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with backoff reset logic"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx lines 183-184"
+}

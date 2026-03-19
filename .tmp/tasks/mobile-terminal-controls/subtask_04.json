@@ -1,0 +1,25 @@
+{
+  "id": "mobile-terminal-controls-04",
+  "seq": "04",
+  "title": "M1-02a: Add Stop button UI to MobileTerminalBar",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx"
+  ],
+  "acceptance_criteria": [
+    "Stop button appears in MobileTerminalBar component",
+    "Button is styled as danger action (red color)",
+    "Button is always visible (not just when agent is running)",
+    "Positioned next to or near Send button for easy access"
+  ],
+  "deliverables": [
+    "Modified MobileTerminalBar component with Stop button UI"
+  ],
+  "completed_summary": "Implemented in Terminal.tsx MobileTerminalBar (lines 299-303)"
+}

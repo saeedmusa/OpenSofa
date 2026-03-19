@@ -1,0 +1,25 @@
+{
+  "id": "mobile-ux-enhancements-05",
+  "seq": "05",
+  "title": "M4-02b: Add event type filter and pull-to-refresh to ActivityFeed",
+  "status": "pending",
+  "depends_on": ["04"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/ActivityFeed.tsx",
+    "src/web/frontend/src/hooks/usePullToRefresh.ts"
+  ],
+  "acceptance_criteria": [
+    "Filter dropdown shows: All, Messages, Approvals, Commands, Errors",
+    "Selecting filter shows only matching event types",
+    "Pull-to-refresh loads more history from API",
+    "Filter state persists during session"
+  ],
+  "deliverables": [
+    "Modified: ActivityFeed.tsx with filter dropdown and pull-to-refresh integration"
+  ]
+}

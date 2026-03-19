@@ -1,0 +1,29 @@
+{
+  "id": "design-system-03",
+  "seq": "03",
+  "title": "Implement Button Primitive",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "button.tsx exports Button component with forwardRef",
+    "Supports 4 variants: primary, secondary, ghost, danger",
+    "Supports 3 sizes: sm, md, lg",
+    "Uses class-variance-authority (cva) for variant management",
+    "Follows shadcn/ui copy-paste owned pattern",
+    "Applies tokens from design system, not hardcoded values",
+    "Includes disabled state with proper ARIA",
+    "Touch target minimum 44px for mobile"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/primitives/button.tsx"
+  ]
+}

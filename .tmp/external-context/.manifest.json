@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-02-21T12:00:00Z",
+  "libraries": {
+    "ios-safari-pwa": {
+      "files": [
+        {
+          "filename": "limitations-2024-2025.md",
+          "topic": "iOS PWA Limitations 2024-2025",
+          "tech_stack": "iOS Safari PWA",
+          "fetched": "2026-02-21T12:00:00Z",
+          "source": "Multiple sources (WebKit.org, firt.dev, MDN, WebKit Bugzilla)"
+        },
+        {
+          "filename": "compatibility-table.md",
+          "topic": "Compatibility Table",
+          "tech_stack": "iOS Safari PWA",
+          "fetched": "2026-02-21T12:00:00Z",
+          "source": "firt.dev"
+        }
+      ]
+    }
+  }
+}

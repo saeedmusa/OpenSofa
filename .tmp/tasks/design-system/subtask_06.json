@@ -1,0 +1,27 @@
+{
+  "id": "design-system-06",
+  "seq": "06",
+  "title": "Implement Input Primitive",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "input.tsx exports Input component with forwardRef",
+    "Includes focus states with accent color ring",
+    "Includes error state variant",
+    "Includes disabled state",
+    "Mobile-friendly with 16px font (prevents zoom on iOS)",
+    "Tokens applied from design system"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/primitives/input.tsx"
+  ]
+}

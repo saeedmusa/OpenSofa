@@ -1,0 +1,25 @@
+{
+  "id": "mobile-terminal-controls-01",
+  "seq": "01",
+  "title": "M1-01a: Add Send button UI to MobileTerminalBar",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx"
+  ],
+  "acceptance_criteria": [
+    "Send button appears in MobileTerminalBar component",
+    "Button is styled as primary action (emerald/green color)",
+    "Button is positioned prominently below input area",
+    "Button only visible on touch devices (MobileTerminalBar already has this check)"
+  ],
+  "deliverables": [
+    "Modified MobileTerminalBar component with Send button UI"
+  ],
+  "completed_summary": "Implemented in InputBar.tsx with Send button (lines 61-75)"
+}

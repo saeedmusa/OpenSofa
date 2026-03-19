@@ -1,0 +1,29 @@
+{
+  "id": "ag-ui-acp-implementation",
+  "name": "AG-UI ACP Architecture Implementation",
+  "status": "in_progress",
+  "objective": "Replace fragile regex-based terminal parsing with structured AG-UI events using AgentAPI's ACP transport, starting with OpenCode only",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/web/ag-ui-events.ts",
+    "src/web/event-parser/acp-parser.ts",
+    "src/web/event-parser/acp-mapper.ts",
+    "src/web/event-parser/mapper.ts",
+    "src/web/event-parser/mod.ts",
+    "src/web/server.ts",
+    "src/agent-registry.ts",
+    "src/web/activity-parser.ts"
+  ],
+  "exit_criteria": [
+    "OpenCode sessions produce structured ACP events",
+    "Activity feed displays tool_call and text_chunk events correctly",
+    "PTY fallback works when ACP is unavailable",
+    "Regex parser removed from activity-parser.ts",
+    "All existing tests pass"
+  ],
+  "subtask_count": 10,
+  "completed_count": 7,
+  "created_at": "2026-03-18T00:00:00Z"
+}

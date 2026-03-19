@@ -1,0 +1,23 @@
+{
+  "id": "whatsapp-coding-architecture-01",
+  "seq": "01",
+  "title": "Document Functional Requirements",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "general",
+  "context_files": [],
+  "reference_files": [],
+  "acceptance_criteria": [
+    "All user-facing functions listed",
+    "Each function has clear acceptance criteria",
+    "Categorized by feature area"
+  ],
+  "deliverables": [
+    "docs/requirements/functional.md"
+  ],
+  "description": "Identify and document all functional requirements for the WhatsApp coding interface. This includes what the user wants to be able to do from WhatsApp: read files, write files, edit code, run terminal commands, view output, git operations, project navigation, search code, see screens/terminal output.",
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

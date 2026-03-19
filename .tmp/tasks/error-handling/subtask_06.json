@@ -1,0 +1,28 @@
+{
+  "id": "error-handling-06",
+  "seq": "06",
+  "title": "M3-03a: Implement server-side rate limiting (60 msg/min per session)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/server.ts",
+    "src/web/routes/sessions.ts",
+    "src/message-queue.ts"
+  ],
+  "acceptance_criteria": [
+    "Rate limiter tracks messages per session with timestamps",
+    "Limits: 60 messages per minute per session",
+    "Returns 429 status with message 'Rate limit exceeded. Please wait.' when exceeded",
+    "Rate limit resets after 1 minute of no messages",
+    "Uses in-memory Map or Redis for tracking"
+  ],
+  "deliverables": [
+    "New file: src/rate-limiter.ts with RateLimiter class",
+    "Modified: src/web/routes/sessions.ts to integrate rate limiting"
+  ]
+}

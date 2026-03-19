@@ -1,0 +1,34 @@
+{
+  "id": "whatsapp-coding-architecture-06",
+  "seq": "06",
+  "title": "Identify Key Elements to Build",
+  "status": "pending",
+  "depends_on": ["03", "05"],
+  "parallel": false,
+  "suggested_agent": "general",
+  "context_files": [
+    "docs/review/nanobot-capabilities.md",
+    "docs/review/nanobot-extension-points.md",
+    "docs/architecture/system-architecture.md",
+    "docs/architecture/component-boundaries.md",
+    "docs/architecture/gap-analysis.md"
+  ],
+  "reference_files": [],
+  "acceptance_criteria": [
+    "Complete list of components to build from scratch",
+    "Complete list of components to reuse from nanobot",
+    "Complete list of components to research/adapt",
+    "Priority ranking of build components",
+    "Dependency graph of build components",
+    "Technology choices justified with trade-offs"
+  ],
+  "description": "Create final deliverable clearly identifying: (1) KEY ELEMENTS TO BUILD - new components we must create from scratch with detailed descriptions of what they do, (2) KEY ELEMENTS TO REUSE - existing nanobot components we will use as-is, (3) KEY ELEMENTS TO EXTEND - nanobot components we need to modify or enhance, (4) KEY ELEMENTS TO INTEGRATE - third-party components we will integrate, (5) Priority ranking - which components to build first based on dependencies and value, (6) Technology choices - justification for each technology selection with trade-off analysis (e.g., why Monaco vs code-server, why FastAPI vs alternatives). This will be the master build plan.",
+  "deliverables": [
+    "docs/architecture/key-elements.md",
+    "docs/architecture/build-priority.md",
+    "docs/architecture/technology-choices.md"
+  ],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

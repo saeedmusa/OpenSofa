@@ -1,0 +1,27 @@
+{
+  "id": "keep-alive-network-resilience-09",
+  "seq": "09",
+  "title": "M2-04a: Add sequence numbers to ActivityEvent",
+  "status": "completed",
+  "depends_on": ["08"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/types/index.ts",
+    "src/web/frontend/src/stores/sessionStore.ts"
+  ],
+  "acceptance_criteria": [
+    "ActivityEvent interface includes sequence: number",
+    "Sequence is monotonically increasing per session",
+    "Sequence created via EventTransformer or similar helper",
+    "Sequence used for session recovery and offline sync"
+  ],
+  "deliverables": [
+    "Modified types/index.ts with sequence field",
+    "Helper for sequence generation in event creation"
+  ],
+  "completed_summary": "Sequence numbers already in WebSocketEvent type and tracked in WebSocketProvider.tsx"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "ag-ui-acp-implementation-02",
+  "seq": "02",
+  "title": "Create acp-parser.ts for ACP SSE event parsing",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md",
+    "src/web/event-parser/jsonl-parser.ts"
+  ],
+  "reference_files": [
+    "src/web/ag-ui-events.ts",
+    "src/web/event-parser/jsonl-parser.ts"
+  ],
+  "acceptance_criteria": [
+    "ACPEventParser class emits 'tool_call', 'text_chunk', 'status_change' events",
+    "Parses SessionUpdate JSON-RPC messages from agentapi",
+    "Handles AgentMessageChunk, ToolCall, ToolCallUpdate structures",
+    "Includes EventEmitter pattern similar to JsonlParser"
+  ],
+  "deliverables": [
+    "src/web/event-parser/acp-parser.ts (148 lines)"
+  ],
+  "started_at": "2026-03-18T00:00:00Z",
+  "completed_at": "2026-03-19T00:00:00Z",
+  "completion_summary": "Verified: acp-parser.ts exists with 148 lines, ACPEventParser class with proper SSE parsing and EventEmitter"
+}

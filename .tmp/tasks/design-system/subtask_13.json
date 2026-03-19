@@ -1,0 +1,28 @@
+{
+  "id": "design-system-13",
+  "seq": "13",
+  "title": "Create Design System Index",
+  "status": "pending",
+  "depends_on": ["02", "03", "04", "05", "06", "07", "08", "09", "10", "11"],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/design-system/tokens/index.ts",
+    "src/web/frontend/src/design-system/theme/index.ts",
+    "src/web/frontend/src/design-system/primitives/*.tsx"
+  ],
+  "acceptance_criteria": [
+    "design-system/index.ts exports all tokens",
+    "design-system/index.ts exports ThemeProvider and useTheme",
+    "design-system/index.ts exports all primitives",
+    "design-system/index.ts exports responsive hooks",
+    "Clean barrel export pattern for easy imports",
+    "TypeScript types properly exported"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/index.ts"
+  ]
+}

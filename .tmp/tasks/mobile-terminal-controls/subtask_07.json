@@ -1,0 +1,25 @@
+{
+  "id": "mobile-terminal-controls-07",
+  "seq": "07",
+  "title": "M1-03: Add New Line button for multi-line input",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx"
+  ],
+  "acceptance_criteria": [
+    "Terminal has 'Line' or '↵' button in MobileTerminalBar",
+    "Clicking inserts newline character (\\n) at cursor position",
+    "Button is secondary-styled (less prominent than Send)",
+    "Works with multi-line input scenarios"
+  ],
+  "deliverables": [
+    "Modified MobileTerminalBar with Line button and insert logic"
+  ],
+  "completed_summary": "Implemented in Terminal.tsx MobileTerminalBar with Line button (lines 304-309)"
+}

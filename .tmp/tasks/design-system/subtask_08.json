@@ -1,0 +1,28 @@
+{
+  "id": "design-system-08",
+  "seq": "08",
+  "title": "Implement Toast Primitive",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "toast.tsx exports Toast, ToastProvider, ToastViewport, useToast components/hook",
+    "Uses @radix-ui/react-toast for accessibility",
+    "Supports variants: default, success, warning, error",
+    "Slides in from bottom on mobile, corner on desktop",
+    "Auto-dismiss with configurable duration",
+    "Includes close button and action support",
+    "Tokens applied from design system"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/primitives/toast.tsx"
+  ]
+}

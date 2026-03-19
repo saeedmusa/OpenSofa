@@ -1,0 +1,30 @@
+{
+  "id": "ag-ui-acp-implementation-04",
+  "seq": "04",
+  "title": "Wire ACP events in server.ts",
+  "status": "completed",
+  "depends_on": ["02", "03"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/web/server.ts",
+    "src/web/event-parser/acp-parser.ts",
+    "src/web/event-parser/acp-mapper.ts",
+    "src/session-manager.ts"
+  ],
+  "acceptance_criteria": [
+    "server.ts imports ACPEventParser and acp-mapper functions",
+    "wireSessionEvents() checks session.transport === 'acp'",
+    "ACP parser events are broadcast via WebSocket when transport is ACP",
+    "Code compiles without errors"
+  ],
+  "deliverables": [
+    "src/web/server.ts (modified)"
+  ],
+  "started_at": "2026-03-18T00:00:00Z",
+  "completed_at": "2026-03-19T00:00:00Z",
+  "completion_summary": "Verified: server.ts wires ACP events in wireSessionEvents() at lines 578-651, ACP parser set up per session, events mapped to AG-UI and broadcast"
+}

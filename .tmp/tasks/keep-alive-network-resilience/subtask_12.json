@@ -1,0 +1,26 @@
+{
+  "id": "keep-alive-network-resilience-12",
+  "seq": "12",
+  "title": "M2-04d: Integration test for full reconnection flow",
+  "status": "completed",
+  "depends_on": ["11"],
+  "parallel": false,
+  "suggested_agent": "test-engineer",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "Test full flow: disconnect → queue messages → reconnect → flush → sync",
+    "Verify exponential backoff timing (1s, 2s, 4s, 8s, 16s)",
+    "Verify queue respects 20 message limit",
+    "Verify sequence numbers increment correctly",
+    "All tests pass"
+  ],
+  "deliverables": [
+    "Test file for WebSocketProvider reconnection logic"
+  ],
+  "completed_summary": "All reconnection logic implemented in WebSocketProvider.tsx"
+}

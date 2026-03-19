@@ -1,0 +1,27 @@
+{
+  "id": "model-selection-02",
+  "seq": "02",
+  "title": "M6-01b: Pass selected model to backend session creation",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/routes/sessions.ts",
+    "src/session-manager.ts",
+    "src/types.ts"
+  ],
+  "acceptance_criteria": [
+    "API POST /sessions accepts { name, dir, agent, model }",
+    "model passed to AgentAPI via --model flag when spawning",
+    "Session.model field stored in session state",
+    "Model persisted to state file via PersistedSession"
+  ],
+  "deliverables": [
+    "Modified: src/web/routes/sessions.ts - pass model to session creation",
+    "Modified: src/session-manager.ts - pass model to AgentAPI spawn"
+  ]
+}

@@ -1,0 +1,1 @@
+function f(r){return r<1024?`${r}B`:r<1024*1024?`${(r/1024).toFixed(1)}K`:`${(r/(1024*1024)).toFixed(1)}M`}function i(r){const n=Date.now()-r,o=Math.floor(n/6e4);if(o<60)return`${o}m`;const t=Math.floor(o/60);return t<24?`${t}h`:`${Math.floor(t/24)}d`}export{f as a,i as f};

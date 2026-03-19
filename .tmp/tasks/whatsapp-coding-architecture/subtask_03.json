@@ -1,0 +1,47 @@
+{
+  "id": "whatsapp-coding-architecture-03",
+  "seq": "03",
+  "title": "Deep Review of Nanobot Capabilities",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "general",
+  "context_files": [
+    "nanobot/README.md",
+    "nanobot/nanobot/agent/tools/base.py",
+    "nanobot/nanobot/agent/tools/filesystem.py",
+    "nanobot/nanobot/agent/tools/shell.py",
+    "nanobot/nanobot/agent/tools/registry.py",
+    "nanobot/nanobot/agent/spawn.py",
+    "nanobot/nanobot/agent/loop.py",
+    "nanobot/nanobot/agent/memory.py",
+    "nanobot/nanobot/channels/whatsapp.py",
+    "nanobot/nanobot/channels/base.py",
+    "nanobot/nanobot/channels/manager.py",
+    "nanobot/nanobot/bus/queue.py",
+    "nanobot/nanobot/bus/events.py"
+  ],
+  "reference_files": [
+    "nanobot/bridge/src/whatsapp.ts",
+    "nanobot/bridge/src/server.ts",
+    "nanobot/bridge/src/index.ts"
+  ],
+  "acceptance_criteria": [
+    "Nanobot tool system fully understood",
+    "Nanobot channel system fully understood",
+    "Nanobot agent loop and message flow mapped",
+    "WhatsApp bridge architecture documented",
+    "Existing file/shell tools capabilities cataloged",
+    "Extension points for new tools identified",
+    "Capabilities that CAN be reused listed",
+    "Capabilities that MUST be built from scratch listed"
+  ],
+  "deliverables": [
+    "docs/review/nanobot-capabilities.md",
+    "docs/review/nanobot-extension-points.md"
+  ],
+  "description": "Perform comprehensive review of nanobot codebase to understand: (1) What capabilities already exist and can be reused (file tools, shell tools, WhatsApp channel, agent loop, message bus, subagent spawning), (2) What are the extension points for adding new tools and channels, (3) How does the WhatsApp bridge work (Baileys Node.js, WebSocket to Python), (4) What are the limitations of current file/shell tools, (5) Session and memory management, (6) Configuration system. Focus on identifying what we DON'T need to build vs what we DO need to build.",
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

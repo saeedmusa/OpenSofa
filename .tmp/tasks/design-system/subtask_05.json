@@ -1,0 +1,26 @@
+{
+  "id": "design-system-05",
+  "seq": "05",
+  "title": "Implement Badge Primitive",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "badge.tsx exports Badge component with forwardRef",
+    "Supports variants: default, success, warning, danger, info",
+    "Uses cva for variant management",
+    "Used for status indicators in session cards",
+    "Tokens applied from design system"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/primitives/badge.tsx"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "id": "model-selection-03",
+  "seq": "03",
+  "title": "M6-01c: Add /set command to change model at runtime",
+  "status": "pending",
+  "depends_on": ["02"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/command-parser.ts",
+    "src/session-manager.ts"
+  ],
+  "acceptance_criteria": [
+    "Command: /set <session> agent <agent> <model>",
+    "Updates Session.model and persists to state",
+    "Restarts agent with new model if session is active",
+    "Returns confirmation: 'Model changed to <model>'",
+    "Error if model not available for current agent"
+  ],
+  "deliverables": [
+    "Modified: src/command-parser.ts - handle /set command with model option"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "whatsapp-coding-architecture-04",
+  "seq": "04",
+  "title": "Map Requirements to Solution Components",
+  "status": "pending",
+  "depends_on": ["01", "02", "03"],
+  "parallel": false,
+  "suggested_agent": "general",
+  "context_files": [
+    "docs/requirements/functional.md",
+    "docs/requirements/non-functional.md",
+    "docs/review/nanobot-capabilities.md"
+  ],
+  "reference_files": [],
+  "acceptance_criteria": [
+    "Each functional requirement mapped to component(s)",
+    "Each non-functional requirement mapped to component(s)",
+    "Gap analysis complete (requirements not met)",
+    "Reuse opportunities documented",
+    "New build requirements documented"
+  ],
+  "deliverables": [
+    "docs/architecture/requirements-mapping.md",
+    "docs/architecture/gap-analysis.md"
+  ],
+  "description": "Create a mapping matrix that shows how each functional and non-functional requirement is met by the proposed solution components. Identify: (1) Which requirements are already satisfied by nanobot (reuse existing), (2) Which requirements require new middleware components, (3) Which requirements require new coding environment components, (4) Gaps - requirements not yet addressed, (5) Dependencies between components. Create gap analysis showing what's missing from the current design.",
+  "started_at": null,
+  "completed_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

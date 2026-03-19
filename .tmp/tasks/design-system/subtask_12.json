@@ -1,0 +1,27 @@
+{
+  "id": "design-system-12",
+  "seq": "12",
+  "title": "Update index.css with Token System",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "@theme directive imports token values from design system",
+    "Preserves existing utility classes (surface, btn, badge, etc.)",
+    "Updates to use token variables where applicable",
+    "Maintains all existing keyframe animations",
+    "No visual regression from current state",
+    "CSS validates without errors"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/index.css"
+  ]
+}

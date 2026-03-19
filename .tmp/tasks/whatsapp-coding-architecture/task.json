@@ -1,0 +1,28 @@
+{
+  "id": "whatsapp-coding-architecture",
+  "name": "WhatsApp Coding Interface Architecture",
+  "status": "active",
+  "objective": "Design architecture for WhatsApp-based coding interface on top of nanobot, analyzing functional/non-functional requirements, existing nanobot capabilities, and key components to build.",
+  "context_files": [
+    "nanobot/README.md",
+    "nanobot/nanobot/agent/tools/",
+    "nanobot/nanobot/channels/whatsapp.py",
+    "nanobot/bridge/src/"
+  ],
+  "reference_files": [
+    "nanobot/bridge/package.json",
+    "nanobot/nanobot/config/"
+  ],
+  "exit_criteria": [
+    "All functional requirements documented",
+    "All non-functional requirements documented",
+    "Nanobot capabilities fully analyzed",
+    "Requirements mapped to solution components",
+    "Architectural design complete",
+    "Key elements to build clearly identified"
+  ],
+  "subtask_count": 6,
+  "completed_count": 0,
+  "created_at": "2026-02-10T20:00:00Z",
+  "completed_at": null
+}

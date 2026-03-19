@@ -1,0 +1,24 @@
+{
+  "id": "keep-alive-network-resilience-02",
+  "seq": "02",
+  "title": "M2-01b: Add pagehide event for iOS Safari compatibility",
+  "status": "completed",
+  "depends_on": ["01"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "App listens to 'pagehide' event for iOS Safari compatibility",
+    "Logs appropriate message when pagehide fires",
+    "Works alongside visibilitychange (both can coexist)"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with pagehide listener"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx lines 271-290"
+}

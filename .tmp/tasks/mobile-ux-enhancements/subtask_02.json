@@ -1,0 +1,25 @@
+{
+  "id": "mobile-ux-enhancements-02",
+  "seq": "02",
+  "title": "M4-01b: Add unified/split view mode toggle to DiffViewer",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/DiffViewer.tsx"
+  ],
+  "acceptance_criteria": [
+    "Toggle button switches between Unified and Split views",
+    "Unified view: single column with +/- prefixes (current implementation)",
+    "Split view: side-by-side old/new columns",
+    "View preference persists in localStorage",
+    "Responsive: defaults to unified on mobile, split on desktop"
+  ],
+  "deliverables": [
+    "Modified: DiffViewer.tsx with view mode state and toggle"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "ag-ui-acp-implementation-08",
+  "seq": "08",
+  "title": "Update exports in activity-parser.ts mod file",
+  "status": "completed",
+  "depends_on": ["07"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/web/event-parser/mod.ts",
+    "src/web/activity-parser.ts"
+  ],
+  "acceptance_criteria": [
+    "ActivityParser export removed or updated if no longer needed",
+    "Any mod.ts or index.ts exports updated accordingly",
+    "No dangling imports of removed functions"
+  ],
+  "deliverables": [
+    "Updated export files if needed"
+  ],
+  "started_at": "2026-03-18T00:00:00Z",
+  "completed_at": "2026-03-19T00:00:00Z",
+  "completion_summary": "Verified: mod.ts exports ACPEventParser and createACPEventParser, no dangling imports"
+}

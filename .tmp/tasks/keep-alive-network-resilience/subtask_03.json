@@ -1,0 +1,25 @@
+{
+  "id": "keep-alive-network-resilience-03",
+  "seq": "03",
+  "title": "M2-02a: Implement exponential backoff reconnection logic",
+  "status": "completed",
+  "depends_on": ["02"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "WebSocketProvider implements exponential backoff: 1s → 2s → 4s → 8s → 16s (max)",
+    "Backoff delay increases on each failed connection attempt",
+    "Max backoff capped at 16 seconds",
+    "Current implementation has basic reconnect - this enhances it"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with exponential backoff"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx line 225"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "ag-ui-acp-implementation-03",
+  "seq": "03",
+  "title": "Create acp-mapper.ts for ACP to AG-UI mapping",
+  "status": "completed",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md",
+    "src/web/event-parser/mapper.ts"
+  ],
+  "reference_files": [
+    "src/web/event-parser/mapper.ts",
+    "src/web/ag-ui-events.ts"
+  ],
+  "acceptance_criteria": [
+    "Maps ACP ToolCall to AG-UI ToolCallStartEvent",
+    "Maps ACP AgentMessageChunk to AG-UI TextMessageContentEvent",
+    "Maps ACP ToolCallUpdate.Status to AG-UI ToolCallResultEvent",
+    "Uses existing mapper.ts patterns as reference"
+  ],
+  "deliverables": [
+    "src/web/event-parser/acp-mapper.ts (~60 lines)"
+  ],
+  "started_at": "2026-03-18T00:00:00Z",
+  "completed_at": "2026-03-18T00:00:00Z",
+  "completion_summary": "Created acp-mapper.ts with 3 functions: mapACPTextToAGUI, mapACPToolCallToAGUI, mapACPToolResultToAGUI"
+}

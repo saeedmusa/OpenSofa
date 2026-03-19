@@ -1,0 +1,35 @@
+{
+  "version": "1.0",
+  "last_updated": "2026-03-18T00:00:00Z",
+  "libraries": {
+    "ag-ui": {
+      "description": "Agent-User Interaction Protocol - Open, lightweight, event-based protocol for connecting AI agents to user-facing applications",
+      "files": [
+        {
+          "filename": "overview.md",
+          "topic": "Overview and core concepts",
+          "fetched": "2026-03-18T00:00:00Z",
+          "source": "Official docs (docs.ag-ui.com)"
+        },
+        {
+          "filename": "events.md",
+          "topic": "Event types reference (lifecycle, text, tools, state, reasoning)",
+          "fetched": "2026-03-18T00:00:00Z",
+          "source": "Official docs (docs.ag-ui.com)"
+        },
+        {
+          "filename": "integrations.md",
+          "topic": "Agent frameworks, SDKs, and client integrations",
+          "fetched": "2026-03-18T00:00:00Z",
+          "source": "Official docs (docs.ag-ui.com)"
+        },
+        {
+          "filename": "practical-patterns.md",
+          "topic": "Use cases, comparison with alternatives, integration patterns",
+          "fetched": "2026-03-18T00:00:00Z",
+          "source": "Official docs (docs.ag-ui.com)"
+        }
+      ]
+    }
+  }
+}

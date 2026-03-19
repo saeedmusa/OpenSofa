@@ -1,0 +1,28 @@
+{
+  "id": "mobile-terminal-controls-08",
+  "seq": "08",
+  "title": "M1-04: Add Quick Commands Palette",
+  "status": "completed",
+  "depends_on": ["06"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx",
+    "src/web/frontend/src/components/ActivityFeed.tsx"
+  ],
+  "acceptance_criteria": [
+    "Lightning bolt (⚡) button opens a modal/popover",
+    "Shows common commands: /approve, /reject, /stop, /help, /screenshot",
+    "Each item is a tappable button",
+    "Palette closes automatically after selection",
+    "Accessible from terminal view on mobile"
+  ],
+  "deliverables": [
+    "New QuickCommandsModal.tsx component",
+    "Modified MobileTerminalBar with command palette trigger"
+  ],
+  "completed_summary": "Implemented in Terminal.tsx QuickCommandsPalette (lines 164-234)"
+}

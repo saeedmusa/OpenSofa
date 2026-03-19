@@ -1,0 +1,26 @@
+{
+  "id": "error-handling-02",
+  "seq": "02",
+  "title": "M3-02: AgentRecoveryManager with 3 retry attempts",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/session-manager.ts",
+    "src/agentapi-client.ts"
+  ],
+  "acceptance_criteria": [
+    "AgentRecoveryManager class created",
+    "Automatically restarts crashed agents up to 3 times",
+    "Tracks restart attempts per session",
+    "Logs recovery attempts with attempt number",
+    "After 3 failures, marks session as failed/stopped"
+  ],
+  "deliverables": [
+    "AgentRecoveryManager class in session-manager.ts or separate file"
+  ]
+}

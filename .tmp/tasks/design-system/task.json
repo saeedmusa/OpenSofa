@@ -1,0 +1,24 @@
+{
+  "id": "design-system",
+  "name": "OpenSofa Web Design System",
+  "status": "active",
+  "objective": "Create a mobile-first design system with tokens, theme architecture, primitives, and responsive hooks for the OpenSofa PWA.",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "docs/OPENSOFAB_WEB_PRODUCT_SPEC.md",
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/hooks/useResponsive.ts"
+  ],
+  "exit_criteria": [
+    "All tokens defined in src/web/frontend/src/design-system/tokens/",
+    "Theme switching architecture works via ThemeProvider",
+    "All 8 primitives follow shadcn/ui patterns with proper variants",
+    "Works on mobile (393px), tablet (768px), desktop (1024px+)",
+    "Build passes without errors"
+  ],
+  "subtask_count": 14,
+  "completed_count": 0,
+  "created_at": "2026-02-17T00:00:00.000Z"
+}

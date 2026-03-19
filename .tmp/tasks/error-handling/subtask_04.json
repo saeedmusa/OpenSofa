@@ -1,0 +1,26 @@
+{
+  "id": "error-handling-04",
+  "seq": "04",
+  "title": "M3-02b: Implement auto-restart with up to 3 attempts and 2s delay",
+  "status": "pending",
+  "depends_on": ["03"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/agent-recovery.ts",
+    "src/session-manager.ts"
+  ],
+  "acceptance_criteria": [
+    "On crash detection, attempts restart up to 3 times",
+    "2 second delay between restart attempts",
+    "On success: logs 'Agent restarted. Resuming...' and updates session status to 'active'",
+    "After 3 failed attempts: logs 'Agent repeatedly crashed. Please restart manually.' and sets session status to 'failed'",
+    "Restart counter resets after successful restart"
+  ],
+  "deliverables": [
+    "Modified: src/agent-recovery.ts with auto-restart logic"
+  ]
+}

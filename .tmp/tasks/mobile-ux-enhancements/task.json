@@ -1,0 +1,22 @@
+{
+  "id": "mobile-ux-enhancements",
+  "name": "M4: Mobile UX Enhancements",
+  "status": "active",
+  "objective": "Add mobile diff viewer optimizations with hunk selector and view mode toggle, session activity timeline, and pre-change preview pattern",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/DiffViewer.tsx",
+    "src/web/frontend/src/components/ActivityFeed.tsx",
+    "src/web/frontend/src/types/index.ts"
+  ],
+  "exit_criteria": [
+    "DiffViewer has hunk selector dropdown and unified/split view toggle",
+    "ActivityFeed shows timeline with timestamps, icons, and event type filters",
+    "Pre-change preview modal with approve/reject per file"
+  ],
+  "subtask_count": 7,
+  "completed_count": 0,
+  "created_at": "2026-02-19T00:00:00.000Z"
+}

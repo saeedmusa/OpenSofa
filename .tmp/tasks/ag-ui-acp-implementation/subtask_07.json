@@ -1,0 +1,27 @@
+{
+  "id": "ag-ui-acp-implementation-07",
+  "seq": "07",
+  "title": "Update server.ts to remove regex parser references",
+  "status": "completed",
+  "depends_on": ["06"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/web/server.ts"
+  ],
+  "acceptance_criteria": [
+    "Import of parseTerminalOutput removed from server.ts",
+    "Line 209 reference to parseTerminalOutput replaced/removed",
+    "Terminal stream onOutput callback updated if needed",
+    "Code compiles without errors"
+  ],
+  "deliverables": [
+    "src/web/server.ts (modified)"
+  ],
+  "started_at": "2026-03-18T00:00:00Z",
+  "completed_at": "2026-03-19T00:00:00Z",
+  "completion_summary": "Verified: server.ts line 209 comment confirms 'Events come from ACP parser, not terminal output' - regex parser references removed"
+}

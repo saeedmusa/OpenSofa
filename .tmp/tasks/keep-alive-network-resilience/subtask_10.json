@@ -1,0 +1,26 @@
+{
+  "id": "keep-alive-network-resilience-10",
+  "seq": "10",
+  "title": "M2-04b: Implement sync:request on reconnection",
+  "status": "completed",
+  "depends_on": ["09"],
+  "parallel": false,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "On reconnect, client sends sync:request with last known sequence",
+    "sync:request event includes: { sessionId, lastSequence }",
+    "Server responds with missed events since that sequence",
+    "Client stores last known sequence in localStorage"
+  ],
+  "deliverables": [
+    "Modified WebSocketProvider.tsx with sync:request logic",
+    "localStorage for persisting last sequence"
+  ],
+  "completed_summary": "Implemented in WebSocketProvider.tsx lines 91-92, 122-125"
+}

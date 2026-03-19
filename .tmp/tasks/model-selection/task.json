@@ -1,0 +1,22 @@
+{
+  "id": "model-selection",
+  "name": "M6-01: Model Selection UI",
+  "status": "active",
+  "objective": "Add model selector dropdown to NewSessionModal, pass selected model to AgentAPI via --model flag, persist in session state.",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/NewSessionModal.tsx",
+    "src/web/frontend/src/types/index.ts",
+    "src/types.ts"
+  ],
+  "exit_criteria": [
+    "New session modal has model dropdown",
+    "Model passed to AgentAPI via --model flag",
+    "Model persisted in session state"
+  ],
+  "subtask_count": 1,
+  "completed_count": 0,
+  "created_at": "2026-02-19T00:00:00.000Z"
+}

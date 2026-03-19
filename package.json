@@ -1,0 +1,48 @@
+{
+  "name": "opensofa",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "build:frontend": "cd src/web/frontend && npm run build",
+    "build:all": "npm run build && npm run build:frontend",
+    "start": "node --max-old-space-size=512 dist/main.js",
+    "dev": "tsx src/main.ts",
+    "dev:frontend": "cd src/web/frontend && npm run dev",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:e2e": "E2E_TEST=true npx playwright test --config=tests/e2e/playwright.config.cjs"
+  },
+  "dependencies": {
+    "@hapi/boom": "^10.0.0",
+    "@hono/node-server": "^1.19.11",
+    "better-sqlite3": "^12.8.0",
+    "eventsource": "^2.0.0",
+    "hono": "^4.12.8",
+    "js-yaml": "^4.1.0",
+    "pino": "^9.0.0",
+    "pino-pretty": "^11.0.0",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0",
+    "sharp": "^0.33.0",
+    "uuid": "^10.0.0",
+    "web-push": "^3.6.7",
+    "ws": "^8.18.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/eventsource": "^1.1.15",
+    "@types/js-yaml": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/qrcode": "^1.5.5",
+    "@types/uuid": "^10.0.0",
+    "@types/web-push": "^3.6.4",
+    "@types/ws": "^8.5.13",
+    "tsx": "^4.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^2.0.0"
+  }
+}

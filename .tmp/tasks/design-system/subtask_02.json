@@ -1,0 +1,29 @@
+{
+  "id": "design-system-02",
+  "seq": "02",
+  "title": "Build Theme Architecture",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "types.ts defines Theme, ThemeMode, ThemeColors type definitions",
+    "context.tsx provides ThemeProvider component wrapping children",
+    "context.tsx exports useTheme hook returning theme state and setter",
+    "sunset.ts exports current theme values matching token colors",
+    "ThemeProvider applies CSS variables to document root",
+    "Theme persists to localStorage for returning users"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/theme/types.ts",
+    "src/web/frontend/src/design-system/theme/context.tsx",
+    "src/web/frontend/src/design-system/theme/sunset.ts",
+    "src/web/frontend/src/design-system/theme/index.ts"
+  ]
+}

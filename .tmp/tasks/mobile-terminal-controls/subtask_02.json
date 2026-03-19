@@ -1,0 +1,26 @@
+{
+  "id": "mobile-terminal-controls-02",
+  "seq": "02",
+  "title": "M1-01b: Wire up Send button WebSocket handler",
+  "status": "completed",
+  "depends_on": ["01"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx",
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "Clicking Send submits current terminal input to agent via WebSocket",
+    "Uses useWebSocket hook to send message",
+    "Message sent as terminal_input event type",
+    "Input is cleared after successful send"
+  ],
+  "deliverables": [
+    "Modified Terminal.tsx with send message handler"
+  ],
+  "completed_summary": "Implemented in InputBar.tsx handleSend function (lines 16-33)"
+}

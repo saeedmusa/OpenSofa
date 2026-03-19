@@ -1,0 +1,26 @@
+{
+  "id": "ag-ui-acp-implementation-05",
+  "seq": "05",
+  "title": "Test OpenCode with ACP - Verify structured events work",
+  "status": "pending",
+  "depends_on": ["01", "02", "03", "04"],
+  "parallel": false,
+  "suggested_agent": "test-engineer",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/web/server.ts",
+    "src/web/event-parser/acp-parser.ts",
+    "src/web/event-parser/acp-mapper.ts"
+  ],
+  "acceptance_criteria": [
+    "OpenCode session starts with ACP transport",
+    "Structured tool_call events appear in activity feed",
+    "Text streaming (text_chunk) events work",
+    "Terminal display still functions via tmux pipe-pane"
+  ],
+  "deliverables": [
+    "Test verification report"
+  ]
+}

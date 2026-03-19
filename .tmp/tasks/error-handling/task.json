@@ -1,0 +1,24 @@
+{
+  "id": "error-handling",
+  "name": "M3: Error Handling & Recovery",
+  "status": "active",
+  "objective": "Implement error classification system with handler in session-manager, agent recovery with 3 retry attempts, and server-side rate limiting (60 msg/min).",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/types.ts",
+    "src/session-manager.ts",
+    "src/agentapi-client.ts",
+    "src/message-queue.ts",
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "exit_criteria": [
+    "ErrorClassification type with handler in session-manager.ts",
+    "AgentRecoveryManager class with 3 retry attempts",
+    "Server-side rate limiting: 60 messages per minute"
+  ],
+  "subtask_count": 3,
+  "completed_count": 0,
+  "created_at": "2026-02-19T00:00:00.000Z"
+}

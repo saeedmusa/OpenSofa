@@ -1,0 +1,24 @@
+{
+  "id": "mobile-ux-enhancements-03",
+  "seq": "03",
+  "title": "M4-01c: Add collapsible header and share button to DiffViewer",
+  "status": "pending",
+  "depends_on": ["01", "02"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/DiffViewer.tsx"
+  ],
+  "acceptance_criteria": [
+    "Tap on header toggles visibility of diff content",
+    "Share button opens system share sheet with diff text",
+    "Visual indicator shows collapsed/expanded state",
+    "Animation for expand/collapse (200ms ease)"
+  ],
+  "deliverables": [
+    "Modified: DiffViewer.tsx with collapsible header and share functionality"
+  ]
+}

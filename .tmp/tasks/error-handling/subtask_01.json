@@ -1,0 +1,28 @@
+{
+  "id": "error-handling-01",
+  "seq": "01",
+  "title": "M3-01: ErrorClassification type + handler in session-manager",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/types.ts",
+    "src/session-manager.ts"
+  ],
+  "acceptance_criteria": [
+    "ErrorClassification type defined with: transient, recoverable, user, fatal",
+    "classifyError() function takes error and returns ErrorClassification",
+    "Error handler integrated in session-manager.ts",
+    "Transient: network errors (ETIMEDOUT, ECONNRESET, ENOTFOUND)",
+    "Recoverable: agent crash (ECONNREFUSED, process exit non-zero)",
+    "User: invalid command (EINVAL)",
+    "Fatal: port in use, critical system errors"
+  ],
+  "deliverables": [
+    "New file: src/error-classification.ts or integrated in session-manager.ts"
+  ]
+}

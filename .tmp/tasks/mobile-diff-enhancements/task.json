@@ -1,0 +1,21 @@
+{
+  "id": "mobile-diff-enhancements",
+  "name": "M4-01: Mobile Diff Enhancements",
+  "status": "active",
+  "objective": "Add mobile-friendly diff viewing: hunk selector dropdown and view mode toggle (unified/split) for Git diffs on mobile devices.",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/DiffViewer.tsx",
+    "src/web/frontend/src/components/Terminal.tsx"
+  ],
+  "exit_criteria": [
+    "Hunk selector dropdown shows all hunks in multi-hunk diffs",
+    "View mode toggle switches between unified and split diff views",
+    "Both features work on mobile viewport (393px width)"
+  ],
+  "subtask_count": 2,
+  "completed_count": 0,
+  "created_at": "2026-02-19T00:00:00.000Z"
+}

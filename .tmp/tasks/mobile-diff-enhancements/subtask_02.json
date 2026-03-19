@@ -1,0 +1,24 @@
+{
+  "id": "mobile-diff-enhancements-02",
+  "seq": "02",
+  "title": "M4-01b: View mode toggle (unified/split)",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/DiffViewer.tsx"
+  ],
+  "acceptance_criteria": [
+    "Toggle button switches between unified and split diff views",
+    "Unified view: shows added/removed lines in single column (green/red)",
+    "Split view: shows old/new in side-by-side columns",
+    "Mobile-friendly: toggle is large and easy to tap"
+  ],
+  "deliverables": [
+    "Modified DiffViewer.tsx with view mode toggle"
+  ]
+}

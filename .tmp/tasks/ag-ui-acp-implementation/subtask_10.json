@@ -1,0 +1,25 @@
+{
+  "id": "ag-ui-acp-implementation-10",
+  "seq": "10",
+  "title": "Run existing tests to verify no regressions",
+  "status": "pending",
+  "depends_on": ["08"],
+  "parallel": false,
+  "suggested_agent": "test-engineer",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/web/server.ts",
+    "src/web/activity-parser.ts"
+  ],
+  "acceptance_criteria": [
+    "npm test passes without errors",
+    "E2E tests pass (24 passed, 9 skipped as baseline)",
+    "No TypeScript compilation errors",
+    "No runtime errors in activity parser integration"
+  ],
+  "deliverables": [
+    "Test results summary"
+  ]
+}

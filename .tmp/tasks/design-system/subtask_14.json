@@ -1,0 +1,27 @@
+{
+  "id": "design-system-14",
+  "seq": "14",
+  "title": "Validate Build & Integration",
+  "status": "pending",
+  "depends_on": ["12", "13"],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/design-system/index.ts",
+    "src/web/frontend/src/index.css"
+  ],
+  "acceptance_criteria": [
+    "npm run build completes without errors",
+    "TypeScript compilation passes",
+    "All token exports work correctly",
+    "ThemeProvider can wrap App without errors",
+    "At least one primitive imported and used in test without error",
+    "Responsive breakpoints work at 393px, 768px, 1024px widths"
+  ],
+  "deliverables": [
+    "Build verification (no file output, just validation)"
+  ]
+}

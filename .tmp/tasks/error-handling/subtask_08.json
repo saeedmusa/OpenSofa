@@ -1,0 +1,26 @@
+{
+  "id": "error-handling-08",
+  "seq": "08",
+  "title": "M3-03c: Add rate limit exceeded UI feedback",
+  "status": "pending",
+  "depends_on": ["06", "07"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/providers/WebSocketProvider.tsx",
+    "src/web/frontend/src/components/Terminal.tsx"
+  ],
+  "acceptance_criteria": [
+    "When server returns 429, shows toast: 'Rate limit exceeded. Please wait.'",
+    "When client queue reaches 20, shows warning: 'Message queue full. Oldest messages will be dropped.'",
+    "UI shows indicator: '3 messages pending' when offline/queuing",
+    "Terminal disables send button when at queue limit"
+  ],
+  "deliverables": [
+    "Modified: Terminal.tsx with queue status indicator",
+    "Modified: WebSocketProvider with rate limit toast handling"
+  ]
+}

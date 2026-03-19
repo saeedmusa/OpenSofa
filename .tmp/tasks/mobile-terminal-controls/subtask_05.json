@@ -1,0 +1,25 @@
+{
+  "id": "mobile-terminal-controls-05",
+  "seq": "05",
+  "title": "M1-02b: Implement Ctrl+C interrupt via WebSocket",
+  "status": "completed",
+  "depends_on": ["04"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx",
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "Clicking Stop sends \\x03 (Ctrl+C) to the agent via WebSocket",
+    "Message sent as terminal_input event with \\x03 character",
+    "Interrupt signal reaches AgentAPI backend"
+  ],
+  "deliverables": [
+    "Modified Terminal.tsx with interrupt handler"
+  ],
+  "completed_summary": "Implemented in Terminal.tsx handleInterrupt (lines 249-268)"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "architecture-refinements",
+  "name": "M5: Architecture Refinements",
+  "status": "active",
+  "objective": "Add ActivityEvent sequence numbers, verify Session.pid field exists, and add KeepAliveManager types for queued messages",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/types.ts",
+    "src/web/activity-parser.ts",
+    "src/web/frontend/src/types/index.ts"
+  ],
+  "exit_criteria": [
+    "ActivityEvent has sequence number field for sync",
+    "Session.pid field verified in types.ts",
+    "KeepAliveManager uses QueuedMessage type"
+  ],
+  "subtask_count": 3,
+  "completed_count": 0,
+  "created_at": "2026-02-19T00:00:00.000Z"
+}

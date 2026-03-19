@@ -1,0 +1,25 @@
+{
+  "id": "ag-ui-acp-implementation-09",
+  "seq": "09",
+  "title": "Verify PTY fallback works",
+  "status": "pending",
+  "depends_on": ["04"],
+  "parallel": false,
+  "suggested_agent": "test-engineer",
+  "context_files": [
+    "docs/AG-UI-ACP-ARCHITECTURE.md"
+  ],
+  "reference_files": [
+    "src/web/server.ts",
+    "src/agent-registry.ts"
+  ],
+  "acceptance_criteria": [
+    "When ACP flag is removed/disabled, PTY mode activates",
+    "Terminal stream still captures output via tmux pipe-pane",
+    "Activity feed shows events (using existing terminal stream)",
+    "No crashes when switching between ACP and PTY modes"
+  ],
+  "deliverables": [
+    "Fallback verification report"
+  ]
+}

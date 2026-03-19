@@ -1,0 +1,26 @@
+{
+  "id": "architecture-refinements-03",
+  "seq": "03",
+  "title": "M5-03: Define QueuedMessage type for KeepAliveManager",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "coder-agent",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/types.ts",
+    "src/message-queue.ts"
+  ],
+  "acceptance_criteria": [
+    "QueuedMessage interface defined: { id, sessionId, content, timestamp }",
+    "KeepAliveManager.messageQueue uses type QueuedMessage[]",
+    "QueuedMessage properly serialized to localStorage",
+    "Type used in offline message queue implementation (M2-03)"
+  ],
+  "deliverables": [
+    "Modified: src/types.ts - added QueuedMessage interface",
+    "Reference: src/message-queue.ts updated to use QueuedMessage"
+  ]
+}

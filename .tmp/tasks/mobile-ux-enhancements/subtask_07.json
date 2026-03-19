@@ -1,0 +1,28 @@
+{
+  "id": "mobile-ux-enhancements-07",
+  "seq": "07",
+  "title": "M4-03b: Add preview expiration and integrate with approval flow",
+  "status": "pending",
+  "depends_on": ["06"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/PreChangePreview.tsx",
+    "src/web/frontend/src/stores/activityStore.ts"
+  ],
+  "acceptance_criteria": [
+    "Preview expires after 5 minutes of inactivity",
+    "Warning shown at 4 minutes: 'Preview expires in 1 minute'",
+    "After expiration, modal closes with message: 'Preview expired'",
+    "On approve: sends /approve command via WebSocket",
+    "On reject: sends /reject command via WebSocket",
+    "Updates pending approval state in session"
+  ],
+  "deliverables": [
+    "Modified: PreChangePreview.tsx with expiration timer",
+    "Modified: WebSocketProvider to integrate preview modal with approval flow"
+  ]
+}

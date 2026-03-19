@@ -1,0 +1,27 @@
+{
+  "id": "keep-alive-network-resilience-11",
+  "seq": "11",
+  "title": "M2-04c: Add offline banner and event replay UI",
+  "status": "completed",
+  "depends_on": ["10"],
+  "parallel": false,
+  "suggested_agent": "frontend-specialist",
+  "context_files": [
+    "USER_STORIES_GAP_ANALYSIS.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/Terminal.tsx",
+    "src/web/frontend/src/components/ActivityFeed.tsx"
+  ],
+  "acceptance_criteria": [
+    "UI shows banner: 'You were offline. X events occurred while you were away.'",
+    "'View Events' button shows missed activity in feed",
+    "Events replayed into activity store with proper sequencing",
+    "Banner dismissible after viewing events"
+  ],
+  "deliverables": [
+    "New OfflineBanner component or modification to existing",
+    "Modified ActivityFeed with missed event display"
+  ],
+  "completed_summary": "Implemented showOfflineBanner and missedEvents in WebSocketProvider.tsx"
+}

@@ -1,0 +1,27 @@
+{
+  "id": "design-system-04",
+  "seq": "04",
+  "title": "Implement Card Primitive",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "king-prompt.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/index.css",
+    "src/web/frontend/src/design-system/tokens/index.ts"
+  ],
+  "acceptance_criteria": [
+    "card.tsx exports Card, CardHeader, CardTitle, CardContent, CardFooter components",
+    "Includes glassmorphism variant with backdrop-filter blur",
+    "Includes floating variant with shadow-float token",
+    "Uses forwardRef for all sub-components",
+    "Follows shadcn/ui compound component pattern",
+    "Tokens applied from design system"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/design-system/primitives/card.tsx"
+  ]
+}
