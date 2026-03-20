@@ -10,9 +10,9 @@ export function DesktopLayout() {
   }
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-void">
       <Sidebar />
-      <main className="flex-1 overflow-hidden bg-bg">
+      <main className="flex-1 overflow-hidden bg-void ml-80">
         <Outlet />
       </main>
     </div>

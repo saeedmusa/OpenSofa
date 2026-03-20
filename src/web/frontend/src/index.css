@@ -3,57 +3,59 @@
 @import "tailwindcss";
 
 /**
- * OpenSofa Design System - Premium PWA Theme
- * A billion-dollar design for AI coding agents
+ * OpenSofa Design System - Kinetic Terminal Theme
+ * A brutalist terminal aesthetic with Matrix Green & Cyan accents
  */
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CSS CUSTOM PROPERTIES
+   CSS CUSTOM PROPERTIES - KINETIC TERMINAL THEME
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
   /* ─── Foundation Colors ─── */
   
-  /* Void Black - Deepest background */
-  --void: #030308;
-  --void-80: rgba(3, 3, 8, 0.8);
-  --void-60: rgba(3, 3, 8, 0.6);
-  --void-40: rgba(3, 3, 8, 0.4);
+  /* Void Black - Pure black backgrounds */
+  --void: #000000;
+  --void-80: rgba(0, 0, 0, 0.8);
+  --void-60: rgba(0, 0, 0, 0.6);
+  --void-40: rgba(0, 0, 0, 0.4);
   
-  /* Obsidian - Primary surfaces */
-  --obsidian: #0a0a0f;
-  --obsidian-80: rgba(10, 10, 15, 0.8);
-  --obsidian-60: rgba(10, 10, 15, 0.6);
-  --obsidian-40: rgba(10, 10, 15, 0.4);
+  /* Surface containers (dark gray elevation scale) */
+  --surface-container-lowest: #0e0e0e;
+  --surface-container-low: #1b1b1b;
+  --surface-container: #1f1f1f;
+  --surface-container-high: #2a2a2a;
+  --surface-container-highest: #353535;
   
-  /* Slate - Elevated surfaces */
-  --slate: #12121a;
-  --slate-80: rgba(18, 18, 26, 0.8);
-  --slate-60: rgba(18, 18, 26, 0.6);
+  /* ─── Primary - Matrix Green ─── */
+  --matrix-green: #00FF41;
+  --matrix-green-dim: #00e639;
+  --matrix-green-fixed: #72ff70;
+  --matrix-green-glow: rgba(0, 255, 65, 0.4);
+  --matrix-green-glow-strong: rgba(0, 255, 65, 0.6);
+  --matrix-green-surface: rgba(0, 255, 65, 0.1);
   
-  /* Graphite - Tertiary surfaces */
-  --graphite: #1a1a24;
-  --graphite-80: rgba(26, 26, 36, 0.8);
+  /* ─── Secondary - Cyan ─── */
+  --cyan-accent: #00FFFF;
+  --cyan-fixed: #00fbfb;
+  --cyan-fixed-dim: #00dddd;
+  --cyan-glow: rgba(0, 255, 255, 0.3);
   
-  /* Ash - Borders and dividers */
-  --ash: rgba(255, 255, 255, 0.06);
-  --ash-strong: rgba(255, 255, 255, 0.10);
-  --ash-subtle: rgba(255, 255, 255, 0.03);
+  /* ─── Error - Neon Red ─── */
+  --neon-red: #FF003C;
+  --neon-red-glow: rgba(255, 0, 60, 0.8);
+  --neon-red-surface: rgba(255, 0, 60, 0.1);
+  
+  /* ─── Outline & Borders ─── */
+  --outline: #84967e;
+  --outline-variant: #3b4b37;
   
   /* ─── Text Colors ─── */
-  --text-primary: #ffffff;
+  --text-primary: #e2e2e2;
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-tertiary: rgba(255, 255, 255, 0.5);
   --text-quaternary: rgba(255, 255, 255, 0.3);
   --text-disabled: rgba(255, 255, 255, 0.2);
-  
-  /* ─── Emerald Accent ─── */
-  --emerald: #10b981;
-  --emerald-bright: #34d399;
-  --emerald-dim: #059669;
-  --emerald-glow: rgba(16, 185, 129, 0.15);
-  --emerald-glow-strong: rgba(16, 185, 129, 0.25);
-  --emerald-surface: rgba(16, 185, 129, 0.08);
   
   /* ─── Status Colors ─── */
   --success: #10b981;
@@ -64,35 +66,35 @@
   --warning-soft: rgba(245, 158, 11, 0.12);
   --warning-glow: rgba(245, 158, 11, 0.3);
   
-  --danger: #f43f5e;
-  --danger-soft: rgba(244, 63, 94, 0.12);
-  --danger-glow: rgba(244, 63, 94, 0.3);
+  --danger: #FF003C;
+  --danger-soft: rgba(255, 0, 60, 0.12);
+  --danger-glow: rgba(255, 0, 60, 0.3);
   
   --info: #06b6d4;
   --info-soft: rgba(6, 182, 212, 0.12);
   
-  /* ─── Legacy Aliases for Ionic/Tailwind ─── */
+  /* ─── Legacy Aliases for UI Compatibility ─── */
   --color-bg: var(--void);
-  --color-bg-elevated: var(--obsidian);
-  --color-surface: var(--slate);
-  --color-surface-elevated: var(--graphite);
+  --color-bg-elevated: var(--surface-container-lowest);
+  --color-surface: var(--surface-container);
+  --color-surface-elevated: var(--surface-container-high);
   
-  --color-border: var(--ash);
-  --color-border-strong: var(--ash-strong);
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-strong: rgba(255, 255, 255, 0.10);
   
   --color-fg: var(--text-primary);
-  --color-fg-strong: var(--text-primary);
+  --color-fg-strong: #ffffff;
   --color-muted: var(--text-tertiary);
   --color-muted-light: var(--text-secondary);
   
-  --color-accent: var(--emerald);
-  --color-accent-light: var(--emerald-bright);
-  --color-accent-soft: var(--emerald-glow);
+  --color-accent: var(--matrix-green);
+  --color-accent-light: var(--cyan-accent);
+  --color-accent-soft: var(--matrix-green-surface);
   
   /* ─── Typography ─── */
-  --font-sans: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
-  --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
-  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: 'Fira Code', 'SF Mono', monospace;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
   
   /* Type scale */
   --text-2xs: 0.625rem;
@@ -111,62 +113,40 @@
   --weight-semibold: 600;
   --weight-bold: 700;
   
-  /* Line heights */
-  --leading-tight: 1.2;
-  --leading-snug: 1.35;
-  --leading-normal: 1.5;
-  --leading-relaxed: 1.65;
-  
   /* Letter spacing */
   --tracking-tight: -0.02em;
   --tracking-normal: 0;
   --tracking-wide: 0.02em;
   --tracking-wider: 0.04em;
+  --tracking-widest: 0.08em;
   
-  /* ─── Spacing ─── */
-  --space-0: 0;
-  --space-0.5: 0.125rem;
-  --space-1: 0.25rem;
-  --space-1.5: 0.375rem;
-  --space-2: 0.5rem;
-  --space-2.5: 0.625rem;
-  --space-3: 0.75rem;
-  --space-3.5: 0.875rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --space-7: 1.75rem;
-  --space-8: 2rem;
-  --space-9: 2.25rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
-  --space-14: 3.5rem;
-  --space-16: 4rem;
-  --space-20: 5rem;
-  --space-24: 6rem;
-  
-  /* ─── Border Radius ─── */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 24px;
+  /* ─── Border Radius (0px for brutalist style) ─── */
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
   --radius-full: 9999px;
   
   /* ─── Shadows ─── */
-  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.4);
-  --shadow-emerald: 0 0 24px rgba(16, 185, 129, 0.2);
-  --shadow-emerald-strong: 0 0 32px rgba(16, 185, 129, 0.35);
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.8);
+  
+  /* Terminal glow shadows */
+  --shadow-glow-primary: 0 0 10px rgba(0, 255, 65, 0.4);
+  --shadow-glow-primary-strong: 0 0 20px rgba(0, 255, 65, 0.6);
+  --shadow-glow-danger: 0 0 15px rgba(255, 0, 60, 0.8);
+  --shadow-glow-cyan: 0 0 15px rgba(0, 255, 255, 0.3);
+  --shadow-terminal: 0 0 10px rgba(0, 255, 65, 0.2);
   
   /* Legacy shadows */
   --shadow-float: var(--shadow-md);
   --shadow-float-lg: var(--shadow-lg);
-  --shadow-glow: var(--shadow-emerald);
-  --shadow-glow-accent: var(--shadow-emerald-strong);
+  --shadow-glow: var(--shadow-glow-primary);
+  --shadow-glow-accent: var(--shadow-glow-primary-strong);
   
   /* ─── Timing ─── */
   --ease-out: cubic-bezier(0.2, 0, 0, 1);
@@ -194,14 +174,14 @@
   --z-toast: 60;
   
   /* ─── Ionic Overrides ─── */
-  --ion-color-primary: var(--emerald);
-  --ion-color-primary-rgb: 16, 185, 129;
+  --ion-color-primary: var(--matrix-green);
+  --ion-color-primary-rgb: 0, 255, 65;
   --ion-color-primary-contrast: var(--void);
-  --ion-color-primary-shade: var(--emerald-dim);
-  --ion-color-primary-tint: var(--emerald-bright);
+  --ion-color-primary-shade: var(--matrix-green-dim);
+  --ion-color-primary-tint: var(--matrix-green-fixed);
   
-  --ion-color-secondary: var(--info);
-  --ion-color-secondary-rgb: 6, 182, 212;
+  --ion-color-secondary: var(--cyan-accent);
+  --ion-color-secondary-rgb: 0, 255, 255;
   --ion-color-secondary-contrast: var(--void);
   
   --ion-color-success: var(--success);
@@ -210,21 +190,21 @@
   --ion-color-warning: var(--warning);
   --ion-color-warning-rgb: 245, 158, 11;
   
-  --ion-color-danger: var(--danger);
-  --ion-color-danger-rgb: 244, 63, 94;
+  --ion-color-danger: var(--neon-red);
+  --ion-color-danger-rgb: 255, 0, 60;
   
   --ion-color-medium: var(--text-tertiary);
   --ion-color-light: var(--text-primary);
   
   --ion-background-color: var(--void);
-  --ion-background-color-rgb: 3, 3, 8;
+  --ion-background-color-rgb: 0, 0, 0;
   
   --ion-text-color: var(--text-primary);
-  --ion-text-color-rgb: 255, 255, 255;
+  --ion-text-color-rgb: 226, 226, 226;
   
-  --ion-toolbar-background: var(--obsidian);
-  --ion-tab-bar-background: var(--obsidian);
-  --ion-item-background: var(--obsidian);
+  --ion-toolbar-background: var(--surface-container-lowest);
+  --ion-tab-bar-background: var(--void);
+  --ion-item-background: var(--surface-container-lowest);
   
   --ion-safe-area-top: env(safe-area-inset-top);
   --ion-safe-area-bottom: env(safe-area-inset-bottom);
@@ -232,10 +212,7 @@
   --ion-safe-area-right: env(safe-area-inset-right);
   
   --ion-grid-padding: 16px;
-  --ion-item-border-color: var(--ash);
-  
-  /* Legacy radius aliases */
-  --radius-full: 9999px;
+  --ion-item-border-color: var(--color-border);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -244,27 +221,27 @@
 
 @theme {
   --color-bg: var(--void);
-  --color-bg-elevated: var(--obsidian);
-  --color-surface: var(--slate);
-  --color-surface-elevated: var(--graphite);
+  --color-bg-elevated: var(--surface-container-lowest);
+  --color-surface: var(--surface-container);
+  --color-surface-elevated: var(--surface-container-high);
   
-  --color-border: var(--ash);
-  --color-border-strong: var(--ash-strong);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
   
   --color-fg: var(--text-primary);
-  --color-fg-strong: var(--text-primary);
+  --color-fg-strong: #ffffff;
   --color-muted: var(--text-tertiary);
   --color-muted-light: var(--text-secondary);
   
-  --color-accent: var(--emerald);
-  --color-accent-light: var(--emerald-bright);
-  --color-accent-soft: var(--emerald-glow);
+  --color-accent: var(--matrix-green);
+  --color-accent-light: var(--cyan-accent);
+  --color-accent-soft: var(--matrix-green-surface);
   
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
-  --color-danger: var(--danger);
+  --color-danger: var(--neon-red);
   --color-danger-soft: var(--danger-soft);
   
   --font-sans: var(--font-sans);
@@ -279,8 +256,8 @@
   
   --shadow-float: var(--shadow-md);
   --shadow-float-lg: var(--shadow-lg);
-  --shadow-glow: var(--shadow-emerald);
-  --shadow-glow-accent: var(--shadow-emerald-strong);
+  --shadow-glow: var(--shadow-glow-primary);
+  --shadow-glow-accent: var(--shadow-glow-primary-strong);
   
   --ease-smooth: var(--ease-out);
   --ease-bounce: var(--ease-bounce);
@@ -312,10 +289,13 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
-  /* Subtle emerald gradient overlay */
-  background-image: 
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(16, 185, 129, 0.08), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(16, 185, 129, 0.05), transparent);
+  background: var(--void);
+}
+
+/* Kinetic Terminal selection */
+::selection {
+  background-color: var(--matrix-green);
+  color: var(--void);
 }
 
 * {
@@ -326,38 +306,38 @@ body {
   outline: none;
   box-shadow: 
     0 0 0 2px var(--void),
-    0 0 0 4px var(--emerald);
+    0 0 0 4px var(--matrix-green);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SCROLLBAR
+   SCROLLBAR - Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--void);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--ash-strong);
-  border-radius: 3px;
+  background: var(--surface-container-high);
+  border-radius: 0;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--matrix-green);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SELECTION
+   MATERIAL SYMBOLS
    ═══════════════════════════════════════════════════════════════════════════ */
 
-::selection {
-  background-color: var(--emerald);
-  color: var(--void);
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -402,27 +382,6 @@ body {
   }
 }
 
-@keyframes modal-fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes modal-scale-in {
-  from { 
-    opacity: 0; 
-    transform: translate(-50%, -50%) scale(0.96); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translate(-50%, -50%) scale(1); 
-  }
-}
-
-@keyframes sheet-slide-up {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
 @keyframes pulse-live {
   0%, 100% { 
     opacity: 1;
@@ -434,29 +393,24 @@ body {
   }
 }
 
-@keyframes skeleton-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+@keyframes pulse-danger {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 60, 0.6); }
+  50% { box-shadow: 0 0 20px rgba(255, 0, 60, 1); }
 }
 
 @keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 var(--emerald-glow); }
-  50% { box-shadow: 0 0 20px 4px var(--emerald-glow); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--matrix-green-glow); }
+  50% { box-shadow: 0 0 20px 4px var(--matrix-green-glow); }
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.7; transform: scale(0.95); }
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
 
-@keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.3; }
-  100% { transform: scale(1.5); opacity: 0; }
+@keyframes skeleton-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -479,16 +433,20 @@ body {
   animation: slide-up var(--duration-slow) var(--ease-bounce) forwards;
 }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
 .animate-glow-pulse {
   animation: glow-pulse 2s ease-in-out infinite;
 }
 
-.animate-pulse {
-  animation: pulse 2s ease-in-out infinite;
+.animate-pulse-live {
+  animation: pulse-live 2s ease-in-out infinite;
+}
+
+.animate-pulse-danger {
+  animation: pulse-danger 2s ease-in-out infinite;
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
 }
 
 /* Stagger children */
@@ -514,71 +472,27 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   GLASS UTILITIES
+   TERMINAL GLOW UTILITIES
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Base glass surface */
-.glass {
-  background: var(--slate-80);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid var(--ash-strong);
+.glow-primary {
+  box-shadow: var(--shadow-glow-primary);
 }
 
-/* Floating glass (cards, modals) */
-.glass-floating {
-  background: var(--graphite-80);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid var(--ash-strong);
-  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+.glow-primary-strong {
+  box-shadow: var(--shadow-glow-primary-strong);
 }
 
-/* Overlay glass */
-.glass-overlay {
-  background: var(--void-80);
-  backdrop-filter: blur(32px) saturate(150%);
-  -webkit-backdrop-filter: blur(32px) saturate(150%);
-  border: 1px solid var(--ash-subtle);
+.glow-danger {
+  box-shadow: var(--shadow-glow-danger);
 }
 
-/* Glass with inner glow */
-.glass-inner-glow {
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-/* Glass with emerald glow */
-.glass-glow {
-  box-shadow: 
-    0 0 0 1px var(--emerald-glow),
-    0 0 20px var(--emerald-glow);
-}
-
-/* Glass refraction top highlight */
-.glass-refraction {
-  position: relative;
-  overflow: hidden;
-}
-
-.glass-refraction::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg, 
-    transparent 0%, 
-    rgba(255, 255, 255, 0.3) 20%, 
-    rgba(255, 255, 255, 0.5) 50%, 
-    rgba(255, 255, 255, 0.3) 80%, 
-    transparent 100%
-  );
+.glow-cyan {
+  box-shadow: var(--shadow-glow-cyan);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   BUTTONS
+   BUTTONS - Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .btn {
@@ -605,39 +519,35 @@ body {
   cursor: not-allowed;
 }
 
-/* Primary Button */
+/* Primary Button - Matrix Green */
 .btn-primary {
-  background: var(--emerald);
+  background: var(--matrix-green);
   color: var(--void);
-  border-color: var(--emerald);
-  box-shadow: 
-    0 2px 8px rgba(16, 185, 129, 0.3),
-    0 0 0 1px rgba(16, 185, 129, 0.1) inset;
+  border-color: var(--matrix-green);
+  box-shadow: var(--shadow-glow-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: var(--emerald-bright);
+  background: var(--matrix-green-fixed);
   transform: translateY(-1px);
-  box-shadow: 
-    0 4px 16px rgba(16, 185, 129, 0.4),
-    0 0 0 1px rgba(16, 185, 129, 0.2) inset;
+  box-shadow: var(--shadow-glow-primary-strong);
 }
 
 .btn-primary:active:not(:disabled) {
   transform: translateY(0);
-  background: var(--emerald-dim);
+  background: var(--matrix-green-dim);
 }
 
-/* Secondary Button */
+/* Secondary Button - Cyan */
 .btn-secondary {
-  background: var(--slate);
-  color: var(--text-primary);
-  border-color: var(--ash-strong);
+  background: transparent;
+  color: var(--cyan-accent);
+  border-color: var(--cyan-accent);
 }
 
 .btn-secondary:hover:not(:disabled) {
-  background: var(--graphite);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: var(--cyan-accent);
+  color: var(--void);
 }
 
 /* Ghost Button */
@@ -648,7 +558,7 @@ body {
 }
 
 .btn-ghost:hover:not(:disabled) {
-  background: var(--ash-subtle);
+  background: var(--surface-container);
   color: var(--text-primary);
 }
 
@@ -664,32 +574,39 @@ body {
 }
 
 .btn-icon:hover:not(:disabled) {
-  background: var(--ash-subtle);
+  background: var(--surface-container);
   color: var(--text-primary);
 }
 
-/* Danger Button */
+/* Danger Button - Neon Red */
 .btn-danger {
-  background: var(--danger-soft);
-  color: var(--danger);
-  border-color: rgba(244, 63, 94, 0.2);
+  background: var(--neon-red-surface);
+  color: var(--neon-red);
+  border-color: rgba(255, 0, 60, 0.2);
 }
 
 .btn-danger:hover:not(:disabled) {
-  background: var(--danger);
+  background: var(--neon-red);
   color: white;
 }
 
-/* Small Button */
-.btn-sm {
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-xs);
-  min-height: 36px;
-  border-radius: var(--radius-md);
+/* Stop Button - Terminal style */
+.btn-stop {
+  background: var(--matrix-green-surface);
+  color: var(--matrix-green);
+  border: 1px solid var(--matrix-green);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+}
+
+.btn-stop:hover:not(:disabled) {
+  background: var(--matrix-green);
+  color: var(--void);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   INPUTS
+   INPUTS - Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .input {
@@ -697,82 +614,48 @@ body {
   padding: var(--space-3) var(--space-4);
   min-height: 48px;
   border-radius: var(--radius-lg);
-  background: var(--obsidian);
-  color: var(--text-primary);
+  background: var(--surface-container-lowest);
+  color: var(--matrix-green);
   font-size: var(--text-base);
-  font-family: var(--font-sans);
-  border: 1px solid var(--ash-strong);
+  font-family: var(--font-mono);
+  border: none;
+  border-bottom: 1px solid var(--surface-container-high);
   transition: all var(--duration-normal) var(--ease-snappy);
 }
 
 .input::placeholder {
   color: var(--text-quaternary);
+  opacity: 0.5;
+  font-style: italic;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--emerald);
-  box-shadow: 
-    0 0 0 3px var(--emerald-glow),
-    0 0 0 1px var(--emerald) inset;
+  border-bottom-color: var(--matrix-green);
+  box-shadow: none;
 }
 
-.input:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Terminal input with prompt */
+.input-terminal {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--surface-container-high);
+  padding-left: 2rem;
 }
 
-/* Legacy input-field alias */
-.input-field {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  background: var(--obsidian);
-  border: 1px solid var(--ash-strong);
-  border-radius: var(--radius-lg);
-  color: var(--text-primary);
-  font-size: var(--text-base);
-  transition: all var(--duration-normal) var(--ease-snappy);
-}
-
-.input-field::placeholder {
-  color: var(--text-quaternary);
-}
-
-.input-field:focus {
-  outline: none;
-  border-color: var(--emerald);
-  box-shadow: 0 0 0 3px var(--emerald-glow);
-}
-
-/* Input with icon wrapper */
-.input-wrapper {
-  position: relative;
-}
-
-.input-wrapper .input {
-  padding-left: 2.75rem;
-}
-
-.input-wrapper .input-icon-left {
-  position: absolute;
-  left: var(--space-3.5);
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-tertiary);
-  pointer-events: none;
+.input-terminal:focus {
+  border-bottom-color: var(--matrix-green);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CARDS
+   CARDS - Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .card {
   padding: var(--space-5);
   border-radius: var(--radius-xl);
-  background: var(--slate-80);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--ash);
+  background: var(--surface-container);
+  border: 1px solid var(--outline-variant);
   transition: all var(--duration-normal) var(--ease-snappy);
 }
 
@@ -781,39 +664,16 @@ body {
 }
 
 .card-interactive:hover {
-  background: var(--graphite-80);
-  border-color: var(--ash-strong);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  background: var(--surface-container-high);
+  border-color: var(--cyan-accent);
 }
 
-.card-interactive:active {
-  transform: translateY(0);
-}
-
-.card-floating {
-  background: var(--graphite-80);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--ash-strong);
-  box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
-
-/* Card with accent border */
-.card-accent {
-  position: relative;
-  overflow: hidden;
-}
-
-.card-accent::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(135deg, var(--emerald-bright) 0%, var(--emerald) 50%, var(--emerald-dim) 100%);
-  opacity: 0.6;
+/* Terminal card with accent border */
+.card-terminal {
+  background: var(--surface-container-low);
+  border-left: 2px solid var(--matrix-green);
+  padding: var(--space-4);
+  font-family: var(--font-mono);
 }
 
 /* Session Card */
@@ -821,35 +681,24 @@ body {
   display: block;
   padding: 1rem 1.25rem;
   border-radius: var(--radius-xl);
-  border: 1px solid var(--ash);
-  background: var(--slate);
+  border: 1px solid var(--surface-container-high);
+  background: var(--surface-container);
   cursor: pointer;
   transition: all var(--duration-normal) var(--ease-snappy);
   min-height: 44px;
 }
 
 .session-card:hover {
-  border-color: var(--ash-strong);
-  background: var(--graphite);
+  border-color: var(--outline);
+  background: var(--surface-container-high);
 }
 
 .session-card:active {
   transform: scale(0.98);
 }
 
-.session-card--floating {
-  background: var(--obsidian);
-  border-color: var(--ash);
-  box-shadow: var(--shadow-lg);
-}
-
-.session-card--floating:hover {
-  border-color: var(--emerald);
-  box-shadow: var(--shadow-lg), var(--shadow-emerald);
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   BADGES
+   BADGES - Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .badge {
@@ -860,11 +709,12 @@ body {
   border-radius: var(--radius-sm);
   font-size: var(--text-2xs);
   font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
-  background: var(--ash-subtle);
+  background: var(--surface-container-high);
   color: var(--text-secondary);
-  border: 1px solid var(--ash);
+  border: 1px solid var(--outline-variant);
+  font-family: var(--font-mono);
 }
 
 .badge-success {
@@ -882,13 +732,27 @@ body {
 .badge-danger {
   background: var(--danger-soft);
   color: var(--danger);
-  border-color: rgba(244, 63, 94, 0.2);
+  border-color: rgba(255, 0, 60, 0.2);
 }
 
 .badge-info {
   background: var(--info-soft);
   color: var(--info);
   border-color: rgba(6, 182, 212, 0.2);
+}
+
+/* Matrix badge */
+.badge-matrix {
+  background: var(--matrix-green-surface);
+  color: var(--matrix-green);
+  border-color: rgba(0, 255, 65, 0.3);
+}
+
+/* Cyan badge */
+.badge-cyan {
+  background: rgba(0, 255, 255, 0.1);
+  color: var(--cyan-accent);
+  border-color: rgba(0, 255, 255, 0.3);
 }
 
 /* Live badge with pulsing dot */
@@ -908,7 +772,7 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   STATUS INDICATORS
+   STATUS INDICATORS - Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .status-dot {
@@ -919,8 +783,8 @@ body {
 }
 
 .status-dot-success {
-  background: var(--success);
-  box-shadow: 0 0 8px var(--success-glow);
+  background: var(--matrix-green);
+  box-shadow: 0 0 8px var(--matrix-green-glow);
 }
 
 .status-dot-warning {
@@ -929,160 +793,124 @@ body {
 }
 
 .status-dot-danger {
-  background: var(--danger);
-  box-shadow: 0 0 8px var(--danger-glow);
+  background: var(--neon-red);
+  box-shadow: 0 0 8px var(--neon-red-glow);
 }
 
 .status-dot-idle {
   background: var(--text-quaternary);
 }
 
-/* Legacy status dot classes */
-.status-dot--stable {
-  background: var(--success);
-  box-shadow: 0 0 8px var(--success-glow);
-}
-
-.status-dot--running {
-  background: var(--warning);
-  box-shadow: 0 0 8px var(--warning-glow);
-  animation: pulse-live 2s infinite;
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   MODAL & SHEET
+   HEADER - Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-overlay);
-  background: var(--void-60);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  animation: modal-fade-in var(--duration-normal) var(--ease-out) forwards;
-}
-
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: var(--z-modal);
-  width: calc(100% - var(--space-8));
-  max-width: 420px;
-  max-height: calc(100vh - var(--space-8));
-  background: var(--graphite-80);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid var(--ash-strong);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-xl), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  animation: modal-scale-in var(--duration-slow) var(--ease-spring) forwards;
-}
-
-/* Bottom sheet for mobile */
-.sheet {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-modal);
-  max-height: calc(100vh - var(--space-8));
-  background: var(--graphite-80);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid var(--ash-strong);
-  border-bottom: none;
-  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
-  animation: sheet-slide-up var(--duration-slow) var(--ease-bounce) forwards;
-}
-
-.sheet::before {
-  content: '';
-  position: absolute;
-  top: var(--space-2);
-  left: 50%;
-  transform: translateX(-50%);
-  width: 36px;
-  height: 4px;
-  background: var(--ash-strong);
-  border-radius: 2px;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   NAVIGATION
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.header {
+.header-terminal {
   position: sticky;
   top: 0;
   z-index: var(--z-header);
-  background: var(--obsidian-80);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--ash-subtle);
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
   padding-top: env(safe-area-inset-top);
 }
 
-.floating-header {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-header);
-  background: var(--obsidian-80);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--ash-subtle);
+.header-terminal-height {
+  height: 56px;
 }
 
-.tab-bar {
+/* ═══════════════════════════════════════════════════════════════════════════
+   SIDEBAR - Terminal Style
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.sidebar-terminal {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: var(--z-header);
+  width: 320px;
+  background: var(--surface-container-lowest);
+  border-right: 1px solid rgba(0, 255, 255, 0.3);
+  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  transition: all var(--duration-normal) var(--ease-snappy);
+  border-left: 4px solid transparent;
+}
+
+.sidebar-nav-item:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-left-color: var(--matrix-green);
+}
+
+.sidebar-nav-item-active {
+  background: var(--cyan-accent);
+  color: var(--void);
+  font-weight: var(--weight-bold);
+}
+
+.sidebar-nav-item-danger:hover {
+  background: var(--neon-red-surface);
+  color: var(--neon-red);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   TAB BAR - Mobile Terminal Style
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.tab-bar-terminal {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: var(--z-tab-bar);
-  background: var(--obsidian-80);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid var(--ash);
+  background: var(--void);
+  border-top: 1px solid rgba(0, 255, 65, 0.3);
   padding-bottom: env(safe-area-inset-bottom);
   display: flex;
   justify-content: space-around;
-  align-items: center;
+  align-items: stretch;
   height: 64px;
 }
 
-.floating-tab-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-tab-bar);
-  background: var(--obsidian-80);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-top: 1px solid var(--ash);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.tab-item {
+.tab-item-terminal {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  flex: 1;
   padding: var(--space-2) var(--space-4);
-  min-height: 44px;
-  color: var(--text-tertiary);
-  transition: color var(--duration-fast) var(--ease-snappy);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--matrix-green);
+  opacity: 0.5;
+  transition: all var(--duration-fast) var(--ease-snappy);
 }
 
-.tab-item.active {
-  color: var(--emerald);
+.tab-item-terminal:hover {
+  background: rgba(0, 255, 65, 0.2);
+  opacity: 1;
 }
 
-.tab-item:hover:not(.active) {
-  color: var(--text-secondary);
+.tab-item-terminal-active {
+  background: var(--matrix-green);
+  color: var(--void);
+  opacity: 1;
+  border-left: 1px solid var(--matrix-green);
+  border-right: 1px solid var(--matrix-green);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1092,9 +920,9 @@ body {
 .skeleton {
   background: linear-gradient(
     90deg,
-    var(--ash-subtle) 25%,
-    var(--ash) 50%,
-    var(--ash-subtle) 75%
+    var(--surface-container-low) 25%,
+    var(--surface-container) 50%,
+    var(--surface-container-low) 75%
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s infinite;
@@ -1111,22 +939,9 @@ body {
   width: 60%;
 }
 
-.skeleton-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   SURFACE & EMPTY STATES
+   EMPTY STATE
    ═══════════════════════════════════════════════════════════════════════════ */
-
-.surface-floating {
-  background: var(--obsidian);
-  border: 1px solid var(--ash);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-lg);
-}
 
 .empty-state {
   display: flex;
@@ -1141,43 +956,12 @@ body {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: var(--radius-xl);
-  background: var(--emerald-surface);
+  background: var(--matrix-green-surface);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
-  color: var(--emerald);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   LOGO
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.logo-icon {
-  width: 32px;
-  height: 32px;
-}
-
-.logo-icon-lg {
-  width: 48px;
-  height: 48px;
-}
-
-.logo-wordmark {
-  font-family: var(--font-display);
-  font-weight: var(--weight-semibold);
-  font-size: var(--text-xl);
-  letter-spacing: var(--tracking-tight);
-  background: linear-gradient(135deg, var(--emerald-bright) 0%, var(--emerald) 50%, var(--emerald-dim) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--matrix-green);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1212,10 +996,22 @@ body {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--emerald-bright) 0%, var(--emerald) 50%, var(--emerald-dim) 100%);
+  background: linear-gradient(135deg, var(--matrix-green-fixed) 0%, var(--matrix-green) 50%, var(--matrix-green-dim) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Terminal prompt */
+.terminal-prompt::before {
+  content: '>';
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--matrix-green);
+  font-family: var(--font-mono);
+  font-weight: var(--weight-bold);
 }
 
 /* Safe area insets */
@@ -1224,4 +1020,66 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+}
+
+/* Custom scrollbar for terminal */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--void);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--surface-container-high);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--matrix-green);
+}
+
+/* Terminal scroll */
+.terminal-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.terminal-scroll::-webkit-scrollbar-track {
+  background: var(--void);
+}
+
+.terminal-scroll::-webkit-scrollbar-thumb {
+  background: var(--matrix-green);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   IONIC OVERRIDES FOR TERMINAL THEME
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+ion-content {
+  --background: var(--void);
+}
+
+ion-toolbar {
+  --background: var(--surface-container-lowest);
+  --border-color: rgba(0, 255, 65, 0.3);
+}
+
+ion-tab-bar {
+  --background: var(--void);
+  --border: 1px solid rgba(0, 255, 65, 0.3);
+}
+
+ion-tab-button {
+  --color: var(--text-tertiary);
+  --color-selected: var(--matrix-green);
+}
+
+ion-item {
+  --background: var(--surface-container-lowest);
+  --border-color: var(--color-border);
+}
+
+ion-modal {
+  --background: var(--surface-container);
 }

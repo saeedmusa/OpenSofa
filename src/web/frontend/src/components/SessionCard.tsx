@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Play, Square, AlertCircle, Clock, ChevronRight, Check, X } from 'lucide-react';
+import { AlertCircle, Clock, ChevronRight, Check, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { Session } from '../types';
 import { formatRelativeTime } from '../utils/format';
@@ -22,14 +22,14 @@ export function SessionCard({ session, onStop, onApprove, onReject }: SessionCar
   }, []);
 
   const statusClass = session.agentStatus === 'stable' 
-    ? 'status-dot--stable' 
-    : 'status-dot--running';
+    ? 'bg-matrix-green shadow-glow-primary' 
+    : 'bg-warning animate-pulse-live';
 
   const formattedTime = formatRelativeTime(session.lastActivityAt);
 
   return (
     <article
-      className="session-card session-card--floating animate-float-in touch-target group"
+      className="session-card animate-fade-in-up touch-target group cursor-pointer border-l-2 border-l-transparent hover:border-l-matrix-green transition-all"
       onClick={() => navigate(`/session/${encodeURIComponent(session.name)}`)}
       role="button"
       tabIndex={0}
@@ -42,62 +42,65 @@ export function SessionCard({ session, onStop, onApprove, onReject }: SessionCar
       }}
     >
       <div className="flex items-center gap-4">
+        {/* Status indicator */}
         <div className={clsx('status-dot flex-shrink-0', statusClass)} aria-hidden="true" />
         
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h3 className="font-medium text-fg-strong text-base truncate">{session.name}</h3>
-            {session.hasPendingApproval && (
-              <span className="badge badge-warning flex-shrink-0">
-                <AlertCircle size={12} aria-hidden="true" />
-                Approval
-              </span>
-            )}
+          {/* Header row with name and agent type */}
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-mono font-bold text-on-surface text-base truncate">{session.name}</h3>
+            <span className="text-[10px] font-mono text-cyan-accent bg-cyan-accent/10 px-1.5 py-0.5 border border-cyan-accent/30">
+              {session.agentType.toUpperCase()}
+            </span>
           </div>
           
-          <div className="flex items-center gap-4 mt-1.5 text-sm text-muted">
-            <span className="flex items-center gap-1.5">
-              <Play size={13} aria-hidden="true" className="text-accent" />
-              {session.agentType}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Clock size={13} aria-hidden="true" />
+          {/* Info row */}
+          <div className="flex items-center gap-4 text-xs font-mono text-muted">
+            <span className="flex items-center gap-1">
+              <Clock size={12} aria-hidden="true" />
               {formattedTime}
             </span>
+            {session.branch && (
+              <span className="text-matrix-green/60">{session.branch}</span>
+            )}
           </div>
 
-          {session.branch && (
-            <div className="mt-2 text-xs text-muted-light font-mono bg-surface px-2.5 py-1 rounded-full inline-block">
-              {session.branch}
-            </div>
-          )}
-
-          {session.hasPendingApproval && (onApprove || onReject) && (
-            <div className="flex gap-2 mt-3" onClick={(e) => e.stopPropagation()}>
-              {onApprove && (
-                <button
-                  onClick={() => onApprove(session.name)}
-                  aria-label={`Approve session ${session.name}`}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-success hover:bg-success/90 text-white py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-                >
-                  <Check size={14} />
-                  Approve
-                </button>
-              )}
-              {onReject && (
-                <button
-                  onClick={() => onReject(session.name)}
-                  aria-label={`Reject session ${session.name}`}
-                  className="flex-1 flex items-center justify-center gap-1.5 bg-danger hover:bg-danger/90 text-white py-2.5 rounded-xl text-sm font-medium transition-all duration-200"
-                >
-                  <X size={14} />
-                  Reject
-                </button>
-              )}
+          {/* Pending approval banner */}
+          {session.hasPendingApproval && (
+            <div className="mt-3 bg-neon-red/10 border border-neon-red/30 p-3">
+              <div className="flex items-center gap-2 text-neon-red text-xs font-mono mb-2">
+                <AlertCircle size={14} />
+                <span>PENDING APPROVAL</span>
+              </div>
+              {onApprove || onReject ? (
+                <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                  {onApprove && (
+                    <button
+                      onClick={() => onApprove(session.name)}
+                      aria-label={`Approve session ${session.name}`}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-matrix-green hover:bg-matrix-green-fixed text-black py-2 font-mono text-xs font-bold transition-colors"
+                    >
+                      <Check size={14} />
+                      APPROVE
+                    </button>
+                  )}
+                  {onReject && (
+                    <button
+                      onClick={() => onReject(session.name)}
+                      aria-label={`Reject session ${session.name}`}
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-neon-red/20 hover:bg-neon-red text-white py-2 font-mono text-xs font-bold transition-colors"
+                    >
+                      <X size={14} />
+                      REJECT
+                    </button>
+                  )}
+                </div>
+              ) : null}
             </div>
           )}
         </div>
 
+        {/* Actions */}
         <div className="flex items-center gap-2">
           {onStop && (
             <button
@@ -106,9 +109,9 @@ export function SessionCard({ session, onStop, onApprove, onReject }: SessionCar
                 onStop(session.name);
               }}
               aria-label={`Stop session ${session.name}`}
-              className="btn btn-danger btn-sm opacity-0 group-hover:opacity-100 transition-opacity"
+              className="btn-stop px-3 py-1.5 opacity-0 group-hover:opacity-100 transition-opacity text-[10px]"
             >
-              <Square size={14} aria-hidden="true" />
+              STOP
             </button>
           )}
           <ChevronRight 

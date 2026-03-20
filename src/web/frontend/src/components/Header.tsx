@@ -1,47 +1,50 @@
-import { Wifi, WifiOff } from 'lucide-react';
 import { clsx } from 'clsx';
-import { Logo } from './Logo';
 
 interface HeaderProps {
   connected: boolean;
   tunnelUrl?: string | null;
 }
 
-export function Header({ connected, tunnelUrl }: HeaderProps) {
+export function Header({ connected }: HeaderProps) {
   return (
-    <header className="floating-header safe-area-inset">
-      <div className="flex items-center justify-between px-5 py-4">
+    <header className="header-terminal">
+      <div className="flex items-center justify-between px-4 h-14">
+        {/* Left section - Logo and status */}
         <div className="flex items-center gap-3">
-          <Logo size="md" />
-          {tunnelUrl && (
-            <span className="badge flex-shrink-0">
-              Remote
+          <span className="material-symbols-outlined text-matrix-green text-xl">terminal</span>
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className={clsx(
+                "absolute inline-flex h-full w-full rounded-full opacity-75",
+                connected ? "bg-matrix-green animate-pulse" : "bg-neon-red"
+              )} />
+              {connected && (
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-matrix-green" />
+              )}
+              {!connected && (
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-red" />
+              )}
             </span>
-          )}
+            <h1 className="text-matrix-green font-mono text-sm font-bold tracking-tighter uppercase">
+              {connected ? 'AGENT: RUNNING' : 'AGENT: OFFLINE'}
+            </h1>
+          </div>
         </div>
 
-        <div 
-          className={clsx(
-            'flex items-center gap-2 px-3 py-1.5 rounded-full transition-all duration-300',
-            connected 
-              ? 'bg-success-soft text-success' 
-              : 'bg-surface text-muted'
-          )}
-          role="status"
-          aria-live="polite"
-          aria-label={connected ? 'Connected to server' : 'Disconnected from server'}
-        >
-          {connected ? (
-            <>
-              <Wifi size={14} aria-hidden="true" />
-              <span className="text-sm font-medium">Connected</span>
-            </>
-          ) : (
-            <>
-              <WifiOff size={14} aria-hidden="true" />
-              <span className="text-sm font-medium">Offline</span>
-            </>
-          )}
+        {/* Right section - Nav items and actions */}
+        <div className="flex items-center gap-4">
+          {/* Desktop nav items */}
+          <div className="hidden md:flex gap-6 font-mono text-[10px] tracking-widest items-center">
+            <span className="text-matrix-green">LOGS</span>
+            <span className="text-matrix-green/60 hover:text-matrix-green transition-colors cursor-pointer">FILES</span>
+            <span className="text-matrix-green/60 hover:text-matrix-green transition-colors cursor-pointer border border-matrix-green px-2 py-0.5">PROMPT</span>
+            <span className="text-matrix-green/60 hover:text-matrix-green transition-colors cursor-pointer">SYSTEM</span>
+          </div>
+
+          {/* Stop button */}
+          <button className="btn-stop px-3 py-1 hover:bg-matrix-green hover:text-black transition-all active:translate-y-0.5">
+            STOP
+          </button>
         </div>
       </div>
     </header>

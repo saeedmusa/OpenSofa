@@ -17,10 +17,10 @@ export function TabBar({ sessionName }: TabBarProps) {
 
   return (
     <nav 
-      className="floating-tab-bar fixed bottom-0 left-0 right-0 safe-area-inset z-40"
+      className="tab-bar-terminal md:hidden"
       aria-label="Session navigation"
     >
-      <ul className="flex justify-around items-center h-16 px-4" role="tablist">
+      <ul className="flex justify-around items-stretch h-full" role="tablist">
         {tabs.map(({ id, icon: Icon, label }) => (
           <li key={id} role="tab" className="flex-1">
             <NavLink
@@ -28,24 +28,13 @@ export function TabBar({ sessionName }: TabBarProps) {
               aria-label={label}
               className={({ isActive }) =>
                 clsx(
-                  'flex flex-col items-center justify-center py-2 px-4 rounded-xl transition-all duration-200',
-                  isActive 
-                    ? 'text-accent bg-accent-soft' 
-                    : 'text-muted hover:text-fg-strong'
+                  'tab-item-terminal',
+                  isActive && 'tab-item-terminal-active'
                 )
               }
             >
-              {({ isActive }) => (
-                <>
-                  <div className={clsx(
-                    'p-2 rounded-xl transition-all duration-200',
-                    isActive && 'bg-accent/20'
-                  )}>
-                    <Icon size={22} aria-hidden="true" />
-                  </div>
-                  <span className="text-[11px] mt-1 font-medium">{label}</span>
-                </>
-              )}
+              <Icon size={20} aria-hidden="true" />
+              <span className="mt-1">{label}</span>
             </NavLink>
           </li>
         ))}
@@ -66,10 +55,10 @@ export function SessionTabBar() {
 
   return (
     <nav 
-      className="floating-tab-bar fixed bottom-0 left-0 right-0 safe-area-inset z-40 lg:hidden"
+      className="tab-bar-terminal lg:hidden"
       aria-label="Session navigation"
     >
-      <ul className="flex justify-around items-center h-16 px-4" role="tablist">
+      <ul className="flex justify-around items-stretch h-full" role="tablist">
         {tabs.map(({ id, icon: Icon, label }) => {
           const isActive = (!tab && !id) || tab === id;
           return (
@@ -80,24 +69,70 @@ export function SessionTabBar() {
                 aria-selected={isActive}
                 className={() =>
                   clsx(
-                    'flex flex-col items-center justify-center py-2 px-4 rounded-xl transition-all duration-200',
-                    isActive 
-                      ? 'text-accent bg-accent-soft' 
-                      : 'text-muted hover:text-fg-strong'
+                    'tab-item-terminal',
+                    isActive && 'tab-item-terminal-active'
                   )
                 }
               >
-                <div className={clsx(
-                  'p-2 rounded-xl transition-all duration-200',
-                  isActive && 'bg-accent/20'
-                )}>
-                  <Icon size={22} aria-hidden="true" />
-                </div>
-                <span className="text-[11px] mt-1 font-medium">{label}</span>
+                <Icon size={20} aria-hidden="true" />
+                <span className="mt-1">{label}</span>
               </NavLink>
             </li>
           );
         })}
+      </ul>
+    </nav>
+  );
+}
+
+/**
+ * Mobile bottom navigation with terminal-style design
+ * Following the "Kinetic Terminal" aesthetic
+ */
+export function MobileBottomNav() {
+  return (
+    <nav className="tab-bar-terminal md:hidden" aria-label="Main navigation">
+      <ul className="flex justify-around items-stretch h-full" role="tablist">
+        <li role="tab" className="flex-1">
+          <a 
+            href="#" 
+            className="tab-item-terminal"
+            aria-label="Logs"
+          >
+            <span className="material-symbols-outlined">database</span>
+            <span>LOGS</span>
+          </a>
+        </li>
+        <li role="tab" className="flex-1">
+          <a 
+            href="#" 
+            className="tab-item-terminal"
+            aria-label="Files"
+          >
+            <span className="material-symbols-outlined">folder_open</span>
+            <span>FILES</span>
+          </a>
+        </li>
+        <li role="tab" className="flex-1">
+          <a 
+            href="#" 
+            className="tab-item-terminal-active"
+            aria-label="Prompt"
+          >
+            <span className="material-symbols-outlined">terminal</span>
+            <span>PROMPT</span>
+          </a>
+        </li>
+        <li role="tab" className="flex-1">
+          <a 
+            href="#" 
+            className="tab-item-terminal"
+            aria-label="System"
+          >
+            <span className="material-symbols-outlined">settings_input_component</span>
+            <span>SYSTEM</span>
+          </a>
+        </li>
       </ul>
     </nav>
   );

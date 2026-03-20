@@ -118,8 +118,8 @@ export function SessionView() {
 
   if (!selectedSession) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="w-10 h-10 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+      <div className="flex items-center justify-center min-h-screen bg-void">
+        <div className="w-10 h-10 border-2 border-matrix-green border-t-transparent rounded-none animate-spin" />
       </div>
     );
   }
@@ -129,46 +129,51 @@ export function SessionView() {
 
   if (isDesktop) {
     return (
-      <div className="flex flex-col h-screen">
-        <header className="floating-header px-6 py-4">
+      <div className="flex flex-col h-screen bg-void">
+        {/* Terminal-style header */}
+        <header className="header-terminal px-6 py-4">
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate('/')}
-              className="btn btn-ghost p-2"
+              className="text-matrix-green hover:bg-matrix-green/10 p-2 transition-colors"
               aria-label="Go back"
             >
-              <ArrowLeft size={22} />
+              <ArrowLeft size={20} />
             </button>
 
             <div className="flex-1 min-w-0">
-              <h1 className="text-lg font-semibold text-fg-strong truncate">{session.name}</h1>
-              <div className="flex items-center gap-3 text-sm text-muted mt-0.5">
-                <span className="flex items-center gap-1.5">
-                  <Play size={12} className="text-accent" />
-                  {session.agentType}
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-cyan-accent bg-cyan-accent/10 px-2 py-0.5 border border-cyan-accent/30">
+                  {session.agentType.toUpperCase()}
                 </span>
-                {session.branch && (
-                  <>
-                    <span className="text-border-strong">•</span>
-                    <span className="font-mono">{session.branch}</span>
-                  </>
-                )}
+                <h1 className="text-lg font-mono font-bold text-on-surface truncate">{session.name}</h1>
               </div>
+              {session.branch && (
+                <div className="flex items-center gap-2 mt-1 text-xs font-mono text-muted">
+                  <span>BRANCH:</span>
+                  <span className="text-matrix-green">{session.branch}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2 text-[10px] font-mono">
+              <span className="text-matrix-green">SYS:</span>
+              <span className="text-muted">ONLINE</span>
             </div>
           </div>
         </header>
 
-        <div className="flex-1 grid grid-cols-3 gap-6 p-6 overflow-hidden">
-          <div className="col-span-1 flex flex-col overflow-hidden">
-            <div className="flex items-center gap-2 mb-4 px-1">
-              <div className="p-2 rounded-xl bg-accent-soft">
-                <Activity size={16} className="text-accent" />
-              </div>
-              <h2 className="text-sm font-semibold text-fg-strong">Activity</h2>
+        {/* Three-column layout */}
+        <div className="flex-1 grid grid-cols-3 gap-4 p-6 overflow-hidden">
+          {/* Activity Column */}
+          <div className="flex flex-col overflow-hidden">
+            <div className="flex items-center gap-2 mb-4 px-2">
+              <span className="material-symbols-outlined text-cyan-accent">receipt_long</span>
+              <h2 className="text-sm font-mono font-bold text-on-surface tracking-wider">ACTIVITY_LOG</h2>
             </div>
-            <div className="flex-1 overflow-y-auto rounded-2xl bg-surface/50 border border-border">
+            <div className="flex-1 overflow-y-auto terminal-scroll bg-surface-container-low rounded-none border border-outline-variant/30">
               {session.hasPendingApproval && (
-                <div className="p-4 border-b border-border">
+                <div className="p-4 border-b border-outline-variant/30">
                   <ApprovalCard session={session} />
                 </div>
               )}
@@ -176,42 +181,44 @@ export function SessionView() {
             </div>
           </div>
 
-          <div className="col-span-1 flex flex-col overflow-hidden">
-            <div className="flex items-center gap-2 mb-4 px-1">
-              <div className="p-2 rounded-xl bg-accent-soft">
-                <TerminalIcon size={16} className="text-accent" />
-              </div>
-              <h2 className="text-sm font-semibold text-fg-strong">Terminal</h2>
+          {/* Terminal Column */}
+          <div className="flex flex-col overflow-hidden">
+            <div className="flex items-center gap-2 mb-4 px-2">
+              <span className="material-symbols-outlined text-matrix-green">terminal</span>
+              <h2 className="text-sm font-mono font-bold text-on-surface tracking-wider">TERMINAL</h2>
             </div>
-            <div className="flex-1 overflow-hidden rounded-2xl bg-surface/50 border border-border">
+            <div className="flex-1 overflow-hidden bg-black rounded-none border border-matrix-green/20">
               <LazyTerminal sessionId={session.name} />
             </div>
           </div>
 
-          <div className="col-span-1 flex flex-col overflow-hidden">
-            <div className="flex items-center gap-2 mb-4 px-1">
-              <div className="p-2 rounded-xl bg-accent-soft">
-                <Folder size={16} className="text-accent" />
-              </div>
-              <h2 className="text-sm font-semibold text-fg-strong">Files</h2>
+          {/* Files Column */}
+          <div className="flex flex-col overflow-hidden">
+            <div className="flex items-center gap-2 mb-4 px-2">
+              <span className="material-symbols-outlined text-cyan-accent">folder_open</span>
+              <h2 className="text-sm font-mono font-bold text-on-surface tracking-wider">FILES</h2>
             </div>
-            <div className="flex-1 overflow-hidden rounded-2xl bg-surface/50 border border-border">
+            <div className="flex-1 overflow-hidden bg-surface-container-low rounded-none border border-outline-variant/30">
               <LazyFileView sessionName={session.name} />
             </div>
           </div>
         </div>
 
-        <div className="sticky bottom-0 p-6 pt-4 bg-gradient-to-t from-bg to-transparent">
+        {/* Input area */}
+        <div className="p-6 pt-4 bg-black border-t border-matrix-green/30">
           <div className="flex gap-3 max-w-2xl mx-auto items-end">
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Send a message... (Shift+Enter for new line)"
-              className="input-field flex-1 resize-none min-h-[44px] max-h-32"
-              rows={1}
-              aria-label="Message input"
-            />
+            <div className="flex-1 relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-matrix-green font-mono font-bold">&gt;</span>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="instruct agent..."
+                className="w-full bg-surface-container-lowest border-b-2 border-surface-container-high focus:border-matrix-green text-matrix-green font-mono pl-10 pr-4 py-3 resize-none min-h-[48px] max-h-32 placeholder:opacity-30"
+                rows={1}
+                aria-label="Message input"
+              />
+            </div>
             <VoiceInput
               onTranscript={(text) => setMessage((prev) => prev + (prev ? ' ' : '') + text)}
               disabled={sending}
@@ -219,21 +226,18 @@ export function SessionView() {
             <button
               onClick={handleSend}
               disabled={!message.trim() || sending}
-              className="btn btn-primary self-end flex items-center gap-2"
+              className="bg-matrix-green text-black px-6 py-3 font-mono font-bold text-xs hover:bg-matrix-green-fixed active:translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={sending ? 'Sending message' : 'Send message'}
             >
               {sending ? (
-                <>
-                  <Loader2 size={16} className="animate-spin" />
-                  Sending...
-                </>
+                <Loader2 size={16} className="animate-spin" />
               ) : (
-                'Send'
+                'SEND'
               )}
             </button>
           </div>
           {sendError && (
-            <div className="mt-2 flex items-center gap-2 text-sm text-red-400 max-w-2xl mx-auto">
+            <div className="mt-2 flex items-center gap-2 text-sm text-neon-red max-w-2xl mx-auto font-mono">
               <AlertCircle size={14} />
               {sendError}
             </div>
@@ -244,40 +248,34 @@ export function SessionView() {
   }
 
   return (
-    <div className="flex flex-col h-screen">
-      <header className="floating-header px-5 py-4">
-        <div className="flex items-center gap-4">
+    <div className="flex flex-col h-screen bg-void">
+      {/* Terminal-style header */}
+      <header className="header-terminal px-5 py-3">
+        <div className="flex items-center gap-3">
           <button
             onClick={() => navigate('/')}
-            className="btn btn-ghost p-2"
+            className="text-matrix-green hover:bg-matrix-green/10 p-2 -ml-2 transition-colors"
             aria-label="Go back"
           >
-            <ArrowLeft size={22} />
+            <ArrowLeft size={20} />
           </button>
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg font-semibold text-fg-strong truncate">{session.name}</h1>
-            <div className="flex items-center gap-3 text-sm text-muted mt-0.5">
-              <span className="flex items-center gap-1.5">
-                <Play size={12} className="text-accent" />
-                {session.agentType}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono text-cyan-accent bg-cyan-accent/10 px-1.5 py-0.5 border border-cyan-accent/30">
+                {session.agentType.toUpperCase()}
               </span>
-              {session.branch && (
-                <>
-                  <span className="text-border-strong">•</span>
-                  <span className="font-mono">{session.branch}</span>
-                </>
-              )}
+              <h1 className="text-base font-mono font-bold text-on-surface truncate">{session.name}</h1>
             </div>
           </div>
 
           <button
             onClick={() => setShowTerminal(!showTerminal)}
             className={clsx(
-              'btn p-3 rounded-xl transition-all duration-200',
+              'p-2 transition-all',
               showTerminal 
-                ? 'bg-accent text-white shadow-[0_0_20px_rgba(232,152,94,0.4)]' 
-                : 'btn-ghost'
+                ? 'bg-matrix-green text-black' 
+                : 'text-matrix-green hover:bg-matrix-green/10'
             )}
             aria-label={showTerminal ? 'Hide terminal' : 'Show terminal'}
           >
@@ -286,6 +284,7 @@ export function SessionView() {
         </div>
       </header>
 
+      {/* Main content area */}
       <div className="flex-1 overflow-hidden pb-32">
         {session.hasPendingApproval && (
           <div className="p-5">
@@ -294,13 +293,13 @@ export function SessionView() {
         )}
 
         {activeTab === 'feed' && !showTerminal && (
-          <div className="h-full overflow-y-auto">
+          <div className="h-full overflow-y-auto terminal-scroll">
             <ActivityFeed sessionName={session.name} />
           </div>
         )}
 
         {(activeTab === 'terminal' || showTerminal) && (
-          <div className="h-full">
+          <div className="h-full bg-black">
             <LazyTerminal sessionId={session.name} />
           </div>
         )}
@@ -314,17 +313,21 @@ export function SessionView() {
 
       <SessionTabBar />
 
-      <div className="fixed bottom-16 left-0 right-0 p-4 bg-gradient-to-t from-bg via-bg to-transparent safe-area-inset z-10">
+      {/* Fixed input bar at bottom */}
+      <div className="fixed bottom-16 left-0 right-0 p-4 bg-black border-t border-matrix-green/30 z-10">
         <div className="flex gap-3 max-w-3xl mx-auto items-end">
-          <textarea
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Send a message... (Shift+Enter for new line)"
-            className="input-field flex-1 resize-none min-h-[48px] max-h-32"
-            rows={1}
-            aria-label="Message input"
-          />
+          <div className="flex-1 relative">
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-matrix-green font-mono font-bold text-lg">&gt;</span>
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="instruct agent..."
+              className="w-full bg-surface-container-lowest border-b-2 border-surface-container-high focus:border-matrix-green text-matrix-green font-mono text-sm pl-9 pr-4 py-2.5 resize-none min-h-[44px] max-h-32 placeholder:opacity-30"
+              rows={1}
+              aria-label="Message input"
+            />
+          </div>
           <VoiceInput
             onTranscript={(text) => setMessage((prev) => prev + (prev ? ' ' : '') + text)}
             disabled={sending}
@@ -332,22 +335,19 @@ export function SessionView() {
           <button
             onClick={handleSend}
             disabled={!message.trim() || sending}
-            className="btn btn-primary self-end flex items-center gap-2 px-6"
+            className="bg-matrix-green text-black px-5 py-2.5 font-mono font-bold text-xs hover:bg-matrix-green-fixed active:translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label={sending ? 'Sending message' : 'Send message'}
           >
             {sending ? (
-              <>
-                <Loader2 size={16} className="animate-spin" />
-                Sending...
-              </>
+              <Loader2 size={14} className="animate-spin" />
             ) : (
-              'Send'
+              'SEND'
             )}
           </button>
         </div>
         {sendError && (
-          <div className="mt-2 flex items-center gap-2 text-sm text-red-400 max-w-3xl mx-auto">
-            <AlertCircle size={14} />
+          <div className="mt-2 flex items-center gap-2 text-xs text-neon-red max-w-3xl mx-auto font-mono">
+            <AlertCircle size={12} />
             {sendError}
           </div>
         )}

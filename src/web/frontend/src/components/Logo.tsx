@@ -8,27 +8,27 @@ interface LogoProps {
 }
 
 const sizeConfig = {
-  sm: { icon: 'w-8 h-8', gap: 'gap-2', text: 'text-base' },
-  md: { icon: 'w-12 h-12', gap: 'gap-3', text: 'text-lg' },
-  lg: { icon: 'w-20 h-20', gap: 'gap-4', text: 'text-2xl' },
-  xl: { icon: 'w-32 h-32', gap: 'gap-4', text: 'text-3xl' },
+  sm: { icon: 'w-8 h-8', gap: 'gap-2', text: 'text-sm' },
+  md: { icon: 'w-10 h-10', gap: 'gap-3', text: 'text-base' },
+  lg: { icon: 'w-16 h-16', gap: 'gap-4', text: 'text-xl' },
+  xl: { icon: 'w-24 h-24', gap: 'gap-4', text: 'text-2xl' },
 };
 
 export function Logo({ size = 'md', showText = true, className }: LogoProps) {
   const config = sizeConfig[size];
 
   return (
-    <div className={clsx('flex flex-col items-center', size === 'xl' ? 'gap-4' : config.gap, className)}>
+    <div className={clsx('flex items-center', config.gap, className)}>
       <img
         src={logoSrc}
-        alt="OpenSofa Logo"
-        className={clsx(config.icon, 'object-contain drop-shadow-lg')}
+        alt="OpenSofa"
+        className={clsx(config.icon, 'object-contain')}
         aria-hidden={!showText}
       />
       {showText && (
-        <h1 className={clsx('font-bold gradient-text', config.text, size === 'xl' && 'tracking-wide')}>
-          OpenSofa
-        </h1>
+        <span className={clsx('font-mono font-bold text-matrix-green tracking-tight', config.text)}>
+          OPENSOFA
+        </span>
       )}
     </div>
   );
