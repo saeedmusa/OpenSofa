@@ -1,0 +1,35 @@
+{
+  "id": "code-review-fixes-06",
+  "seq": "06",
+  "title": "Fix silent error swallowing and sessions JSON error handling",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/state-persistence.ts",
+    "src/web/resource-monitor.ts",
+    "src/feedback-controller.ts",
+    "src/web/routes/sessions.ts"
+  ],
+  "acceptance_criteria": [
+    "state-persistence.ts:97 saveSync catch block logs with log.warn()",
+    "state-persistence.ts:124 .catch(() => {}) replaced with error logging",
+    "resource-monitor.ts:385-388 empty catch blocks add log.debug()",
+    "feedback-controller.ts:338-357 catch blocks add log.debug()",
+    "sessions.ts:46 returns 400 error for invalid JSON instead of empty object"
+  ],
+  "deliverables": [
+    "src/web/state-persistence.ts",
+    "src/web/resource-monitor.ts",
+    "src/feedback-controller.ts",
+    "src/web/routes/sessions.ts"
+  ],
+  "issues_addressed": ["#11", "#28"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

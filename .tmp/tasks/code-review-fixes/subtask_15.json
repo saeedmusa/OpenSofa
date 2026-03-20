@@ -1,0 +1,31 @@
+{
+  "id": "code-review-fixes-15",
+  "seq": "15",
+  "title": "Fix database lifecycle: lazy init, closeDb, graceful shutdown, schema fix",
+  "status": "pending": [],
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/db.ts",
+    "src/main.ts"
+  ],
+  "acceptance_criteria": [
+    "Database uses lazy initialization via getDb() function (not at import time)",
+    "closeDb() function exists for graceful shutdown and test cleanup",
+    "closeDb() called during graceful shutdown in main.ts",
+    "event_id TEXT included in initial CREATE TABLE statement",
+    "ALTER TABLE kept for backward compatibility with existing databases"
+  ],
+  "deliverables": [
+    "src/db.ts",
+    "src/main.ts"
+  ],
+  "issues_addressed": ["#8", "#24", "#64"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

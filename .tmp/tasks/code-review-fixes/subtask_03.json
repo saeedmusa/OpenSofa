@@ -1,0 +1,32 @@
+{
+  "id": "code-review-fixes-03",
+  "seq": "03",
+  "title": "Fix token URL security: remove query param auth, implement WebSocket ticket-based auth",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/middleware/auth.ts",
+    "src/web/server.ts",
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "Query parameter token support (?token=) removed from auth.ts:33-35",
+    "Only Authorization: Bearer header accepted for HTTP endpoints",
+    "WebSocket uses ticket-based approach: short-lived ticket requested via HTTP, used in WS URL",
+    "QR code URL in server.ts:458 no longer embeds raw token"
+  ],
+  "deliverables": [
+    "src/web/middleware/auth.ts",
+    "src/web/server.ts",
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "issues_addressed": ["#1", "#19"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

@@ -4,7 +4,7 @@
  * Provides safe alternatives to execSync that prevent command injection.
  * Always use these functions instead of execSync with string interpolation.
  */
-import { execFileSync, execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { createLogger } from './logger.js';
 const log = createLogger('safe-shell');
 /**
@@ -36,38 +36,6 @@ export function safeGitExec(cwd, args, timeout = 30000) {
  */
 export function safeTmuxExec(args, timeout = 5000) {
     return safeExec('tmux', args, { timeout });
-}
-/**
- * Execute a shell command with shell interpretation (USE SPARINGLY)
- * Only use when shell features (pipes, redirects) are required
- * All user input must be validated/whitelisted
- */
-export function safeShell(command, options = {}) {
-    // Validate: only allow known-safe patterns
-    const dangerousPatterns = [
-        /[;&|`$]/, // Shell metacharacters
-        /\br\b/, // word boundaries that could be commands
-        /^\s*rm\s+-rf/i, // Dangerous rm commands
-        />\s*\//, // Redirect to absolute path
-    ];
-    for (const pattern of dangerousPatterns) {
-        if (pattern.test(command)) {
-            throw new Error(`Unsafe shell command detected: ${command}`);
-        }
-    }
-    try {
-        return execSync(command, {
-            cwd: options.cwd,
-            timeout: options.timeout,
-            encoding: 'utf-8',
-            stdio: ['pipe', 'pipe', 'pipe'],
-            shell: '/bin/sh', // Use explicit shell
-        });
-    }
-    catch (err) {
-        log.error('safeShell failed', { command, error: String(err) });
-        throw err;
-    }
 }
 /**
  * Validate that a path is safe (no path traversal, no null bytes)

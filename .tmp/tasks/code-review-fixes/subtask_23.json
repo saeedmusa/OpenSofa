@@ -1,0 +1,29 @@
+{
+  "id": "code-review-fixes-23",
+  "seq": "23",
+  "title": "Fix auth header edge case and add startup env validation",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/auth.ts",
+    "src/main.ts"
+  ],
+  "acceptance_criteria": [
+    "parseAuthHeader handles 'Bearer' alone (no token) — returns null instead of 'Bearer'",
+    "Uses startsWith('bearer ') check with proper slice and trim",
+    "Startup validates required env vars (OPENSOFA_SECRET) and warns if missing"
+  ],
+  "deliverables": [
+    "src/web/auth.ts",
+    "src/main.ts"
+  ],
+  "issues_addressed": ["#27", "#58"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

@@ -1,0 +1,30 @@
+{
+  "id": "code-review-fixes-13",
+  "seq": "13",
+  "title": "Consolidate duplicate agent adapters and AdapterRegistry classes",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/model-adapters/",
+    "src/web/agent-adapters/"
+  ],
+  "acceptance_criteria": [
+    "Single unified AgentAdapter interface defined (merging ActivityAdapter and ModelAdapter)",
+    "Per-agent implementations consolidated into single adapter layer",
+    "Two AdapterRegistry classes merged into single AgentAdapterRegistry",
+    "Unified interface supports both activity parsing and model discovery"
+  ],
+  "deliverables": [
+    "src/model-adapters/",
+    "src/web/agent-adapters/"
+  ],
+  "issues_addressed": ["#13", "#14"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

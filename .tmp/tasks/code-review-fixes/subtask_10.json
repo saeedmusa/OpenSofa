@@ -1,0 +1,32 @@
+{
+  "id": "code-review-fixes-10",
+  "seq": "10",
+  "title": "Fix require() in ESM modules (claude-adapter, aider-adapter, base-adapter)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/agent-adapters/claude-adapter.ts",
+    "src/web/agent-adapters/aider-adapter.ts",
+    "src/model-adapters/base-adapter.ts"
+  ],
+  "acceptance_criteria": [
+    "claude-adapter.ts:271 require() replaced with dynamic import()",
+    "aider-adapter.ts:234 require() replaced with dynamic import()",
+    "base-adapter.ts:85 require() replaced or restructured",
+    "Circular dependencies broken if present"
+  ],
+  "deliverables": [
+    "src/web/agent-adapters/claude-adapter.ts",
+    "src/web/agent-adapters/aider-adapter.ts",
+    "src/model-adapters/base-adapter.ts"
+  ],
+  "issues_addressed": ["#20"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

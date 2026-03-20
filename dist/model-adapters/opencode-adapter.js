@@ -4,7 +4,7 @@
  * Adapter for discovering models from OpenCode CLI.
  * Uses `opencode models` and `opencode auth list` commands.
  */
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { createLogger } from '../utils/logger.js';
 import { getEnrichedEnv } from '../utils/expand-path.js';
 import { BaseAdapter } from './base-adapter.js';
@@ -112,7 +112,7 @@ export class OpenCodeAdapter extends BaseAdapter {
      */
     getConfiguredProviderPrefixes() {
         try {
-            const output = execSync('opencode auth list', {
+            const output = execFileSync('opencode', ['auth', 'list'], {
                 encoding: 'utf-8',
                 timeout: 10000,
                 env: getEnrichedEnv(),
@@ -145,7 +145,7 @@ export class OpenCodeAdapter extends BaseAdapter {
      */
     getAllModels() {
         try {
-            const output = execSync('opencode models', {
+            const output = execFileSync('opencode', ['models'], {
                 encoding: 'utf-8',
                 timeout: 30000,
                 env: getEnrichedEnv(),

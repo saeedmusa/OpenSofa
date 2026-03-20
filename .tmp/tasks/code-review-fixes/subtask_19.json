@@ -1,0 +1,26 @@
+{
+  "id": "code-review-fixes-19",
+  "seq": "19",
+  "title": "Create .gitignore and remove committed artifacts (workDir, .bak, .DS_Store)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [],
+  "acceptance_criteria": [
+    ".gitignore created with: node_modules/, dist/, .env, *.db, .tmp/, .DS_Store, workDir/, *.bak",
+    "workDir/ removed from git tracking (git rm -r --cached workDir/)",
+    "*.bak files removed from src/web/frontend/src/components/ and views/",
+    ".DS_Store removed from git tracking"
+  ],
+  "deliverables": [
+    ".gitignore"
+  ],
+  "issues_addressed": ["#37", "#38", "#39", "#40"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+import { Logo } from './Logo';
 
 interface HeaderProps {
   connected: boolean;
@@ -10,8 +11,8 @@ export function Header({ connected }: HeaderProps) {
     <header className="header-terminal">
       <div className="flex items-center justify-between px-4 h-14">
         {/* Left section — Logo and status */}
-        <div className="flex items-center gap-3">
-          <span className="material-symbols-outlined text-matrix-green text-xl">terminal</span>
+        <div className="flex items-center gap-4">
+          <Logo size="md" />
           <div className="flex items-center gap-2">
             <span className="relative flex h-2 w-2">
               <span className={clsx(
@@ -25,7 +26,7 @@ export function Header({ connected }: HeaderProps) {
                 <span className="relative inline-flex h-2 w-2 bg-neon-red" />
               )}
             </span>
-            <h1 className="text-matrix-green font-mono text-sm font-bold tracking-tighter uppercase">
+            <h1 className="text-matrix-green font-mono text-xs font-bold tracking-tighter uppercase">
               {connected ? 'AGENT: RUNNING' : 'AGENT: OFFLINE'}
             </h1>
           </div>

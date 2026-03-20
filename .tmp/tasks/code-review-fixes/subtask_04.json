@@ -1,0 +1,33 @@
+{
+  "id": "code-review-fixes-04",
+  "seq": "04",
+  "title": "Remove safeShell and fix database initialization (lazy init, closeDb)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/utils/safe-shell.ts",
+    "src/db.ts",
+    "src/main.ts"
+  ],
+  "acceptance_criteria": [
+    "safeShell function removed from safe-shell.ts (regex /\\br\\b/ matches everything)",
+    "All safeShell callers migrated to safeExec or safeGitExec",
+    "db.ts uses lazy initialization: getDb() function with null check",
+    "closeDb() function exists for graceful shutdown and test cleanup",
+    "closeDb() called during graceful shutdown in main.ts"
+  ],
+  "deliverables": [
+    "src/utils/safe-shell.ts",
+    "src/db.ts",
+    "src/main.ts"
+  ],
+  "issues_addressed": ["#7", "#8"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

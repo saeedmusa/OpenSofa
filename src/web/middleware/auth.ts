@@ -29,10 +29,7 @@ export const createAuthMiddleware = (deps: AuthMiddlewareDeps) => {
     const authHeader = c.req.header('Authorization');
     const headerToken = parseAuthHeader(authHeader);
 
-    // Fall back to query parameter
-    const queryToken = c.req.query('token');
-
-    const providedToken = headerToken ?? queryToken;
+    const providedToken = headerToken;
 
     if (!providedToken) {
       return c.json(error('Authentication required', 'UNAUTHORIZED'), 401);

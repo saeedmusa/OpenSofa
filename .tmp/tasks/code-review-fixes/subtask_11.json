@@ -1,0 +1,32 @@
+{
+  "id": "code-review-fixes-11",
+  "seq": "11",
+  "title": "Refactor event parser: split giant switch, extract helpers, fix counter collisions",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/event-parser/mapper.ts",
+    "src/web/event-parser/acp-mapper.ts",
+    "src/web/event-parser/jsonl-parser.ts"
+  ],
+  "acceptance_criteria": [
+    "mapAGUIToActivityEvent() (175 lines) split into per-event-type mapper functions using strategy/map pattern",
+    "extractFilePath(input) helper created to eliminate 6+ duplicated (event.input?.file_path as string) patterns",
+    "mapToolCallStart (180 lines) refactored with lookup table for tool categories",
+    "Module-level event counters replaced with UUID-based IDs or instance-scoped per session"
+  ],
+  "deliverables": [
+    "src/web/event-parser/mapper.ts",
+    "src/web/event-parser/acp-mapper.ts",
+    "src/web/event-parser/jsonl-parser.ts"
+  ],
+  "issues_addressed": ["#21", "#22", "#44", "#51"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

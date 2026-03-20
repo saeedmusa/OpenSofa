@@ -1,0 +1,35 @@
+{
+  "id": "code-review-fixes-21",
+  "seq": "21",
+  "title": "Frontend: error boundary reporting, extract approval hook, add service layer",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "OpenFrontendSpecialist",
+  "context_files": [
+    "CODE_REVIEW.md",
+    ".opencode/context/ui/web/ui-styling-standards.md"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/ErrorBoundary.tsx",
+    "src/web/frontend/src/components/ApprovalCard.tsx",
+    "src/web/frontend/src/views/App.tsx",
+    "src/web/frontend/src/views/HomeView.tsx"
+  ],
+  "acceptance_criteria": [
+    "ErrorBoundary componentDidCatch sends errors to backend endpoint (not just console.error)",
+    "Approval logic extracted to shared useApproval(sessionName) hook from ApprovalCard and App.tsx DeepLinkApprovalModal",
+    "Service layer or React Query abstraction created for API calls (components don't call api directly)",
+    "Follows 4-stage design workflow",
+    "Responsive at all breakpoints"
+  ],
+  "deliverables": [
+    "src/web/frontend/src/components/ErrorBoundary.tsx",
+    "src/web/frontend/src/hooks/useApproval.ts",
+    "src/web/frontend/src/services/"
+  ],
+  "issues_addressed": ["#49", "#50", "#57"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

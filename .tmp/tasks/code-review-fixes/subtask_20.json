@@ -1,0 +1,26 @@
+{
+  "id": "code-review-fixes-20",
+  "seq": "20",
+  "title": "Fix notification routes: async I/O and consistent error response format",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/notifications.ts"
+  ],
+  "acceptance_criteria": [
+    "fs.existsSync, fs.readFileSync, fs.writeFileSync replaced with fs.promises equivalents",
+    "All responses use success() and error() helpers consistently (not inline { success: true, data: ... })"
+  ],
+  "deliverables": [
+    "src/web/routes/notifications.ts"
+  ],
+  "issues_addressed": ["#41", "#52"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

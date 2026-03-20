@@ -1,0 +1,25 @@
+{
+  "id": "code-review-fixes-25",
+  "seq": "25",
+  "title": "Fix E2E mobile tests (use Playwright mobile emulation with hasTouch)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "TestEngineer",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "tests/e2e/mobile.spec.ts"
+  ],
+  "acceptance_criteria": [
+    "Playwright mobile emulation uses device config with hasTouch: true",
+    "Mobile-specific UI components (InputBar) properly tested with touch events"
+  ],
+  "deliverables": [
+    "tests/e2e/mobile.spec.ts"
+  ],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

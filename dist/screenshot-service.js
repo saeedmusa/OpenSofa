@@ -4,7 +4,7 @@
  * Captures AgentAPI tmux pane output and renders mobile-friendly PNG screenshots.
  * Based on LOW_LEVEL_DESIGN.md §12.
  */
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import sharp from 'sharp';
 export class ScreenshotService {
     config;
@@ -69,7 +69,7 @@ export class ScreenshotService {
         }
         const sessionName = `agentapi-${port}`;
         try {
-            return execSync(`tmux capture-pane -t ${sessionName} -p -S -50`, {
+            return execFileSync('tmux', ['capture-pane', '-t', sessionName, '-p', '-S', '-50'], {
                 encoding: 'utf-8',
                 timeout: 5000,
                 maxBuffer: 1024 * 1024,

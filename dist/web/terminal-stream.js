@@ -5,7 +5,7 @@
  * Each AgentAPI session gets its own tmux pane, which we pipe to a log file
  * and then tail -f to stream to WebSocket clients.
  */
-import { spawn, execSync, execFileSync } from 'child_process';
+import { spawn, execFileSync } from 'child_process';
 import { existsSync, unlinkSync } from 'fs';
 import { WebSocket } from 'ws';
 import { createLogger } from '../utils/logger.js';
@@ -55,7 +55,7 @@ export const encodeTerminalData = (data) => data.toString('base64');
 export const defaultTerminalSpawner = {
     spawnTmux: (args) => spawn('tmux', args, { stdio: ['ignore', 'pipe', 'pipe'] }),
     spawnTail: (args) => spawn('tail', args, { stdio: ['ignore', 'pipe', 'pipe'] }),
-    execTmux: (args) => { execSync(`tmux ${args.join(' ')}`, { stdio: 'pipe' }); },
+    execTmux: (args) => { execFileSync('tmux', args, { stdio: 'pipe' }); },
 };
 // ──────────────────────────────────────
 // Terminal Stream Factory

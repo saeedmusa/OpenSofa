@@ -1,0 +1,24 @@
+{
+  "id": "code-review-fixes-27",
+  "seq": "27",
+  "title": "Remove dead code (terminal-stream broadcastBuffers Map)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/terminal-stream.ts"
+  ],
+  "acceptance_criteria": [
+    "broadcastBuffers Map removed if unused, or buffering feature implemented"
+  ],
+  "deliverables": [
+    "src/web/terminal-stream.ts"
+  ],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

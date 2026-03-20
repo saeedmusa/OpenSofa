@@ -1,0 +1,34 @@
+{
+  "id": "code-review-fixes-02",
+  "seq": "02",
+  "title": "Fix command injection: replace all execSync with execFileSync across 4 files",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/opencode-models.ts",
+    "src/model-adapters/opencode-adapter.ts",
+    "src/web/terminal-stream.ts",
+    "src/screenshot-service.ts"
+  ],
+  "acceptance_criteria": [
+    "opencode-models.ts: execSync('opencode auth list') replaced with execFileSync('opencode', ['auth', 'list'])",
+    "opencode-adapter.ts: all execSync calls replaced with execFileSync using array arguments",
+    "terminal-stream.ts:82 execTmux uses execFileSync with array args instead of shell string concatenation",
+    "screenshot-service.ts:93 execSync tmux capture-pane replaced with execFileSync('tmux', [...args])"
+  ],
+  "deliverables": [
+    "src/web/routes/opencode-models.ts",
+    "src/model-adapters/opencode-adapter.ts",
+    "src/web/terminal-stream.ts",
+    "src/screenshot-service.ts"
+  ],
+  "issues_addressed": ["#5", "#6", "#26"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

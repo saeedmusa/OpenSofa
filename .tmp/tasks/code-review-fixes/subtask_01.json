@@ -1,0 +1,28 @@
+{
+  "id": "code-review-fixes-01",
+  "seq": "01",
+  "title": "Fix TOTP security: encrypt secret, add auth, hide secret in response, add bounds check",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/totp.ts"
+  ],
+  "acceptance_criteria": [
+    "TOTP secret encrypted with AES-256-GCM using key derived from OPENSOFA_SECRET env var",
+    "All TOTP routes wrapped with createAuthMiddleware",
+    "API response no longer returns 'secret' field (only 'qrUri')",
+    "Array bounds checking added for dynamic truncate: if (offset + 4 > hmac.length) throw"
+  ],
+  "deliverables": [
+    "src/web/routes/totp.ts"
+  ],
+  "issues_addressed": ["#2", "#3", "#4", "#48"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

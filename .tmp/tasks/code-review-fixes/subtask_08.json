@@ -1,0 +1,32 @@
+{
+  "id": "code-review-fixes-08",
+  "seq": "08",
+  "title": "Replace sync file I/O with async in route handlers (files, browse, notifications)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/files.ts",
+    "src/web/routes/browse.ts",
+    "src/web/routes/notifications.ts"
+  ],
+  "acceptance_criteria": [
+    "files.ts: all fs.existsSync, fs.statSync, fs.readFileSync replaced with fs.promises equivalents",
+    "browse.ts:61,65,129 sync calls replaced with async equivalents",
+    "notifications.ts:38-43 sync I/O replaced with fs.promises",
+    "Promise.all used for batch stat operations where applicable"
+  ],
+  "deliverables": [
+    "src/web/routes/files.ts",
+    "src/web/routes/browse.ts",
+    "src/web/routes/notifications.ts"
+  ],
+  "issues_addressed": ["#17", "#41"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

@@ -7,5 +7,5 @@
  * Architecture Ref: §1.3, USER_STORIES.md US-13
  */
 import { Hono } from 'hono';
-export declare const createTOTPRoutes: () => Hono;
+export declare const createTOTPRoutes: (expectedToken: string) => Hono;
 //# sourceMappingURL=totp.d.ts.map

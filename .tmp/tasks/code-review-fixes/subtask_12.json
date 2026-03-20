@@ -1,0 +1,33 @@
+{
+  "id": "code-review-fixes-12",
+  "seq": "12",
+  "title": "Refactor God Modules: extract session-manager.ts and server.ts into focused modules",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/session-manager.ts",
+    "src/web/server.ts"
+  ],
+  "acceptance_criteria": [
+    "session-manager.ts (1441 lines) extracted into: WorktreeManager, ProcessSpawner, ApprovalHandler, PortAllocator, SessionLifecycle",
+    "server.ts start() function (~370 lines) extracted into: setupMiddleware, setupRoutes, setupWebSocket, setupTunnel, wireSessionEvents",
+    "Each extracted module has single responsibility and clear interface"
+  ],
+  "deliverables": [
+    "src/session-manager.ts",
+    "src/web/server.ts",
+    "src/worktree-manager.ts",
+    "src/process-spawner.ts",
+    "src/approval-handler.ts",
+    "src/port-allocator.ts"
+  ],
+  "issues_addressed": ["#9", "#10"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

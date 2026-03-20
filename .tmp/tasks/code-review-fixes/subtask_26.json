@@ -1,0 +1,31 @@
+{
+  "id": "code-review-fixes-26",
+  "seq": "26",
+  "title": "Extract magic numbers to named constants",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/files.ts",
+    "src/web/broadcaster.ts",
+    "src/screenshot-service.ts"
+  ],
+  "acceptance_criteria": [
+    "files.ts:119 (100 entries) → MAX_DIRECTORY_ENTRIES",
+    "broadcaster.ts:29 (2000 events) → MAX_EVENT_HISTORY",
+    "screenshot-service.ts:28 (60 lines) → SCREENSHOT_MAX_LINES"
+  ],
+  "deliverables": [
+    "src/web/routes/files.ts",
+    "src/web/broadcaster.ts",
+    "src/screenshot-service.ts",
+    "src/utils/constants.ts"
+  ],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

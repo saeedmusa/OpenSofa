@@ -1,0 +1,25 @@
+{
+  "id": "code-review-fixes-28",
+  "seq": "28",
+  "title": "Add type validation to browse.ts POST endpoint",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/browse.ts"
+  ],
+  "acceptance_criteria": [
+    "browse.ts:104 destructures path from JSON with type checking",
+    "Returns 400 error if path is not a string"
+  ],
+  "deliverables": [
+    "src/web/routes/browse.ts"
+  ],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

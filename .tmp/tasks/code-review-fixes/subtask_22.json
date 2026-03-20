@@ -1,0 +1,27 @@
+{
+  "id": "code-review-fixes-22",
+  "seq": "22",
+  "title": "Setup backend tooling: ESLint, Prettier, pre-commit hooks",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [],
+  "acceptance_criteria": [
+    "Root-level ESLint flat config with @typescript-eslint rules for backend TypeScript files",
+    ".prettierrc with project conventions and format npm script",
+    "Husky + lint-staged configured with ESLint and Prettier checks on pre-commit"
+  ],
+  "deliverables": [
+    "eslint.config.js",
+    ".prettierrc",
+    "package.json"
+  ],
+  "issues_addressed": ["#53", "#54", "#61"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

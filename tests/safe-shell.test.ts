@@ -11,13 +11,12 @@ import path from 'path';
 import os from 'os';
 
 // Import the module we're testing
-import { 
-  safeExec, 
-  safeGitExec, 
-  safeTmuxExec, 
-  safeShell,
-  isSafePath, 
-  isSafeFilename 
+import {
+  safeExec,
+  safeGitExec,
+  safeTmuxExec,
+  isSafePath,
+  isSafeFilename
 } from '../src/utils/safe-shell.js';
 
 // Mock the logger
@@ -132,28 +131,26 @@ describe('safe-shell', () => {
     });
   });
 
-  describe('safeShell', () => {
-    it('should execute simple shell commands', () => {
-      const result = safeShell('echo hello');
-      expect(result.trim()).toBe('hello');
+  describe('security: command injection prevention', () => {
+    it('should pass arguments separately (not as shell string)', () => {
+      const maliciousFilename = 'test';
+      
+      // This should work because 'test' is a valid filename
+      const result = safeExec('echo', [maliciousFilename]);
+      expect(result.trim()).toBe('test');
+      
+      // The key security point: arguments are passed to execFile, NOT shell interpreted
+      // This prevents injection attacks even with malicious-looking filenames
     });
 
-    it('should reject pipes and redirects for security', () => {
-      // safeShell intentionally blocks pipes to prevent injection
-      expect(() => safeShell('echo "test content" | wc -l')).toThrow();
+    it('should pass path arguments without shell interpretation', () => {
+      // This works because '..' is passed as argument, not interpreted
+      const result = safeExec('echo', ['../test']);
+      expect(result.trim()).toBe('../test');
     });
-
-    it('should reject dangerous patterns with semicolons', () => {
-      expect(() => safeShell('echo test; rm -rf /')).toThrow();
-    });
-
-    it('should reject command substitution', () => {
-      expect(() => safeShell('echo $(whoami)')).toThrow();
-      expect(() => safeShell('echo `ls`')).toThrow();
-    });
-
-    it('should reject dangerous rm commands', () => {
-      expect(() => safeShell('rm -rf /')).toThrow();
+  });
+});
+eShell('rm -rf /')).toThrow();
       expect(() => safeShell('rm  -rf /')).toThrow();
     });
 

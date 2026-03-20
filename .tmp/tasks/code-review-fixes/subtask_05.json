@@ -1,0 +1,31 @@
+{
+  "id": "code-review-fixes-05",
+  "seq": "05",
+  "title": "Extract isPathWithinDir to shared util and fix path traversal on case-insensitive FS",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/files.ts",
+    "src/web/routes/browse.ts"
+  ],
+  "acceptance_criteria": [
+    "isPathWithinDir extracted to src/utils/path-utils.ts",
+    "files.ts and browse.ts both import from path-utils.ts (no duplicate code)",
+    "Path comparison uses fs.realpathSync() for canonical path resolution",
+    "Case-insensitive FS bypass prevented (e.g., /Users/saeed/../Users/Saeed)"
+  ],
+  "deliverables": [
+    "src/utils/path-utils.ts",
+    "src/web/routes/files.ts",
+    "src/web/routes/browse.ts"
+  ],
+  "issues_addressed": ["#15", "#25"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

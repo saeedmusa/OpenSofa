@@ -1,0 +1,34 @@
+{
+  "id": "code-review-fixes-17",
+  "seq": "17",
+  "title": "Fix type safety: process.env cast, non-null assertions, browse type validation",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/utils/expand-path.ts",
+    "src/web/routes/totp.ts",
+    "src/command-parser.ts",
+    "src/web/routes/browse.ts"
+  ],
+  "acceptance_criteria": [
+    "expand-path.ts:104 process.env typed as Record<string, string | undefined>",
+    "totp.ts:41-47 non-null assertions (!) replaced with proper null checks",
+    "command-parser.ts:29,31,61 non-null assertions on regex groups replaced with null checks",
+    "browse.ts:104 path parameter validated with typeof check, returns 400 if not string"
+  ],
+  "deliverables": [
+    "src/utils/expand-path.ts",
+    "src/web/routes/totp.ts",
+    "src/command-parser.ts",
+    "src/web/routes/browse.ts"
+  ],
+  "issues_addressed": ["#32", "#65", "#66"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

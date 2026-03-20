@@ -1,0 +1,27 @@
+{
+  "id": "code-review-fixes-07",
+  "seq": "07",
+  "title": "Fix CORS substring match vulnerability",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/server.ts"
+  ],
+  "acceptance_criteria": [
+    "CORS origin check uses exact matching instead of origin.includes('localhost')",
+    "Only http://localhost:PORT and http://127.0.0.1:PORT are valid origins",
+    "localhost.evil.com and maliciouslocalhost.com are rejected"
+  ],
+  "deliverables": [
+    "src/web/server.ts"
+  ],
+  "issues_addressed": ["#16"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

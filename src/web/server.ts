@@ -455,14 +455,14 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
         log.info('Tunnel established', { url: tunnelUrl });
 
         // Generate and display QR code
-        const qrUrl = `${tunnelUrl}?token=${token}`;
+        const qrUrl = tunnelUrl;
         await displayQRCode(qrUrl);
       } catch (err) {
         log.error('Failed to start tunnel', { error: String(err) });
 
         // Show local URL with QR code as fallback
         const localUrl = `http://localhost:${WEB_PORT}`;
-        const localQrUrl = `${localUrl}?token=${token}`;
+        const localQrUrl = localUrl;
         console.log('\n  [TUNNEL UNAVAILABLE - Using local access]\n');
         await displayQRCode(localQrUrl);
       }
@@ -534,7 +534,7 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     const tunnelUrl = getTunnelUrl();
     if (!tunnelUrl || !tokenManager) return null;
     const token = tokenManager.getOrGenerate();
-    return `${tunnelUrl}?token=${token}`;
+    return tunnelUrl;
   };
 
   const broadcastTunnelUrl = (url: string) => {

@@ -1,0 +1,37 @@
+{
+  "id": "code-review-fixes-18",
+  "seq": "18",
+  "title": "Add missing tests: browse, TOTP, agent adapters, notifications, terminal stream",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "TestEngineer",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/browse.ts",
+    "src/web/routes/totp.ts",
+    "src/web/routes/notifications.ts",
+    "src/web/agent-adapters/",
+    "src/web/terminal-stream.ts"
+  ],
+  "acceptance_criteria": [
+    "tests/web/browse.test.ts: path traversal attempts, directory creation, symlinks, edge cases",
+    "tests/web/totp.test.ts: setup, verify, disable endpoint integration tests",
+    "tests/web/agent-adapters/: unit tests with sample agent output for each adapter",
+    "tests/web/notifications.test.ts: settings read/write, test notification endpoint",
+    "tests/web/terminal-stream.test.ts: process crashes, cleanup failures, subscriber management"
+  ],
+  "deliverables": [
+    "tests/web/browse.test.ts",
+    "tests/web/totp.test.ts",
+    "tests/web/agent-adapters/",
+    "tests/web/notifications.test.ts",
+    "tests/web/terminal-stream.test.ts"
+  ],
+  "issues_addressed": ["#34", "#35", "#36", "#62", "#67"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

@@ -10,6 +10,7 @@
 import { Hono } from 'hono';
 import { createLogger } from '../../utils/logger.js';
 import { success, error } from '../types.js';
+import { createAuthMiddleware } from '../middleware/auth.js';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -39,6 +40,7 @@ function hmacSHA1(secret: Buffer, counter: Buffer): Buffer {
 
 function dynamicTruncate(hmac: Buffer): number {
     const offset = hmac[hmac.length - 1]! & 0x0f;
+    if (offset + 4 > hmac.length) throw new Error('Invalid HMAC');
     const code =
         ((hmac[offset]! & 0x7f) << 24) |
         ((hmac[offset + 1]! & 0xff) << 16) |
@@ -73,8 +75,20 @@ function generateOTPAuthURI(secret: string, account: string): string {
 }
 
 // ──────────────────────────────────────
-// Secret Storage (encrypted file)
+// Secret Storage (AES-256-GCM encrypted)
 // ──────────────────────────────────────
+
+const AES_ALGORITHM = 'aes-256-gcm';
+const IV_LENGTH = 16;
+const AUTH_TAG_LENGTH = 16;
+
+function getEncryptionKey(): Buffer {
+    const secret = process.env.OPENSOFA_SECRET;
+    if (!secret) {
+        throw new Error('OPENSOFA_SECRET environment variable is required for TOTP encryption');
+    }
+    return crypto.createHash('sha256').update(secret).digest();
+}
 
 function getSecretPath(): string {
     const configDir = process.env.XDG_CONFIG_HOME || path.join(process.env.HOME || '~', '.config');
@@ -85,9 +99,20 @@ function loadSecret(): string | null {
     try {
         const secretPath = getSecretPath();
         if (!fs.existsSync(secretPath)) return null;
-        // In production, this would be decrypted with OPENSOFA_SECRET
-        // For now, read the raw secret (plaintext for MVP)
-        return fs.readFileSync(secretPath, 'utf-8').trim();
+
+        const data = fs.readFileSync(secretPath);
+        if (data.length < IV_LENGTH + AUTH_TAG_LENGTH) return null;
+
+        const iv = data.subarray(0, IV_LENGTH);
+        const authTag = data.subarray(IV_LENGTH, IV_LENGTH + AUTH_TAG_LENGTH);
+        const ciphertext = data.subarray(IV_LENGTH + AUTH_TAG_LENGTH);
+
+        const key = getEncryptionKey();
+        const decipher = crypto.createDecipheriv(AES_ALGORITHM, key, iv);
+        decipher.setAuthTag(authTag);
+
+        const decrypted = Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+        return decrypted.toString('utf-8');
     } catch {
         return null;
     }
@@ -99,16 +124,28 @@ function saveSecret(secret: string): void {
     if (!fs.existsSync(dir)) {
         fs.mkdirSync(dir, { recursive: true });
     }
-    // In production, encrypt with OPENSOFA_SECRET using AES-256-GCM
-    fs.writeFileSync(secretPath, secret, { mode: 0o600 });
+
+    const key = getEncryptionKey();
+    const iv = crypto.randomBytes(IV_LENGTH);
+    const cipher = crypto.createCipheriv(AES_ALGORITHM, key, iv);
+
+    const encrypted = Buffer.concat([cipher.update(secret, 'utf-8'), cipher.final()]);
+    const authTag = cipher.getAuthTag();
+
+    // Store as: IV (16 bytes) + auth tag (16 bytes) + ciphertext
+    const payload = Buffer.concat([iv, authTag, encrypted]);
+    fs.writeFileSync(secretPath, payload, { mode: 0o600 });
 }
 
 // ──────────────────────────────────────
 // Route Factory
 // ──────────────────────────────────────
 
-export const createTOTPRoutes = (): Hono => {
+export const createTOTPRoutes = (expectedToken: string): Hono => {
     const app = new Hono();
+
+    // All TOTP routes require authentication
+    app.use('*', createAuthMiddleware({ expectedToken }));
 
     // GET /api/totp/status — Check if TOTP is configured
     app.get('/status', (c) => {
@@ -131,7 +168,7 @@ export const createTOTPRoutes = (): Hono => {
 
         log.info('TOTP configured', { account: hostname });
 
-        return c.json(success({ qrUri, secret }));
+        return c.json(success({ qrUri }));
     });
 
     // POST /api/totp/verify — Validate a 6-digit TOTP code

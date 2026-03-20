@@ -21,15 +21,6 @@ export declare function safeGitExec(cwd: string, args: string[], timeout?: numbe
  */
 export declare function safeTmuxExec(args: string[], timeout?: number): string;
 /**
- * Execute a shell command with shell interpretation (USE SPARINGLY)
- * Only use when shell features (pipes, redirects) are required
- * All user input must be validated/whitelisted
- */
-export declare function safeShell(command: string, options?: {
-    cwd?: string;
-    timeout?: number;
-}): string;
-/**
  * Validate that a path is safe (no path traversal, no null bytes)
  */
 export declare function isSafePath(filePath: string): boolean;

@@ -1,0 +1,29 @@
+{
+  "id": "code-review-fixes-24",
+  "seq": "24",
+  "title": "Fix cache and performance: PATH cache TTL, AgentAPIClient memoization",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/utils/expand-path.ts",
+    "src/session-manager.ts"
+  ],
+  "acceptance_criteria": [
+    "enrichedPathCache has TTL (5 minutes) with invalidation method",
+    "Caching tradeoff documented in code comments",
+    "AgentAPIClient instances cached per session in Map or memoized factory (not created on every call)"
+  ],
+  "deliverables": [
+    "src/utils/expand-path.ts",
+    "src/session-manager.ts"
+  ],
+  "issues_addressed": ["#43", "#56"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

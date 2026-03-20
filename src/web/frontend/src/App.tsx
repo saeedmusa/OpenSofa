@@ -37,14 +37,14 @@ export default function App() {
       <IonApp>
         <IonContent class="ion-bg-dark">
           <div className="flex flex-col items-center justify-center min-h-full p-8">
-            <div className="surface-floating p-10 text-center max-w-md animate-scale-in rounded-3xl">
+            <div className="surface-floating p-10 text-center max-w-md animate-scale-in">
               <Logo size="xl" className="justify-center mb-6" />
-              <h2 className="text-xl font-semibold text-fg-strong mb-3">Authentication Required</h2>
-              <p className="text-[rgba(255,255,255,0.5)] mb-6">
+              <h2 className="text-xl font-bold text-fg-strong font-mono mb-3 uppercase tracking-wider">Authentication Required</h2>
+              <p className="text-muted mb-6 font-mono text-sm">
                 Scan the QR code from your terminal or open the link with a valid token.
               </p>
-              <p className="text-[rgba(255,255,255,0.5)]/60 text-sm">
-                Run <code className="bg-surface px-2 py-1 rounded-lg text-accent">opensofa web</code> in your terminal to get a new link.
+              <p className="text-muted/60 text-sm font-mono">
+                Run <code className="bg-surface px-2 py-1 text-matrix-green">opensofa web</code> in your terminal to get a new link.
               </p>
             </div>
           </div>

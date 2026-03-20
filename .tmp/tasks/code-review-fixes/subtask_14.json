@@ -1,0 +1,40 @@
+{
+  "id": "code-review-fixes-14",
+  "seq": "14",
+  "title": "Eliminate module-level mutable state and import-time side effects",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/server.ts",
+    "src/web/auth.ts",
+    "src/web/broadcaster.ts",
+    "src/web/agent-adapters/mod.ts",
+    "src/web/routes/model-discovery.ts",
+    "src/message-queue.ts"
+  ],
+  "acceptance_criteria": [
+    "server.ts:721 clientSockets Map encapsulated in class or factory",
+    "auth.ts:233 defaultTokenManager wrapped in factory function",
+    "broadcaster.ts:130 initSequenceFromDB() moved out of module-level call",
+    "agent-adapters/mod.ts:88-93 singleton registry creation moved to explicit init",
+    "model-discovery.ts:17-38 initializeAdapters() moved to startup, not import",
+    "message-queue.ts:204 globalMessageQueue replaced with createMessageQueue() factory"
+  ],
+  "deliverables": [
+    "src/web/server.ts",
+    "src/web/auth.ts",
+    "src/web/broadcaster.ts",
+    "src/web/agent-adapters/mod.ts",
+    "src/web/routes/model-discovery.ts",
+    "src/message-queue.ts"
+  ],
+  "issues_addressed": ["#12", "#23", "#46"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

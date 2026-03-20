@@ -1,0 +1,31 @@
+{
+  "id": "code-review-fixes-16",
+  "seq": "16",
+  "title": "Fix type safety: unsafe casts in sessions, agents, WebSocketProvider routes",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/routes/sessions.ts",
+    "src/web/routes/agents.ts",
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "acceptance_criteria": [
+    "sessions.ts:77 agent validated against agentRegistry.isValidType() before use",
+    "agents.ts:43 URL param validated before cast to AgentType",
+    "WebSocketProvider.tsx:158,162,166,173 payloads validated with Zod schemas or type guards before casting"
+  ],
+  "deliverables": [
+    "src/web/routes/sessions.ts",
+    "src/web/routes/agents.ts",
+    "src/web/frontend/src/providers/WebSocketProvider.tsx"
+  ],
+  "issues_addressed": ["#29", "#30", "#31"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

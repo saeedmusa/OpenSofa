@@ -1,0 +1,26 @@
+{
+  "id": "code-review-fixes-29",
+  "seq": "29",
+  "title": "Fix feedback controller (tight coupling, fire-and-forget async)",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/feedback-controller.ts"
+  ],
+  "acceptance_criteria": [
+    "IPermissionClassifier interface defined",
+    "PermissionClassifier injected via constructor (dependency injection)",
+    "Fire-and-forget async operations return promises for callers to await"
+  ],
+  "deliverables": [
+    "src/feedback-controller.ts"
+  ],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

@@ -1,0 +1,29 @@
+{
+  "id": "code-review-fixes-09",
+  "seq": "09",
+  "title": "Fix rate limiter memory leak and add real rate limiting tests",
+  "status": "pending",
+  "depends_on": [],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "CODE_REVIEW.md"
+  ],
+  "reference_files": [
+    "src/web/middleware/rate-limit.ts",
+    "tests/rate-limit.test.ts"
+  ],
+  "acceptance_criteria": [
+    "memoryStore Map has periodic cleanup every 5 minutes or uses LRU cache with TTL eviction",
+    "Tests create real Hono app instance and send multiple requests",
+    "Tests verify rate limiting returns 429 after limit exceeded (not just .toBeDefined())"
+  ],
+  "deliverables": [
+    "src/web/middleware/rate-limit.ts",
+    "tests/rate-limit.test.ts"
+  ],
+  "issues_addressed": ["#18", "#33"],
+  "started_at": null,
+  "completed_at": null,
+  "completion_summary": null
+}

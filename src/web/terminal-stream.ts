@@ -6,7 +6,7 @@
  * and then tail -f to stream to WebSocket clients.
  */
 
-import { spawn, ChildProcess, execSync, execFileSync } from 'child_process';
+import { spawn, ChildProcess, execFileSync } from 'child_process';
 import { existsSync, unlinkSync } from 'fs';
 import { WebSocket } from 'ws';
 import { createLogger } from '../utils/logger.js';
@@ -79,7 +79,7 @@ export interface TerminalProcessSpawner {
 export const defaultTerminalSpawner: TerminalProcessSpawner = {
   spawnTmux: (args) => spawn('tmux', args, { stdio: ['ignore', 'pipe', 'pipe'] }),
   spawnTail: (args) => spawn('tail', args, { stdio: ['ignore', 'pipe', 'pipe'] }),
-  execTmux: (args) => { execSync(`tmux ${args.join(' ')}`, { stdio: 'pipe' }); },
+  execTmux: (args) => { execFileSync('tmux', args, { stdio: 'pipe' }); },
 };
 
 // ──────────────────────────────────────

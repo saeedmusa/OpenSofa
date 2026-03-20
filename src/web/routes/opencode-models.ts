@@ -5,7 +5,7 @@
  */
 
 import { Hono } from 'hono';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { createLogger } from '../../utils/logger.js';
 
 const log = createLogger('opencode-models');
@@ -15,7 +15,7 @@ const log = createLogger('opencode-models');
  */
 function getConfiguredProviders(): Set<string> {
   try {
-    const output = execSync('opencode auth list', { 
+    const output = execFileSync('opencode', ['auth', 'list'], {
       encoding: 'utf-8',
       timeout: 10000,
     });
@@ -50,7 +50,7 @@ function getConfiguredProviders(): Set<string> {
  */
 function getAllModels(): string[] {
   try {
-    const output = execSync('opencode models', { 
+    const output = execFileSync('opencode', ['models'], {
       encoding: 'utf-8',
       timeout: 30000,
     });
