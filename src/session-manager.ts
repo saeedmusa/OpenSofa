@@ -299,10 +299,31 @@ export class SessionManager extends EventEmitter {
     // Guard: mark session as in-flight to prevent duplicate creates
     this.creatingSessions.add(name);
 
+    // Create placeholder session entry immediately so frontend can poll for status
+    const placeholderSession: Session = {
+      name,
+      status: 'creating',
+      agentType: agent,
+      model,
+      port: 0,
+      pid: 0,
+      repoDir: '',
+      workDir: '',
+      branch: '',
+      createdAt: Date.now(),
+      lastActivityAt: Date.now(),
+      agentStatus: 'running',
+      feedbackController: null,
+      autoApprove: this.config.autoApprove,
+      screenshotsEnabled: true,
+    };
+    this.sessions.set(name, placeholderSession);
+
     // 2. Validate inputs
     const validation = this.validateSessionInput(name, dir);
     if (!validation.ok) {
       this.creatingSessions.delete(name);
+      this.sessions.delete(name);
       throw new Error(validation.error!);
     }
 
@@ -317,6 +338,7 @@ export class SessionManager extends EventEmitter {
       const error = err as Error;
       log.error('Failed to create worktree', { error: error.message });
       this.creatingSessions.delete(name);
+      this.sessions.delete(name);
       throw new Error(`Failed to create worktree: ${error.message}`);
     }
 
@@ -332,6 +354,7 @@ export class SessionManager extends EventEmitter {
       const error = err as Error;
       log.error('Failed to spawn AgentAPI', { error: error.message });
       this.creatingSessions.delete(name);
+      this.sessions.delete(name);
       this.releasePort(port);
       this.removeWorktree(dir, workDir);
       throw new Error(`Failed to start AgentAPI: ${error.message}`);
@@ -343,6 +366,7 @@ export class SessionManager extends EventEmitter {
     } catch (err) {
       log.error('AgentAPI health check failed', { error: String(err) });
       this.creatingSessions.delete(name);
+      this.sessions.delete(name);
       this.killProcess(pid);
       this.releasePort(port);
       this.removeWorktree(dir, workDir);

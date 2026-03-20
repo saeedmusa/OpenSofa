@@ -133,6 +133,8 @@ export interface DiscoveredModel {
   name: string;
   provider: string;
   agent: AgentType;
+  supportsVision: boolean;
+  supportsImages: boolean;
 }
 
 export interface ModelProvider {

@@ -15,6 +15,8 @@ export interface DiscoveredModel {
   name: string;         // Display name (e.g., "claude-sonnet-4-20250514")
   provider: string;     // Provider name (e.g., "Z.AI", "OpenRouter", "HuggingFace")
   agent: AgentType;     // Which agent this model is for
+  supportsVision: boolean;  // Whether model supports image input (vision)
+  supportsImages: boolean;  // Whether model supports image generation/output
 }
 
 export interface ModelProvider {

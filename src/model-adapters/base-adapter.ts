@@ -107,12 +107,16 @@ export abstract class BaseAdapter implements ModelAdapter {
     id: string,
     name: string,
     provider: string,
+    supportsVision = true,
+    supportsImages = false,
   ): DiscoveredModel {
     return {
       id,
       name,
       provider,
       agent: this.agent,
+      supportsVision,
+      supportsImages,
     };
   }
   
