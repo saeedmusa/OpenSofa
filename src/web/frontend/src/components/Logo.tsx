@@ -26,7 +26,7 @@ export function Logo({ size = 'md', showText = true, className }: LogoProps) {
         aria-hidden={!showText}
       />
       {showText && (
-        <span className={clsx('font-mono font-bold text-matrix-green tracking-tight', config.text)}>
+        <span className={clsx('font-mono font-bold text-[#00FF41] tracking-tight', config.text)}>
           OPENSOFA
         </span>
       )}

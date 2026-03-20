@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
+import { safeVibrate } from '../utils/haptics';
 
 interface UsePullToRefreshOptions {
   onRefresh: () => Promise<void>;
@@ -45,7 +46,7 @@ export function usePullToRefresh({
   const onTouchEnd = useCallback(async () => {
     if (pullProgress >= 1 && !isRefreshing) {
       setIsRefreshing(true);
-      if (navigator.vibrate) navigator.vibrate(30);
+      safeVibrate(30);
       try {
         await onRefresh();
       } finally {

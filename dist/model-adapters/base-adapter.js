@@ -93,12 +93,14 @@ export class BaseAdapter {
     /**
      * Create a DiscoveredModel object with common fields.
      */
-    createModel(id, name, provider) {
+    createModel(id, name, provider, supportsVision = true, supportsImages = false) {
         return {
             id,
             name,
             provider,
             agent: this.agent,
+            supportsVision,
+            supportsImages,
         };
     }
     /**

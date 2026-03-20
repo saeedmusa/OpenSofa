@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
 import { clsx } from 'clsx';
 import { Check, AlertTriangle, Info, X } from 'lucide-react';
+import { safeVibrate } from '../utils/haptics';
 
 type ToastType = 'success' | 'error' | 'info';
 
@@ -41,9 +42,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       setTimeout(() => removeToast(id), duration);
     }
 
-    if (navigator.vibrate) {
-      navigator.vibrate(type === 'error' ? [50, 30, 50] : 30);
-    }
+    safeVibrate(type === 'error' ? [50, 30, 50] : 30);
   }, [removeToast]);
 
   const value: ToastContextValue = {
@@ -121,7 +120,7 @@ function ToastItem({ toast, onRemove }: ToastItemProps) {
       <button
         onClick={onRemove}
         aria-label="Dismiss notification"
-        className="flex-shrink-0 p-1.5 rounded-lg text-muted hover:text-fg hover:bg-surface transition-colors"
+        className="flex-shrink-0 p-1.5 rounded-lg text-[rgba(255,255,255,0.5)] hover:text-fg hover:bg-surface transition-colors"
       >
         <X size={16} />
       </button>

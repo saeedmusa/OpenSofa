@@ -104,12 +104,12 @@ export function TOTPModal({ onVerified, onCancel }: TOTPModalProps) {
                         </div>
                         <div>
                             <h2 className="text-sm font-semibold text-fg-strong">Security Verification</h2>
-                            <p className="text-xs text-muted mt-0.5">Enter your 6-digit code</p>
+                            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-0.5">Enter your 6-digit code</p>
                         </div>
                     </div>
                     <button
                         onClick={onCancel}
-                        className="p-2 rounded-xl text-muted hover:text-fg hover:bg-surface transition-colors"
+                        className="p-2 rounded-xl text-[rgba(255,255,255,0.5)] hover:text-fg hover:bg-surface transition-colors"
                         aria-label="Close"
                     >
                         <X size={18} />
@@ -119,7 +119,7 @@ export function TOTPModal({ onVerified, onCancel }: TOTPModalProps) {
                 {/* Command preview */}
                 {pendingChallenge && (
                     <div className="px-5 pt-4">
-                        <p className="text-xs text-muted mb-2">Destructive command:</p>
+                        <p className="text-xs text-[rgba(255,255,255,0.5)] mb-2">Destructive command:</p>
                         <div className="bg-danger/5 border border-danger/20 rounded-xl p-3 font-mono text-xs text-danger overflow-x-auto">
                             {pendingChallenge.command}
                         </div>
@@ -157,7 +157,7 @@ export function TOTPModal({ onVerified, onCancel }: TOTPModalProps) {
 
                     {/* Loading */}
                     {isLoading && (
-                        <div className="flex items-center justify-center gap-2 mt-3 text-muted text-xs">
+                        <div className="flex items-center justify-center gap-2 mt-3 text-[rgba(255,255,255,0.5)] text-xs">
                             <Loader2 size={14} className="animate-spin" />
                             Verifying...
                         </div>
@@ -168,7 +168,7 @@ export function TOTPModal({ onVerified, onCancel }: TOTPModalProps) {
                 <div className="px-5 pb-5">
                     <button
                         onClick={onCancel}
-                        className="w-full py-3 text-sm text-muted hover:text-fg font-medium rounded-xl hover:bg-surface transition-colors"
+                        className="w-full py-3 text-sm text-[rgba(255,255,255,0.5)] hover:text-fg font-medium rounded-xl hover:bg-surface transition-colors"
                     >
                         Cancel
                     </button>

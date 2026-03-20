@@ -27,14 +27,15 @@ export function ActivityFeed({ sessionName }: ActivityFeedProps) {
     <div className="space-y-6 p-5">
       {grouped.map(({ label, events: groupEvents }) => (
         <div key={label} className="animate-float-in">
+          {/* Time divider — scan-line style, no heavy borders */}
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border-strong to-transparent" />
-            <span className="text-xs text-muted font-medium uppercase tracking-wider px-3">
+            <div className="h-px flex-1 bg-outline-variant/30" />
+            <span className="text-[10px] text-muted font-mono uppercase tracking-widest px-2">
               {label}
             </span>
-            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border-strong to-transparent" />
+            <div className="h-px flex-1 bg-outline-variant/30" />
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2">
             {groupEvents.map((event, index) => (
               <ActivityCard 
                 key={event.id} 
@@ -49,11 +50,11 @@ export function ActivityFeed({ sessionName }: ActivityFeedProps) {
       {events.length === 0 && (
         <div className="empty-state animate-float-in">
           <div className="empty-state-icon">
-            <span className="text-2xl">✨</span>
+            <span className="material-symbols-outlined text-matrix-green text-xl">terminal</span>
           </div>
-          <p className="text-sm text-muted font-medium">No activity yet</p>
-          <p className="text-xs text-muted mt-1">
-            Activity will appear here as the agent works
+          <p className="text-sm text-on-surface font-mono mt-3">NO_ACTIVITY_LOG</p>
+          <p className="text-xs text-muted font-mono mt-1">
+            Activity will stream here as the agent executes
           </p>
         </div>
       )}
@@ -75,44 +76,47 @@ function ActivityCard({ event, style }: ActivityCardProps) {
   return (
     <div
       className={clsx(
-        "surface-floating p-4 cursor-pointer transition-all duration-200 animate-scale-in group",
-        isError && "border-danger/30",
+        "surface-floating p-3 cursor-pointer transition-all duration-150 animate-scale-in group",
+        isError && "border-neon-red/30",
         isApproval && "border-warning/30"
       )}
       onClick={() => setExpanded(!expanded)}
       style={style}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-start gap-3">
+        {/* Icon — brutalist square, no rounded corners */}
         <div className={clsx(
-          'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform',
-          isError ? 'bg-danger-soft' : isApproval ? 'bg-warning-soft' : 'bg-accent-soft',
+          'w-8 h-8 flex items-center justify-center flex-shrink-0 transition-transform',
+          isError ? 'bg-danger-soft border border-neon-red/20' : 
+          isApproval ? 'bg-warning-soft border border-warning/20' : 
+          'bg-accent-soft border border-matrix-green/20',
           'group-hover:scale-110'
         )}>
-          <span className="text-lg">{event.icon}</span>
+          <span className="text-sm">{event.icon}</span>
         </div>
         
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-fg-strong font-medium leading-relaxed break-words">{event.summary}</p>
+          <p className="text-sm text-on-surface font-mono leading-relaxed break-words">{event.summary}</p>
           
           {expanded && event.details && (
             <div className="mt-3 space-y-2 text-xs">
               {event.details.filePath && (
-                <div className="flex items-center gap-2 text-muted-light">
-                  <span className="font-mono bg-surface px-2 py-1 rounded-lg">{event.details.filePath}</span>
+                <div className="flex items-center gap-2 text-cyan-accent">
+                  <span className="font-mono bg-surface-container px-2 py-1 text-[10px]">{event.details.filePath}</span>
                 </div>
               )}
               {event.details.command && (
-                <pre className="bg-bg-elevated p-3 rounded-xl overflow-x-auto text-muted font-mono border border-border">
+                <pre className="bg-surface-container-high p-3 overflow-x-auto text-muted font-mono text-[11px] border border-outline-variant/20">
                   {event.details.command}
                 </pre>
               )}
               {event.details.errorStack && (
-                <pre className="bg-danger/10 p-3 rounded-xl overflow-x-auto text-danger font-mono border border-danger/20">
+                <pre className="bg-neon-red/10 p-3 overflow-x-auto text-neon-red font-mono text-[11px] border border-neon-red/20">
                   {event.details.errorStack}
                 </pre>
               )}
               {event.details.diff && (
-                <div className="mt-3 overflow-hidden rounded-xl border border-border" onClick={e => e.stopPropagation()}>
+                <div className="mt-3 overflow-hidden border border-outline-variant/20" onClick={e => e.stopPropagation()}>
                     <DiffViewer diffText={event.details.diff} filePath={event.details.filePath || 'Changes'} />
                 </div>
               )}
@@ -122,7 +126,7 @@ function ActivityCard({ event, style }: ActivityCardProps) {
         
         {event.details && (
           <div className={clsx(
-            'text-muted text-xs transition-transform duration-200',
+            'text-muted text-xs transition-transform duration-200 font-mono',
             expanded && 'rotate-180'
           )}>
             ▼
@@ -141,9 +145,9 @@ function groupByTime(events: ActivityEvent[]): { label: string; events: Activity
     const diff = now - event.timestamp;
     let label: string;
 
-    if (diff < 60000) label = 'Now';
-    else if (diff < 3600000) label = `${Math.floor(diff / 60000)} minutes ago`;
-    else label = `${Math.floor(diff / 3600000)} hours ago`;
+    if (diff < 60000) label = 'NOW';
+    else if (diff < 3600000) label = `T-${Math.floor(diff / 60000)}M`;
+    else label = `T-${Math.floor(diff / 3600000)}H`;
 
     if (!groups.has(label)) {
       groups.set(label, []);

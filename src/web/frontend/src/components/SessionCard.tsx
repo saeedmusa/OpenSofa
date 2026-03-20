@@ -42,7 +42,7 @@ export function SessionCard({ session, onStop, onApprove, onReject }: SessionCar
       }}
     >
       <div className="flex items-center gap-4">
-        {/* Status indicator */}
+        {/* Status indicator — brutalist square */}
         <div className={clsx('status-dot flex-shrink-0', statusClass)} aria-hidden="true" />
         
         <div className="flex-1 min-w-0">
@@ -78,7 +78,7 @@ export function SessionCard({ session, onStop, onApprove, onReject }: SessionCar
                     <button
                       onClick={() => onApprove(session.name)}
                       aria-label={`Approve session ${session.name}`}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-matrix-green hover:bg-matrix-green-fixed text-black py-2 font-mono text-xs font-bold transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-matrix-green hover:bg-matrix-green-fixed text-void py-2 font-mono text-xs font-bold transition-colors"
                     >
                       <Check size={14} />
                       APPROVE
@@ -88,7 +88,7 @@ export function SessionCard({ session, onStop, onApprove, onReject }: SessionCar
                     <button
                       onClick={() => onReject(session.name)}
                       aria-label={`Reject session ${session.name}`}
-                      className="flex-1 flex items-center justify-center gap-1.5 bg-neon-red/20 hover:bg-neon-red text-white py-2 font-mono text-xs font-bold transition-colors"
+                      className="flex-1 flex items-center justify-center gap-1.5 bg-neon-red/20 hover:bg-neon-red text-on-surface py-2 font-mono text-xs font-bold transition-colors"
                     >
                       <X size={14} />
                       REJECT

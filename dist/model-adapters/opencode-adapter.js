@@ -90,7 +90,7 @@ export class OpenCodeAdapter extends BaseAdapter {
             if (!providerMap.has(prefix)) {
                 providerMap.set(prefix, []);
             }
-            providerMap.get(prefix).push(this.createModel(modelId, displayName, providerName));
+            providerMap.get(prefix).push(this.createModel(modelId, displayName, providerName, this.supportsVision(modelId), this.supportsImages(modelId)));
         }
         // Convert map to ModelProvider array
         const providers = [];
@@ -193,6 +193,52 @@ export class OpenCodeAdapter extends BaseAdapter {
      */
     normalizeProviderId(prefix) {
         return prefix.replace(/\//g, '-').replace(/-$/, '');
+    }
+    /**
+     * Check if a model supports vision/image input based on its name.
+     * Vision-capable: opus, sonnet (except sonnet-4-haiku), claude-3-5-sonnet, claude-3-opus
+     * Non-vision (text-only): haiku models, gpt-4o-mini (for some providers)
+     */
+    supportsVision(modelId) {
+        const lower = modelId.toLowerCase();
+        // Vision-capable patterns (Anthropic models)
+        if (lower.includes('opus') || lower.includes('sonnet') || lower.includes('claude-3-5-sonnet') || lower.includes('claude-3-opus')) {
+            return true;
+        }
+        // Non-vision patterns
+        if (lower.includes('haiku')) {
+            return false;
+        }
+        // Vision-capable OpenAI models
+        if (lower.includes('gpt-4o') || lower.includes('gpt-4-vision')) {
+            return true;
+        }
+        // Non-vision OpenAI models
+        if (lower.includes('gpt-4o-mini') || lower.includes('gpt-3.5')) {
+            return false;
+        }
+        // Vision-capable Gemini models
+        if (lower.includes('gemini-1.5') || lower.includes('gemini-pro-vision')) {
+            return true;
+        }
+        // Default to true for unknown models (most modern models support vision)
+        return true;
+    }
+    /**
+     * Check if a model supports image generation/output.
+     * DALL-E, Imagen, and some GPT models support image generation.
+     */
+    supportsImages(modelId) {
+        const lower = modelId.toLowerCase();
+        // Image generation models
+        if (lower.includes('dall-e') || lower.includes('imagen') || lower.includes('stable-diffusion')) {
+            return true;
+        }
+        // GPT-4o with vision supports image output in some contexts
+        if (lower.includes('gpt-4o') && !lower.includes('mini')) {
+            return true;
+        }
+        return false;
     }
 }
 //# sourceMappingURL=opencode-adapter.js.map

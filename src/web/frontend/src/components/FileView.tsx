@@ -26,7 +26,7 @@ export function FileView({ sessionName }: FileViewProps) {
           {selectedFile ? (
             <FileContent sessionName={sessionName} filePath={selectedFile} />
           ) : (
-            <div className="flex items-center justify-center h-full text-muted text-sm">
+            <div className="flex items-center justify-center h-full text-[rgba(255,255,255,0.5)] text-sm">
               Select a file to view contents
             </div>
           )}
@@ -40,7 +40,7 @@ export function FileView({ sessionName }: FileViewProps) {
       <div className="h-full flex flex-col">
         <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-surface">
           <button
-            className="touch-target flex items-center justify-center text-muted hover:text-fg"
+            className="touch-target flex items-center justify-center text-[rgba(255,255,255,0.5)] hover:text-fg"
             onClick={() => setSelectedFile(null)}
           >
             <ArrowLeft size={20} />

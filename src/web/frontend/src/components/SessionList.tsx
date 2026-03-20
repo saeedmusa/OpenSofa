@@ -20,6 +20,7 @@ export function SessionList({ sessions, isLoading, error, onStop, onApprove, onR
       return b.lastActivityAt - a.lastActivityAt;
     });
   }, [sessions]);
+
   if (isLoading) {
     return <SessionListSkeleton count={3} />;
   }
@@ -27,7 +28,7 @@ export function SessionList({ sessions, isLoading, error, onStop, onApprove, onR
   if (error) {
     return (
       <div className="surface-floating p-6 text-center animate-scale-in">
-        <p className="text-danger text-sm font-medium">{error}</p>
+        <p className="text-danger text-sm font-mono">{error}</p>
       </div>
     );
   }
@@ -36,10 +37,10 @@ export function SessionList({ sessions, isLoading, error, onStop, onApprove, onR
     return (
       <div className="surface-floating p-10 text-center animate-scale-in">
         <div className="empty-state-icon mx-auto mb-4">
-          <span className="text-2xl">💬</span>
+          <span className="material-symbols-outlined text-matrix-green text-xl">smart_toy</span>
         </div>
-        <p className="text-muted text-sm font-medium mb-1">No active sessions</p>
-        <p className="text-muted/60 text-xs">
+        <p className="text-muted text-sm font-mono mb-1">NO_ACTIVE_SESSIONS</p>
+        <p className="text-muted/60 text-xs font-mono">
           Create a session to get started
         </p>
       </div>

@@ -2,6 +2,7 @@ import { useEffect, useCallback, useState } from 'react';
 import { useWebSocket } from '../providers/WebSocketProvider';
 import { useSessionStore } from '../stores/sessionStore';
 import { api } from '../utils/api';
+import { safeVibrate } from '../utils/haptics';
 import { SessionList } from '../components/SessionList';
 import { Header } from '../components/Header';
 import { NewSessionModal } from '../components/NewSessionModal';
@@ -62,7 +63,7 @@ export function HomeView() {
   const handleApprove = async (name: string) => {
     try {
       await api.sessions.approve(name);
-      if (navigator.vibrate) navigator.vibrate(50);
+      safeVibrate(50);
       toast.success(`Session "${name}" approved`);
       loadSessions();
     } catch (err) {
@@ -73,7 +74,7 @@ export function HomeView() {
   const handleReject = async (name: string) => {
     try {
       await api.sessions.reject(name);
-      if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+      safeVibrate([30, 50, 30]);
       toast.success(`Session "${name}" rejected`);
       loadSessions();
     } catch (err) {
@@ -87,17 +88,17 @@ export function HomeView() {
 
   if (!api.getToken()) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-void">
-        <div className="w-full max-w-md p-8 bg-surface-container-lowest border border-outline-variant animate-scale-in">
+      <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-[#000000]">
+        <div className="w-full max-w-md p-8 bg-[#0e0e0e] border border-[#3b4b37] animate-scale-in">
           <div className="flex flex-col items-center text-center mb-8">
-            <span className="material-symbols-outlined text-matrix-green text-5xl mb-4">terminal</span>
-            <h2 className="text-xl font-bold text-on-surface mb-2">Authentication Required</h2>
-            <p className="text-sm text-muted">
+            <span className="material-symbols-outlined text-[#00FF41] text-5xl mb-4">terminal</span>
+            <h2 className="text-xl font-bold text-[#e2e2e2] font-mono mb-2">AUTH_REQUIRED</h2>
+            <p className="text-sm text-[rgba(255,255,255,0.5)] font-mono">
               Scan the QR code from your terminal or open the link with a valid token.
             </p>
           </div>
-          <div className="bg-surface-container p-4 font-mono text-xs text-muted">
-            <span className="text-matrix-green">$</span> opensofa web
+          <div className="bg-[#1f1f1f] p-4 font-mono text-xs text-[rgba(255,255,255,0.5)]">
+            <span className="text-[#00FF41]">$</span> opensofa web
           </div>
         </div>
       </div>
@@ -109,8 +110,8 @@ export function HomeView() {
       <div className="h-full overflow-y-auto p-8">
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-on-surface font-mono tracking-tight">ALL_SESSIONS</h2>
-            <p className="text-sm text-muted mt-1 font-mono">
+            <h2 className="text-2xl font-bold text-[#e2e2e2] font-mono tracking-tight">ALL_SESSIONS</h2>
+            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1 font-mono">
               {sessions.length} active session{sessions.length !== 1 ? 's' : ''}
             </p>
           </div>
@@ -125,7 +126,7 @@ export function HomeView() {
             <button
               onClick={loadSessions}
               disabled={isLoading}
-              className="btn btn-ghost"
+              className="btn btn-ghost flex items-center gap-2"
             >
               <RefreshCw size={18} className={clsx(isLoading && 'animate-spin')} />
               <span>REFRESH</span>
@@ -150,8 +151,9 @@ export function HomeView() {
     );
   }
 
+  // Mobile layout
   return (
-    <div className="min-h-screen bg-void" {...handlers}>
+    <div className="min-h-screen bg-[#000000]" {...handlers}>
       <Header connected={connected} />
 
       {/* Pull to refresh indicator */}
@@ -160,11 +162,11 @@ export function HomeView() {
           className="flex items-center justify-center py-4 transition-transform"
           style={{ transform: `translateY(${pullProgress * 50}px)` }}
         >
-          <div className="p-3 rounded-full bg-matrix-green-surface">
+          <div className="p-3 bg-[#1f1f1f]">
             <RefreshCw
               size={20}
               className={clsx(
-                'text-matrix-green transition-transform',
+                'text-[#00FF41] transition-transform',
                 isRefreshing && 'animate-spin'
               )}
               style={{ transform: `rotate(${pullProgress * 360}deg)` }}
@@ -174,9 +176,9 @@ export function HomeView() {
       )}
 
       <main className="p-5 pt-20">
-        {/* Session timestamp */}
+        {/* Session timestamp — terminal style */}
         <div className="flex justify-center mb-6">
-          <span className="bg-surface-container-high px-3 py-1 font-mono text-[10px] text-outline tracking-widest border border-outline-variant/30">
+          <span className="bg-[#2a2a2a] px-3 py-1 font-mono text-[10px] text-[#84967e] tracking-widest border border-[#3b4b37]/30">
             SESSION_START: {new Date().toISOString().replace(/[:.]/g, '_')}Z
           </span>
         </div>
@@ -184,14 +186,14 @@ export function HomeView() {
         {/* Sessions header */}
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-medium text-muted mb-1 uppercase tracking-widest font-mono">Sessions</h2>
-            <p className="text-xs text-muted font-mono">
+            <h2 className="text-sm font-medium text-[rgba(255,255,255,0.5)] mb-1 uppercase tracking-widest font-mono">Sessions</h2>
+            <p className="text-xs text-[rgba(255,255,255,0.5)] font-mono">
               {sessions.length} active
             </p>
           </div>
           <button
             onClick={() => setShowNewSession(true)}
-            className="btn btn-primary btn-sm flex items-center gap-2"
+            className="btn btn-primary flex items-center gap-2 text-xs px-3 py-2"
           >
             <Plus size={16} />
             <span>NEW</span>
@@ -208,10 +210,10 @@ export function HomeView() {
         />
       </main>
 
-      {/* Floating Action Button */}
+      {/* Floating Action Button — Matrix Green glow */}
       <button 
         onClick={() => setShowNewSession(true)}
-        className="fixed bottom-24 right-6 w-14 h-14 bg-matrix-green text-black shadow-glow-primary flex items-center justify-center active:scale-95 transition-transform z-50"
+        className="fixed bottom-24 right-6 w-14 h-14 bg-[#00FF41] text-[#000000] shadow-glow-primary flex items-center justify-center active:scale-95 transition-transform z-50"
         aria-label="Create new session"
       >
         <Plus size={24} className="font-bold" />

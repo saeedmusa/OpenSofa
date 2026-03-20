@@ -101,7 +101,7 @@ export function NotificationSettings() {
     if (loading) {
         return (
             <div className="flex items-center justify-center py-8">
-                <Loader2 size={24} className="animate-spin text-muted" />
+                <Loader2 size={24} className="animate-spin text-[rgba(255,255,255,0.5)]" />
             </div>
         );
     }
@@ -110,11 +110,11 @@ export function NotificationSettings() {
         <section className="surface-floating p-6">
             <div className="flex items-center gap-3 mb-5">
                 <div className="p-2.5 rounded-xl bg-accent-soft">
-                    {isTopicSet ? <Bell size={20} className="text-accent" /> : <BellOff size={20} className="text-muted" />}
+                    {isTopicSet ? <Bell size={20} className="text-accent" /> : <BellOff size={20} className="text-[rgba(255,255,255,0.5)]" />}
                 </div>
                 <div>
                     <h2 className="font-semibold text-fg-strong">Push Notifications (ntfy.sh)</h2>
-                    <p className="text-xs text-muted">Receive alerts on your devices when Agent requires input</p>
+                    <p className="text-xs text-[rgba(255,255,255,0.5)]">Receive alerts on your devices when Agent requires input</p>
                 </div>
             </div>
 
@@ -129,7 +129,7 @@ export function NotificationSettings() {
                         placeholder="e.g. opensofa_alerts_xyz123"
                         className="w-full px-3 py-2 bg-bg-strong border border-border rounded-lg text-sm text-fg focus:outline-none focus:border-accent"
                     />
-                    <p className="text-xs text-muted mt-2">
+                    <p className="text-xs text-[rgba(255,255,255,0.5)] mt-2">
                         Download the <a href="https://ntfy.sh" target="_blank" rel="noreferrer" className="text-accent hover:underline">ntfy.sh app</a> on iOS or Android and subscribe to this exact topic to receive notifications. Keep this unique and secret. Leave blank to disable.
                     </p>
                 </div>

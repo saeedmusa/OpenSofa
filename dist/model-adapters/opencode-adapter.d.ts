@@ -52,5 +52,16 @@ export declare class OpenCodeAdapter extends BaseAdapter {
      * e.g., "huggingface/zai-org" → "huggingface-zai-org"
      */
     private normalizeProviderId;
+    /**
+     * Check if a model supports vision/image input based on its name.
+     * Vision-capable: opus, sonnet (except sonnet-4-haiku), claude-3-5-sonnet, claude-3-opus
+     * Non-vision (text-only): haiku models, gpt-4o-mini (for some providers)
+     */
+    private supportsVision;
+    /**
+     * Check if a model supports image generation/output.
+     * DALL-E, Imagen, and some GPT models support image generation.
+     */
+    private supportsImages;
 }
 //# sourceMappingURL=opencode-adapter.d.ts.map

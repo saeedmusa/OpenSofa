@@ -36,7 +36,7 @@ interface SessionState {
 
 const VALID_TRANSITIONS: Record<SessionStatus, SessionStatus[]> = {
   creating: ['active', 'error'],
-  active: ['stopping', 'error'],
+  active: ['active', 'stopping', 'error'],
   stopping: ['stopped', 'error'],
   stopped: ['creating'],
   error: ['active', 'creating'],

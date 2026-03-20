@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Share2, Loader2, Check } from 'lucide-react';
+import { safeVibrate } from '../utils/haptics';
 
 interface ShareCardGeneratorProps {
     projectName: string;
@@ -156,7 +157,7 @@ export function ShareCardGenerator({
             }
 
             setShared(true);
-            if (navigator.vibrate) navigator.vibrate(50);
+            safeVibrate(50);
             setTimeout(() => setShared(false), 3000);
         } catch (err) {
             // User cancelled share or clipboard not available

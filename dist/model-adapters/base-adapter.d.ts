@@ -41,7 +41,7 @@ export declare abstract class BaseAdapter implements ModelAdapter {
     /**
      * Create a DiscoveredModel object with common fields.
      */
-    protected createModel(id: string, name: string, provider: string): DiscoveredModel;
+    protected createModel(id: string, name: string, provider: string, supportsVision?: boolean, supportsImages?: boolean): DiscoveredModel;
     /**
      * Create a ModelProvider object.
      */

@@ -459,6 +459,12 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
         await displayQRCode(qrUrl);
       } catch (err) {
         log.error('Failed to start tunnel', { error: String(err) });
+
+        // Show local URL with QR code as fallback
+        const localUrl = `http://localhost:${WEB_PORT}`;
+        const localQrUrl = `${localUrl}?token=${token}`;
+        console.log('\n  [TUNNEL UNAVAILABLE - Using local access]\n');
+        await displayQRCode(localQrUrl);
       }
     } else {
       log.info('Tunnel disabled or cloudflared not available');
@@ -732,17 +738,23 @@ function getSocketForClient(clientId: string): WebSocket | undefined {
 
 async function displayQRCode(url: string): Promise<void> {
   try {
-    // Use utf8 type which outputs █ (filled) and ░ (empty) block characters
-    // This renders correctly on both light and dark terminals
     const qrString = await qrcode.toString(url, {
       type: 'utf8',
       width: 40,
+      margin: 2,
     });
+
+    console.log('\n');
+    console.log('╔═══════════════════════════════════════════════════════════╗');
+    console.log('║           OPENSOFA - KINETIC TERMINAL PWA                ║');
+    console.log('╚═══════════════════════════════════════════════════════════╝');
     console.log('\n' + qrString);
-    console.log(`\n🌐 Web Interface: ${url}\n`);
-    console.log('Scan QR code with your phone camera to open OpenSofa Web\n');
+    console.log('\n  Web Interface: ' + url);
+    console.log('\n  Scan QR code with your phone camera to open PWA');
+    console.log('  ─────────────────────────────────────────────────────');
+    console.log('  Token auto-applied for instant access\n');
   } catch (err) {
     log.warn('Failed to generate QR code', { error: String(err) });
-    console.log(`\n🌐 Web Interface: ${url}\n`);
+    console.log('\n  Web Interface: ' + url + '\n');
   }
 }

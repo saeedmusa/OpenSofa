@@ -12,6 +12,7 @@ import { SkipLink } from './components/SkipLink';
 import { FocusTrap } from './components/FocusTrap';
 import { Logo } from './components/Logo';
 import { api } from './utils/api';
+import { safeVibrate } from './utils/haptics';
 
 const HomeView = lazy(() => import('./views/HomeView').then(m => ({ default: m.HomeView })));
 const SessionView = lazy(() => import('./views/SessionView').then(m => ({ default: m.SessionView })));
@@ -39,10 +40,10 @@ export default function App() {
             <div className="surface-floating p-10 text-center max-w-md animate-scale-in rounded-3xl">
               <Logo size="xl" className="justify-center mb-6" />
               <h2 className="text-xl font-semibold text-fg-strong mb-3">Authentication Required</h2>
-              <p className="text-muted mb-6">
+              <p className="text-[rgba(255,255,255,0.5)] mb-6">
                 Scan the QR code from your terminal or open the link with a valid token.
               </p>
-              <p className="text-muted/60 text-sm">
+              <p className="text-[rgba(255,255,255,0.5)]/60 text-sm">
                 Run <code className="bg-surface px-2 py-1 rounded-lg text-accent">opensofa web</code> in your terminal to get a new link.
               </p>
             </div>
@@ -163,7 +164,7 @@ function DeepLinkApprovalModal({ sessionName, onDismiss }: DeepLinkApprovalModal
     setError(null);
     try {
       await api.sessions.approve(sessionName);
-      if (navigator.vibrate) navigator.vibrate(50);
+      safeVibrate(50);
       onDismiss();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to approve');
@@ -177,7 +178,7 @@ function DeepLinkApprovalModal({ sessionName, onDismiss }: DeepLinkApprovalModal
     setError(null);
     try {
       await api.sessions.reject(sessionName);
-      if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+      safeVibrate([30, 50, 30]);
       onDismiss();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to reject');
@@ -206,7 +207,7 @@ function DeepLinkApprovalModal({ sessionName, onDismiss }: DeepLinkApprovalModal
             <span className="font-semibold text-fg-strong">Approval Required</span>
           </div>
 
-          <p className="text-sm text-muted mb-5" id="approval-description">
+          <p className="text-sm text-[rgba(255,255,255,0.5)] mb-5" id="approval-description">
             Session <span className="font-mono text-accent bg-accent-soft px-2 py-0.5 rounded-lg">{sessionName}</span> needs your approval.
           </p>
 
@@ -234,7 +235,7 @@ function DeepLinkApprovalModal({ sessionName, onDismiss }: DeepLinkApprovalModal
           )}
 
           <button
-            className="w-full mt-4 text-muted text-sm py-2 hover:text-fg-strong transition-colors font-medium"
+            className="w-full mt-4 text-[rgba(255,255,255,0.5)] text-sm py-2 hover:text-fg-strong transition-colors font-medium"
             onClick={onDismiss}
             aria-label="Dismiss approval dialog"
           >

@@ -47,7 +47,7 @@ export function InputBar({ sessionId, getTerminal }: InputBarProps) {
   if (typeof window === 'undefined' || !('ontouchstart' in window)) return null;
 
   return (
-    <div className="flex items-center gap-4 p-4 bg-black border-t border-matrix-green/30">
+    <div className="flex items-center gap-4 p-4 bg-void border-t border-matrix-green/30">
       {/* Terminal prompt */}
       <div className="flex-1 relative">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-matrix-green font-mono font-bold">&gt;</span>
@@ -58,7 +58,7 @@ export function InputBar({ sessionId, getTerminal }: InputBarProps) {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="instruct agent..."
-          className="w-full bg-surface-container-lowest border-b border-surface-container-high focus:border-matrix-green focus:ring-0 text-matrix-green font-mono pl-8 py-2 text-sm placeholder:opacity-30 placeholder:italic"
+          className="w-full bg-surface-container-lowest border-b border-surface-container-high focus:border-matrix-green focus:ring-0 text-matrix-green font-mono pl-8 py-2 text-sm placeholder:opacity-30 placeholder:text-muted"
           aria-label="Terminal input"
         />
       </div>
@@ -80,7 +80,7 @@ export function InputBar({ sessionId, getTerminal }: InputBarProps) {
         <button
           onClick={handleSend}
           disabled={!input.trim() || isSending}
-          className="bg-matrix-green text-black px-6 py-2 font-mono font-bold text-xs hover:bg-matrix-green-fixed active:translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-matrix-green text-void px-6 py-2 font-mono font-bold text-xs hover:bg-matrix-green-fixed active:translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={isSending ? "Sending command" : "Send command"}
         >
           {isSending ? (

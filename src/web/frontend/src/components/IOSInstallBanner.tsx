@@ -50,7 +50,7 @@ export function IOSInstallBanner({ dismissKey = 'ios-install-banner' }: IOSInsta
       <div className="bg-surface border border-border rounded-2xl p-4 shadow-lg animate-slide-up">
         <button
           onClick={handleDismiss}
-          className="absolute top-2 right-2 p-1 text-muted hover:text-fg"
+          className="absolute top-2 right-2 p-1 text-[rgba(255,255,255,0.5)] hover:text-fg"
           aria-label="Dismiss"
         >
           <X size={16} />
@@ -65,7 +65,7 @@ export function IOSInstallBanner({ dismissKey = 'ios-install-banner' }: IOSInsta
             <h3 className="text-sm font-semibold text-fg-strong">
               Install OpenSofa for Push Notifications
             </h3>
-            <p className="text-xs text-muted mt-1">
+            <p className="text-xs text-[rgba(255,255,255,0.5)] mt-1">
               Tap the Share button → "Add to Home Screen" to enable notifications
             </p>
             

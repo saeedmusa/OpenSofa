@@ -7,7 +7,7 @@ export function PageLoader() {
         <div className="p-4 rounded-2xl bg-accent-soft">
           <Loader2 className="w-6 h-6 text-accent animate-spin" />
         </div>
-        <span className="text-sm text-muted font-medium">Loading...</span>
+        <span className="text-sm text-[rgba(255,255,255,0.5)] font-medium">Loading...</span>
       </div>
     </div>
   );

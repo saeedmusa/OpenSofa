@@ -6,7 +6,7 @@ export function Sidebar() {
   const sessions = useSessionStore((s) => s.sessions);
 
   return (
-    <aside className="sidebar-terminal pt-14 hidden lg:flex">
+    <aside className="sidebar-terminal pt-14 hidden lg:flex flex-col">
       {/* Terminal prompt header */}
       <div className="p-4 border-b border-surface-container-high">
         <span className="text-matrix-green font-bold font-mono text-sm">ROOT@OPENSOFA:~#</span>
@@ -46,7 +46,7 @@ export function Sidebar() {
         {/* Session list */}
         {sessions.length > 0 && (
           <div className="mt-4 pt-4 border-t border-surface-container-high">
-            <div className="px-4 py-2 text-[10px] text-muted uppercase tracking-widest">
+            <div className="px-4 py-2 text-[10px] text-muted uppercase tracking-widest font-mono">
               Active Sessions ({sessions.length})
             </div>
             {sessions.slice(0, 5).map((session) => (
@@ -69,7 +69,7 @@ export function Sidebar() {
 
         {/* Terminate all button */}
         <div className="mt-auto pt-4 border-t border-surface-container-high">
-          <button className="sidebar-nav-item sidebar-nav-item-danger w-full text-neon-red hover:bg-neon-red-surface">
+          <button className="sidebar-nav-item sidebar-nav-item-danger w-full text-neon-red hover:bg-neon-red/10">
             <span className="material-symbols-outlined">terminal</span>
             <span>TERMINATE_ALL</span>
           </button>

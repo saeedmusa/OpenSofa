@@ -91,7 +91,7 @@ export function CatchUpCard({ sessionName }: CatchUpCardProps) {
                             <h3 className="text-xs font-semibold text-accent uppercase tracking-wider">
                                 While you were away
                             </h3>
-                            <span className="text-[10px] text-muted font-mono">
+                            <span className="text-[10px] text-[rgba(255,255,255,0.5)] font-mono">
                                 {catchUp.minutesAway}m
                             </span>
                         </div>
@@ -101,7 +101,7 @@ export function CatchUpCard({ sessionName }: CatchUpCardProps) {
                         </p>
 
                         {/* Quick stats */}
-                        <div className="flex items-center gap-4 mt-2 text-xs text-muted">
+                        <div className="flex items-center gap-4 mt-2 text-xs text-[rgba(255,255,255,0.5)]">
                             {catchUp.filesChanged > 0 && (
                                 <span>📁 {catchUp.filesChanged} files</span>
                             )}
@@ -120,7 +120,7 @@ export function CatchUpCard({ sessionName }: CatchUpCardProps) {
 
                     <button
                         onClick={dismiss}
-                        className="p-1.5 rounded-lg text-muted hover:text-fg hover:bg-surface transition-colors flex-shrink-0"
+                        className="p-1.5 rounded-lg text-[rgba(255,255,255,0.5)] hover:text-fg hover:bg-surface transition-colors flex-shrink-0"
                         aria-label="Dismiss catch-up summary"
                     >
                         <X size={14} />

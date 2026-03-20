@@ -4,6 +4,7 @@ import { Play, Square, AlertCircle, Clock, Share2, MoreVertical, Link } from 'lu
 import { clsx } from 'clsx';
 import type { Session } from '../types';
 import { formatRelativeTime } from '../utils/format';
+import { safeVibrate } from '../utils/haptics';
 import { useToast } from './Toast';
 
 interface SwipeableSessionCardProps {
@@ -44,7 +45,7 @@ export function SwipeableSessionCard({ session, onStop, tunnelUrl }: SwipeableSe
     longPressTimer.current = setTimeout(() => {
       if (isDragging.current) {
         setShowContextMenu(true);
-        if (navigator.vibrate) navigator.vibrate(50);
+        safeVibrate(50);
       }
     }, 500);
   };
@@ -147,7 +148,7 @@ export function SwipeableSessionCard({ session, onStop, tunnelUrl }: SwipeableSe
             <span className="text-sm font-medium">Stop</span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-muted">
+          <div className="flex items-center gap-2 text-[rgba(255,255,255,0.5)]">
             <Share2 size={16} />
             <span className="text-sm font-medium">Share</span>
           </div>
@@ -189,14 +190,14 @@ export function SwipeableSessionCard({ session, onStop, tunnelUrl }: SwipeableSe
                   e.stopPropagation();
                   setShowContextMenu(!showContextMenu);
                 }}
-                className="ml-auto p-1 text-muted hover:text-fg"
+                className="ml-auto p-1 text-[rgba(255,255,255,0.5)] hover:text-fg"
                 aria-label="More options"
               >
                 <MoreVertical size={16} />
               </button>
             </div>
             
-            <div className="flex items-center gap-3 text-xs text-muted">
+            <div className="flex items-center gap-3 text-xs text-[rgba(255,255,255,0.5)]">
               <span className="flex items-center gap-1">
                 <Play size={12} aria-hidden="true" />
                 {session.agentType}
@@ -208,7 +209,7 @@ export function SwipeableSessionCard({ session, onStop, tunnelUrl }: SwipeableSe
             </div>
 
             {session.branch && (
-              <div className="mt-2 text-xs text-muted font-mono">
+              <div className="mt-2 text-xs text-[rgba(255,255,255,0.5)] font-mono">
                 {session.branch}
               </div>
             )}

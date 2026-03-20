@@ -7,7 +7,7 @@
  * Based on LOW_LEVEL_DESIGN.md §7
  */
 import { EventEmitter } from 'events';
-import { spawn } from 'child_process';
+import { spawn, execFileSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { createLogger } from './utils/logger.js';
@@ -252,10 +252,30 @@ export class SessionManager extends EventEmitter {
         }
         // Guard: mark session as in-flight to prevent duplicate creates
         this.creatingSessions.add(name);
+        // Create placeholder session entry immediately so frontend can poll for status
+        const placeholderSession = {
+            name,
+            status: 'creating',
+            agentType: agent,
+            model,
+            port: 0,
+            pid: 0,
+            repoDir: '',
+            workDir: '',
+            branch: '',
+            createdAt: Date.now(),
+            lastActivityAt: Date.now(),
+            agentStatus: 'running',
+            feedbackController: null,
+            autoApprove: this.config.autoApprove,
+            screenshotsEnabled: true,
+        };
+        this.sessions.set(name, placeholderSession);
         // 2. Validate inputs
         const validation = this.validateSessionInput(name, dir);
         if (!validation.ok) {
             this.creatingSessions.delete(name);
+            this.sessions.delete(name);
             throw new Error(validation.error);
         }
         // 3. Create git worktree
@@ -270,6 +290,7 @@ export class SessionManager extends EventEmitter {
             const error = err;
             log.error('Failed to create worktree', { error: error.message });
             this.creatingSessions.delete(name);
+            this.sessions.delete(name);
             throw new Error(`Failed to create worktree: ${error.message}`);
         }
         // 4. Allocate port
@@ -284,6 +305,7 @@ export class SessionManager extends EventEmitter {
             const error = err;
             log.error('Failed to spawn AgentAPI', { error: error.message });
             this.creatingSessions.delete(name);
+            this.sessions.delete(name);
             this.releasePort(port);
             this.removeWorktree(dir, workDir);
             throw new Error(`Failed to start AgentAPI: ${error.message}`);
@@ -295,6 +317,7 @@ export class SessionManager extends EventEmitter {
         catch (err) {
             log.error('AgentAPI health check failed', { error: String(err) });
             this.creatingSessions.delete(name);
+            this.sessions.delete(name);
             this.killProcess(pid);
             this.releasePort(port);
             this.removeWorktree(dir, workDir);
@@ -542,16 +565,55 @@ export class SessionManager extends EventEmitter {
         }
     }
     /**
-     * Kill a process by PID
+     * Verify a PID belongs to an agent/tmux process before killing.
+     * Prevents killing wrong process if PID was reused by OS.
+     */
+    verifyProcessOwnership(pid) {
+        if (!pid || pid === 0)
+            return false;
+        try {
+            // Check process exists and get command name
+            // macOS: ps -p PID -o comm=
+            // Linux: ps -p PID -o comm= or /proc/PID/comm
+            const comm = execFileSync('ps', ['-p', String(pid), '-o', 'comm='], {
+                encoding: 'utf-8',
+                stdio: ['pipe', 'pipe', 'ignore'],
+                timeout: 1000,
+            }).trim();
+            // Allowlist: only kill if it's agentapi, tmux, or known agent binaries
+            const allowed = ['agentapi', 'tmux', 'node', 'claude', 'opencode', 'aider', 'goose', 'codex', 'gemini', 'amp', 'copilot', 'cursor', 'auggie', 'amazonq'];
+            const isOwned = allowed.some(name => comm.toLowerCase().includes(name));
+            if (!isOwned) {
+                log.warn('PID ownership verification failed - not killing', { pid, comm });
+            }
+            return isOwned;
+        }
+        catch {
+            // Process doesn't exist or ps failed
+            return false;
+        }
+    }
+    /**
+     * Kill a process by PID with ownership verification
      */
     killProcess(pid) {
         if (!pid || pid === 0)
             return;
+        // Verify this is actually our process before killing
+        const isOwned = this.verifyProcessOwnership(pid);
+        if (!isOwned) {
+            log.debug('Skipping kill - PID not owned by agent', { pid });
+            return;
+        }
         try {
             process.kill(pid, 'SIGTERM');
             setTimeout(() => {
                 try {
-                    process.kill(pid, 'SIGKILL');
+                    // Re-verify before SIGKILL in case PID was reused during timeout
+                    const isStillOwned = this.verifyProcessOwnership(pid);
+                    if (isStillOwned) {
+                        process.kill(pid, 'SIGKILL');
+                    }
                 }
                 catch {
                     // Already dead

@@ -63,7 +63,7 @@ export function DiffViewer({ diffText, filePath }: DiffViewerProps) {
         
         <button
           onClick={handleCopy}
-          className="touch-target flex items-center justify-center p-2 text-muted hover:text-fg ml-2"
+          className="touch-target flex items-center justify-center p-2 text-[rgba(255,255,255,0.5)] hover:text-fg ml-2"
           aria-label="Copy diff to clipboard"
         >
           {copied ? <Check size={16} className="text-success" /> : <Copy size={16} />}

@@ -49,10 +49,10 @@ function FileContentInner({ sessionName, filePath }: FileContentProps) {
 
   if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-muted text-sm px-4 gap-2">
+      <div className="flex flex-col items-center justify-center h-full text-[rgba(255,255,255,0.5)] text-sm px-4 gap-2">
         <AlertTriangle className="w-8 h-8 mb-2 text-danger" />
         <p className="text-danger">Failed to load file</p>
-        <p className="text-xs text-muted/60">{error instanceof Error ? error.message : 'Unknown error'}</p>
+        <p className="text-xs text-[rgba(255,255,255,0.5)]/60">{error instanceof Error ? error.message : 'Unknown error'}</p>
         <button
           onClick={() => refetch()}
           className="mt-2 flex items-center gap-1.5 px-3 py-1.5 bg-surface border border-border rounded text-xs hover:bg-border/50 transition-colors"
@@ -66,7 +66,7 @@ function FileContentInner({ sessionName, filePath }: FileContentProps) {
 
   if (!fileData) {
     return (
-      <div className="flex items-center justify-center h-full text-muted">
+      <div className="flex items-center justify-center h-full text-[rgba(255,255,255,0.5)]">
         Select a file to view contents
       </div>
     );
@@ -81,7 +81,7 @@ function FileContentInner({ sessionName, filePath }: FileContentProps) {
           <h3 className="text-sm font-medium truncate" title={fileName}>
             {fileName}
           </h3>
-          <div className="flex items-center gap-2 text-xs text-muted">
+          <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.5)]">
             <span>{fileData.language}</span>
             <span>·</span>
             <span>{lines.length} lines</span>
@@ -91,7 +91,7 @@ function FileContentInner({ sessionName, filePath }: FileContentProps) {
         </div>
         <button
           onClick={handleCopy}
-          className="touch-target flex items-center justify-center p-2 text-muted hover:text-fg"
+          className="touch-target flex items-center justify-center p-2 text-[rgba(255,255,255,0.5)] hover:text-fg"
           title="Copy to clipboard"
         >
           {copied ? <Check size={16} className="text-success" /> : <Copy size={16} />}
@@ -103,7 +103,7 @@ function FileContentInner({ sessionName, filePath }: FileContentProps) {
           <tbody>
             {visibleLines.map((line, idx) => (
               <tr key={currentPage * linesPerPage + idx} className="hover:bg-surface/50">
-                <td className="w-10 text-right pr-3 text-muted/40 select-none border-r border-border/30 align-top">
+                <td className="w-10 text-right pr-3 text-[rgba(255,255,255,0.5)]/40 select-none border-r border-border/30 align-top">
                   {currentPage * linesPerPage + idx + 1}
                 </td>
                 <td className="pl-3 pr-4 whitespace-pre text-fg">
@@ -118,17 +118,17 @@ function FileContentInner({ sessionName, filePath }: FileContentProps) {
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-surface">
           <button
-            className="touch-target flex items-center justify-center p-1 text-muted hover:text-fg disabled:opacity-30"
+            className="touch-target flex items-center justify-center p-1 text-[rgba(255,255,255,0.5)] hover:text-fg disabled:opacity-30"
             onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
             disabled={currentPage === 0}
           >
             <ChevronLeft size={18} />
           </button>
-          <span className="text-xs text-muted">
+          <span className="text-xs text-[rgba(255,255,255,0.5)]">
             {currentPage + 1} / {totalPages}
           </span>
           <button
-            className="touch-target flex items-center justify-center p-1 text-muted hover:text-fg disabled:opacity-30"
+            className="touch-target flex items-center justify-center p-1 text-[rgba(255,255,255,0.5)] hover:text-fg disabled:opacity-30"
             onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
             disabled={currentPage === totalPages - 1}
           >

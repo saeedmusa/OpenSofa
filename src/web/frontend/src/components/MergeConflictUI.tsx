@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Check, GitMerge } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useResponsive } from '../hooks/useResponsive';
 import { api } from '../utils/api';
+import { safeVibrate } from '../utils/haptics';
 
 interface ConflictMarker {
     filePath: string;
@@ -44,7 +45,7 @@ export function MergeConflictUI({ sessionName, conflicts, onResolved }: MergeCon
             await api.sessions.resolveConflict(sessionName, conflict.filePath, resolution);
 
             setResolved(prev => new Set(prev).add(currentIndex));
-            if (navigator.vibrate) navigator.vibrate(50);
+            safeVibrate(50);
 
             // Auto-advance to next unresolved
             if (currentIndex < totalConflicts - 1) {
@@ -55,7 +56,7 @@ export function MergeConflictUI({ sessionName, conflicts, onResolved }: MergeCon
             }
         } catch (err) {
             console.error('Failed to resolve conflict:', err);
-            if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+            safeVibrate([30, 50, 30]);
         } finally {
             setResolving(false);
         }
@@ -63,7 +64,7 @@ export function MergeConflictUI({ sessionName, conflicts, onResolved }: MergeCon
 
     if (!conflict) {
         return (
-            <div className="flex flex-col items-center justify-center h-full text-muted text-sm p-6 animate-fade-in">
+            <div className="flex flex-col items-center justify-center h-full text-[rgba(255,255,255,0.5)] text-sm p-6 animate-fade-in">
                 <GitMerge size={28} className="text-success mb-3" />
                 <p className="font-medium text-fg-strong">All conflicts resolved!</p>
             </div>
@@ -85,14 +86,14 @@ export function MergeConflictUI({ sessionName, conflicts, onResolved }: MergeCon
                         <h3 className="text-sm font-medium text-fg-strong truncate" title={conflict.filePath}>
                             {fileName}
                         </h3>
-                        <p className="text-xs text-muted">
+                        <p className="text-xs text-[rgba(255,255,255,0.5)]">
                             Lines {conflict.startLine}–{conflict.endLine}
                         </p>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted font-mono">
+                    <span className="text-xs text-[rgba(255,255,255,0.5)] font-mono">
                         {currentIndex + 1}/{totalConflicts}
                     </span>
                     {isResolved && (
@@ -168,7 +169,7 @@ export function MergeConflictUI({ sessionName, conflicts, onResolved }: MergeCon
             {totalConflicts > 1 && (
                 <div className="flex items-center justify-between px-4 py-2 border-t border-border bg-surface flex-shrink-0">
                     <button
-                        className="touch-target flex items-center gap-1 px-3 py-2 rounded-xl text-sm text-muted hover:text-fg disabled:opacity-30 transition-colors"
+                        className="touch-target flex items-center gap-1 px-3 py-2 rounded-xl text-sm text-[rgba(255,255,255,0.5)] hover:text-fg disabled:opacity-30 transition-colors"
                         onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
                         disabled={currentIndex === 0}
                         aria-label="Previous conflict"
@@ -194,7 +195,7 @@ export function MergeConflictUI({ sessionName, conflicts, onResolved }: MergeCon
                         ))}
                     </div>
                     <button
-                        className="touch-target flex items-center gap-1 px-3 py-2 rounded-xl text-sm text-muted hover:text-fg disabled:opacity-30 transition-colors"
+                        className="touch-target flex items-center gap-1 px-3 py-2 rounded-xl text-sm text-[rgba(255,255,255,0.5)] hover:text-fg disabled:opacity-30 transition-colors"
                         onClick={() => setCurrentIndex(prev => Math.min(totalConflicts - 1, prev + 1))}
                         disabled={currentIndex === totalConflicts - 1}
                         aria-label="Next conflict"

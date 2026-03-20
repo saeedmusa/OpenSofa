@@ -31,6 +31,17 @@ export declare class ClaudeAdapter extends BaseAdapter {
      */
     private detectProvider;
     /**
+     * Check if a model supports vision/image input based on its name.
+     * Vision-capable: opus, sonnet-4, claude-3-5-sonnet, claude-3-opus
+     * Non-vision (text-only): haiku models
+     */
+    private supportsVision;
+    /**
+     * Check if a model supports image generation/output.
+     * Currently only haiku-4 and some Sonnet models support image output.
+     */
+    private supportsImages;
+    /**
      * Extract models from environment variables.
      */
     private extractModels;

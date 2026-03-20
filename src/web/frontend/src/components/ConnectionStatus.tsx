@@ -2,6 +2,7 @@ import { useWebSocket } from '../providers/WebSocketProvider';
 import { useEffect, useState, useRef } from 'react';
 import { Wifi, WifiOff, RefreshCw, Bell, Clock } from 'lucide-react';
 import { clsx } from 'clsx';
+import { safeVibrate } from '../utils/haptics';
 
 interface ConnectionStatusProps {
   onViewEvents?: () => void;
@@ -29,7 +30,7 @@ export function ConnectionStatus({ onViewEvents }: ConnectionStatusProps) {
     } else if (wasDisconnectedRef.current && connectionStatus === 'connected') {
       wasDisconnectedRef.current = false;
       setShowReconnected(true);
-      if (navigator.vibrate) navigator.vibrate(50);
+      safeVibrate(50);
       const timer = setTimeout(() => setShowReconnected(false), 2000);
       return () => clearTimeout(timer);
     }
@@ -169,7 +170,7 @@ export function ConnectionStatus({ onViewEvents }: ConnectionStatusProps) {
                 <p className="text-sm font-medium text-fg-strong">
                   You were offline. {missedEvents} event{missedEvents !== 1 ? 's' : ''} occurred while you were away.
                 </p>
-                <p className="text-xs text-muted">
+                <p className="text-xs text-[rgba(255,255,255,0.5)]">
                   <Clock size={12} className="inline mr-1" />
                   Tap to view missed activity
                 </p>
@@ -184,7 +185,7 @@ export function ConnectionStatus({ onViewEvents }: ConnectionStatusProps) {
               </button>
               <button
                 onClick={dismissOfflineBanner}
-                className="p-2 text-muted hover:text-fg transition-colors rounded-lg hover:bg-surface"
+                className="p-2 text-[rgba(255,255,255,0.5)] hover:text-fg transition-colors rounded-lg hover:bg-surface"
                 aria-label="Dismiss offline banner"
               >
                 ✕
@@ -208,7 +209,7 @@ export function ConnectionStatus({ onViewEvents }: ConnectionStatusProps) {
               <p className="text-sm font-medium text-fg-strong">
                 {pendingCount} message{pendingCount !== 1 ? 's' : ''} pending
               </p>
-              <p className="text-xs text-muted">
+              <p className="text-xs text-[rgba(255,255,255,0.5)]">
                 Will be sent when reconnected
               </p>
             </div>

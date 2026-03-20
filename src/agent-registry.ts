@@ -290,7 +290,6 @@ export class AgentRegistry {
       'server',
       `--port=${port}`,
       `--type=${def.agentApiType}`,
-      '--experimental-acp',
       `--term-width=${termWidth}`,
       `--term-height=${termHeight}`,
       '--',

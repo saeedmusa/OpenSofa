@@ -54,12 +54,12 @@ export function FileBrowser({ sessionName, onFileSelect, selectedFile }: FileBro
 
   if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-muted text-sm px-6 gap-3 animate-fade-in">
+      <div className="flex flex-col items-center justify-center h-full text-[rgba(255,255,255,0.5)] text-sm px-6 gap-3 animate-fade-in">
         <div className="empty-state-icon">
           <File size={28} className="text-danger" />
         </div>
         <p className="text-danger font-medium">Failed to load files</p>
-        <p className="text-xs text-muted text-center">{error instanceof Error ? error.message : 'Unknown error'}</p>
+        <p className="text-xs text-[rgba(255,255,255,0.5)] text-center">{error instanceof Error ? error.message : 'Unknown error'}</p>
         <button
           onClick={() => refetch()}
           className="btn btn-secondary btn-sm mt-2"
@@ -73,7 +73,7 @@ export function FileBrowser({ sessionName, onFileSelect, selectedFile }: FileBro
 
   if (!data?.entries?.length && !currentPath) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-muted text-sm px-6 animate-fade-in">
+      <div className="flex flex-col items-center justify-center h-full text-[rgba(255,255,255,0.5)] text-sm px-6 animate-fade-in">
         <div className="empty-state-icon">
           <File size={28} className="text-accent" />
         </div>
@@ -100,16 +100,16 @@ export function FileBrowser({ sessionName, onFileSelect, selectedFile }: FileBro
           <div className="flex items-center gap-1.5 text-xs">
             <button
               onClick={() => navigateTo('')}
-              className="text-muted hover:text-accent transition-colors font-medium"
+              className="text-[rgba(255,255,255,0.5)] hover:text-accent transition-colors font-medium"
             >
               root
             </button>
             {pathParts.map((part, idx) => (
               <span key={idx} className="flex items-center gap-1.5">
-                <span className="text-muted/50">/</span>
+                <span className="text-[rgba(255,255,255,0.5)]/50">/</span>
                 <button
                   onClick={() => navigateTo(pathParts.slice(0, idx + 1).join('/'))}
-                  className="text-muted hover:text-accent transition-colors truncate font-medium"
+                  className="text-[rgba(255,255,255,0.5)] hover:text-accent transition-colors truncate font-medium"
                 >
                   {part}
                 </button>
@@ -197,7 +197,7 @@ function FileEntryRow({
               e.stopPropagation();
               onToggleDir();
             }}
-            className="text-muted hover:text-fg p-0.5 rounded-lg hover:bg-surface transition-colors"
+            className="text-[rgba(255,255,255,0.5)] hover:text-fg p-0.5 rounded-lg hover:bg-surface transition-colors"
           >
             {isExpanded ? (
               <ChevronDown size={16} />
@@ -219,7 +219,7 @@ function FileEntryRow({
       )}
       <span className="truncate flex-1 text-left font-medium">{entry.name}</span>
       {entry.type === 'file' && entry.size !== undefined && (
-        <span className="text-xs text-muted font-mono">
+        <span className="text-xs text-[rgba(255,255,255,0.5)] font-mono">
           {formatSize(entry.size)}
         </span>
       )}

@@ -92,7 +92,12 @@ export declare class SessionManager extends EventEmitter {
     private isStartupProcessAlive;
     private healthCheck;
     /**
-     * Kill a process by PID
+     * Verify a PID belongs to an agent/tmux process before killing.
+     * Prevents killing wrong process if PID was reused by OS.
+     */
+    private verifyProcessOwnership;
+    /**
+     * Kill a process by PID with ownership verification
      */
     private killProcess;
     /**

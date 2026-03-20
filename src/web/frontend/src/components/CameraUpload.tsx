@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from 'react';
 import { Camera, X, ImageIcon, Loader2 } from 'lucide-react';
 import { api } from '../utils/api';
+import { safeVibrate } from '../utils/haptics';
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB per Architecture §1.3
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -63,10 +64,10 @@ export function CameraUpload({ sessionName, onUploaded }: CameraUploadProps) {
             // Clear state
             setFile(null);
             setPreview(null);
-            if (navigator.vibrate) navigator.vibrate(50);
+            safeVibrate(50);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Upload failed');
-            if (navigator.vibrate) navigator.vibrate([30, 50, 30]);
+            safeVibrate([30, 50, 30]);
         } finally {
             setUploading(false);
         }
@@ -95,7 +96,7 @@ export function CameraUpload({ sessionName, onUploaded }: CameraUploadProps) {
             {/* Camera button — 48×48px per Architecture §1.3 */}
             <button
                 onClick={() => inputRef.current?.click()}
-                className="touch-target flex items-center justify-center p-2.5 rounded-xl text-muted hover:text-fg hover:bg-surface transition-colors"
+                className="touch-target flex items-center justify-center p-2.5 rounded-xl text-[rgba(255,255,255,0.5)] hover:text-fg hover:bg-surface transition-colors"
                 aria-label="Attach image"
                 disabled={uploading}
             >
@@ -124,7 +125,7 @@ export function CameraUpload({ sessionName, onUploaded }: CameraUploadProps) {
 
                         {/* Info + send */}
                         <div className="p-3">
-                            <div className="flex items-center gap-2 text-xs text-muted mb-2">
+                            <div className="flex items-center gap-2 text-xs text-[rgba(255,255,255,0.5)] mb-2">
                                 <ImageIcon size={12} />
                                 <span className="truncate">{file?.name}</span>
                                 <span className="flex-shrink-0 font-mono">

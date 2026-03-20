@@ -2,334 +2,210 @@
 @import "@ionic/react/css/core.css";
 @import "tailwindcss";
 
-/**
- * OpenSofa Design System - Kinetic Terminal Theme
- * A brutalist terminal aesthetic with Matrix Green & Cyan accents
- */
+/* ═══════════════════════════════════════════════════════════════════════════
+   OPENSOFA DESIGN SYSTEM — THE KINETIC TERMINAL
+   Single source of truth for all design tokens.
+   Tailwind v4 @theme block — colors, fonts, animations, shadows.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Foundation: Pure Black Void ─────────────────────────────────────── */
+  --color-void: #000000;
+  --color-void-80: rgba(0, 0, 0, 0.8);
+  --color-void-60: rgba(0, 0, 0, 0.6);
+  --color-void-40: rgba(0, 0, 0, 0.4);
+
+  /* ── Surface Elevation Scale (dark gray nesting) ────────────────────── */
+  --color-surface-container-lowest: #0e0e0e;
+  --color-surface-container-low: #1b1b1b;
+  --color-surface-container: #1f1f1f;
+  --color-surface-container-high: #2a2a2a;
+  --color-surface-container-highest: #353535;
+  --color-surface-dim: #131313;
+  --color-surface: #131313;
+  --color-surface-bright: #393939;
+  --color-surface-variant: #353535;
+  --color-surface-elevated: #1f1f1f;
+
+  /* ── Primary: Matrix Green ──────────────────────────────────────────── */
+  --color-matrix-green: #00FF41;
+  --color-matrix-green-dim: #00e639;
+  --color-matrix-green-fixed: #72ff70;
+  --color-matrix-green-fixed-dim: #00e639;
+
+  /* ── Secondary: Cyan ────────────────────────────────────────────────── */
+  --color-cyan-accent: #00FFFF;
+  --color-cyan-fixed: #00fbfb;
+  --color-cyan-fixed-dim: #00dddd;
+
+  /* ── Danger: Neon Red ───────────────────────────────────────────────── */
+  --color-neon-red: #FF003C;
+  --color-error-container: #93000a;
+  --color-error: #ffb4ab;
+
+  /* ── Warning / Success / Info ───────────────────────────────────────── */
+  --color-warning: #f59e0b;
+  --color-warning-soft: rgba(245, 158, 11, 0.12);
+  --color-success: #10b981;
+  --color-success-soft: rgba(16, 185, 129, 0.12);
+  --color-info: #06b6d4;
+
+  /* ── Outline & Borders ──────────────────────────────────────────────── */
+  --color-outline: #84967e;
+  --color-outline-variant: #3b4b37;
+
+  /* ── Text Colors ────────────────────────────────────────────────────── */
+  --color-on-surface: #e2e2e2;
+  --color-on-surface-variant: #b9ccb2;
+  --color-fg: #e2e2e2;
+  --color-fg-strong: #ffffff;
+  --color-muted: rgba(255, 255, 255, 0.5);
+  --color-muted-light: rgba(255, 255, 255, 0.7);
+
+  /* ── Semantic Aliases ───────────────────────────────────────────────── */
+  --color-accent: #00FF41;
+  --color-accent-light: #00FFFF;
+  --color-accent-soft: rgba(0, 255, 65, 0.1);
+  --color-danger: #FF003C;
+  --color-danger-soft: rgba(255, 0, 60, 0.12);
+  --color-bg: #000000;
+  --color-bg-elevated: #0e0e0e;
+  --color-border: rgba(255, 255, 255, 0.06);
+  --color-border-strong: rgba(255, 255, 255, 0.10);
+
+  /* ── Legacy / Compat ────────────────────────────────────────────────── */
+  --color-background: #000000;
+  --color-primary: #00FF41;
+  --color-secondary: #00FFFF;
+  --color-primary-container: #00FF41;
+  --color-secondary-container: #00fbfb;
+  --color-on-primary: #003907;
+  --color-on-secondary: #003737;
+  --color-on-primary-container: #007117;
+  --color-on-secondary-container: #007070;
+  --color-on-error: #690005;
+  --color-on-error-container: #ffdad6;
+  --color-inverse-surface: #e2e2e2;
+  --color-inverse-on-surface: #303030;
+  --color-inverse-primary: #006e16;
+  --color-surface-tint: #00e639;
+  --color-on-background: #e2e2e2;
+
+  /* ── Border Radius: Brutalist 0px ───────────────────────────────────── */
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+
+  /* ── Fonts ──────────────────────────────────────────────────────────── */
+  --font-mono: 'Fira Code', 'SF Mono', monospace;
+  --font-sans: 'Space Grotesk', system-ui, sans-serif;
+  --font-headline: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Space Grotesk', system-ui, sans-serif;
+  --font-label: 'Space Grotesk', system-ui, sans-serif;
+
+  /* ── Shadows: Hard Glows (no soft shadows) ──────────────────────────── */
+  --shadow-glow-primary: 0 0 10px rgba(0, 255, 65, 0.4);
+  --shadow-glow-primary-strong: 0 0 20px rgba(0, 255, 65, 0.6);
+  --shadow-glow-cyan: 0 0 15px rgba(0, 255, 255, 0.3);
+  --shadow-glow-danger: 0 0 15px rgba(255, 0, 60, 0.8);
+  --shadow-terminal-glow: 0 0 10px rgba(0, 255, 65, 0.2);
+
+  /* ── Animations ─────────────────────────────────────────────────────── */
+  --animate-pulse-live: pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-pulse-danger: pulse-danger 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-glow-pulse: glow-pulse 2s ease-in-out infinite;
+  --animate-blink: blink 1s step-end infinite;
+  --animate-spin: spin 1s linear infinite;
+  --animate-scale-in: scale-in 0.3s ease-out forwards;
+  --animate-float-in: float-in 0.4s ease-out forwards;
+  --animate-fade-in-up: fade-in-up 0.3s ease-out forwards;
+
+  /* ── Keyframes ──────────────────────────────────────────────────────── */
+  @keyframes pulse-live {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+  @keyframes pulse-danger {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 60, 0.6); }
+    50% { box-shadow: 0 0 20px rgba(255, 0, 60, 1); }
+  }
+  @keyframes glow-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.4); }
+    50% { box-shadow: 0 0 20px 4px rgba(0, 255, 65, 0.4); }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  @keyframes float-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fade-in-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   CSS CUSTOM PROPERTIES - KINETIC TERMINAL THEME
+   CSS CUSTOM PROPERTIES (for non-Tailwind usage / Ionic overrides)
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ─── Foundation Colors ─── */
-  
-  /* Void Black - Pure black backgrounds */
   --void: #000000;
-  --void-80: rgba(0, 0, 0, 0.8);
-  --void-60: rgba(0, 0, 0, 0.6);
-  --void-40: rgba(0, 0, 0, 0.4);
-  
-  /* Surface containers (dark gray elevation scale) */
   --surface-container-lowest: #0e0e0e;
   --surface-container-low: #1b1b1b;
   --surface-container: #1f1f1f;
   --surface-container-high: #2a2a2a;
   --surface-container-highest: #353535;
-  
-  /* ─── Primary - Matrix Green ─── */
   --matrix-green: #00FF41;
-  --matrix-green-dim: #00e639;
-  --matrix-green-fixed: #72ff70;
-  --matrix-green-glow: rgba(0, 255, 65, 0.4);
-  --matrix-green-glow-strong: rgba(0, 255, 65, 0.6);
-  --matrix-green-surface: rgba(0, 255, 65, 0.1);
-  
-  /* ─── Secondary - Cyan ─── */
   --cyan-accent: #00FFFF;
-  --cyan-fixed: #00fbfb;
-  --cyan-fixed-dim: #00dddd;
-  --cyan-glow: rgba(0, 255, 255, 0.3);
-  
-  /* ─── Error - Neon Red ─── */
   --neon-red: #FF003C;
-  --neon-red-glow: rgba(255, 0, 60, 0.8);
-  --neon-red-surface: rgba(255, 0, 60, 0.1);
-  
-  /* ─── Outline & Borders ─── */
   --outline: #84967e;
   --outline-variant: #3b4b37;
-  
-  /* ─── Text Colors ─── */
   --text-primary: #e2e2e2;
-  --text-secondary: rgba(255, 255, 255, 0.7);
   --text-tertiary: rgba(255, 255, 255, 0.5);
-  --text-quaternary: rgba(255, 255, 255, 0.3);
-  --text-disabled: rgba(255, 255, 255, 0.2);
-  
-  /* ─── Status Colors ─── */
-  --success: #10b981;
-  --success-soft: rgba(16, 185, 129, 0.12);
-  --success-glow: rgba(16, 185, 129, 0.3);
-  
-  --warning: #f59e0b;
-  --warning-soft: rgba(245, 158, 11, 0.12);
-  --warning-glow: rgba(245, 158, 11, 0.3);
-  
-  --danger: #FF003C;
-  --danger-soft: rgba(255, 0, 60, 0.12);
-  --danger-glow: rgba(255, 0, 60, 0.3);
-  
-  --info: #06b6d4;
-  --info-soft: rgba(6, 182, 212, 0.12);
-  
-  /* ─── Legacy Aliases for UI Compatibility ─── */
-  --color-bg: var(--void);
-  --color-bg-elevated: var(--surface-container-lowest);
-  --color-surface: var(--surface-container);
-  --color-surface-elevated: var(--surface-container-high);
-  
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-strong: rgba(255, 255, 255, 0.10);
-  
-  --color-fg: var(--text-primary);
-  --color-fg-strong: #ffffff;
-  --color-muted: var(--text-tertiary);
-  --color-muted-light: var(--text-secondary);
-  
-  --color-accent: var(--matrix-green);
-  --color-accent-light: var(--cyan-accent);
-  --color-accent-soft: var(--matrix-green-surface);
-  
-  /* ─── Typography ─── */
-  --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-mono: 'Fira Code', 'SF Mono', monospace;
-  --font-display: 'Space Grotesk', system-ui, sans-serif;
-  
-  /* Type scale */
-  --text-2xs: 0.625rem;
-  --text-xs: 0.6875rem;
-  --text-sm: 0.75rem;
-  --text-base: 0.875rem;
-  --text-lg: 1rem;
-  --text-xl: 1.125rem;
-  --text-2xl: 1.375rem;
-  --text-3xl: 1.75rem;
-  --text-4xl: 2.25rem;
-  
-  /* Font weights */
-  --weight-normal: 400;
-  --weight-medium: 500;
-  --weight-semibold: 600;
-  --weight-bold: 700;
-  
-  /* Letter spacing */
-  --tracking-tight: -0.02em;
-  --tracking-normal: 0;
-  --tracking-wide: 0.02em;
-  --tracking-wider: 0.04em;
-  --tracking-widest: 0.08em;
-  
-  /* ─── Border Radius (0px for brutalist style) ─── */
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
-  --radius-2xl: 0px;
-  --radius-full: 9999px;
-  
-  /* ─── Shadows ─── */
-  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.6);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.7);
-  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.8);
-  
-  /* Terminal glow shadows */
-  --shadow-glow-primary: 0 0 10px rgba(0, 255, 65, 0.4);
-  --shadow-glow-primary-strong: 0 0 20px rgba(0, 255, 65, 0.6);
-  --shadow-glow-danger: 0 0 15px rgba(255, 0, 60, 0.8);
-  --shadow-glow-cyan: 0 0 15px rgba(0, 255, 255, 0.3);
-  --shadow-terminal: 0 0 10px rgba(0, 255, 65, 0.2);
-  
-  /* Legacy shadows */
-  --shadow-float: var(--shadow-md);
-  --shadow-float-lg: var(--shadow-lg);
-  --shadow-glow: var(--shadow-glow-primary);
-  --shadow-glow-accent: var(--shadow-glow-primary-strong);
-  
-  /* ─── Timing ─── */
-  --ease-out: cubic-bezier(0.2, 0, 0, 1);
-  --ease-in: cubic-bezier(0.7, 0, 1, 1);
-  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
-  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
-  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  
-  --duration-instant: 0.1s;
-  --duration-fast: 0.15s;
-  --duration-normal: 0.2s;
-  --duration-slow: 0.3s;
-  --duration-slower: 0.4s;
-  --duration-slowest: 0.5s;
-  
-  /* ─── Z-Index Scale ─── */
-  --z-base: 0;
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-header: 30;
-  --z-tab-bar: 40;
-  --z-overlay: 50;
-  --z-modal: 51;
-  --z-toast: 60;
-  
-  /* ─── Ionic Overrides ─── */
-  --ion-color-primary: var(--matrix-green);
-  --ion-color-primary-rgb: 0, 255, 65;
-  --ion-color-primary-contrast: var(--void);
-  --ion-color-primary-shade: var(--matrix-green-dim);
-  --ion-color-primary-tint: var(--matrix-green-fixed);
-  
-  --ion-color-secondary: var(--cyan-accent);
-  --ion-color-secondary-rgb: 0, 255, 255;
-  --ion-color-secondary-contrast: var(--void);
-  
-  --ion-color-success: var(--success);
-  --ion-color-success-rgb: 16, 185, 129;
-  
-  --ion-color-warning: var(--warning);
-  --ion-color-warning-rgb: 245, 158, 11;
-  
-  --ion-color-danger: var(--neon-red);
-  --ion-color-danger-rgb: 255, 0, 60;
-  
-  --ion-color-medium: var(--text-tertiary);
-  --ion-color-light: var(--text-primary);
-  
-  --ion-background-color: var(--void);
-  --ion-background-color-rgb: 0, 0, 0;
-  
-  --ion-text-color: var(--text-primary);
-  --ion-text-color-rgb: 226, 226, 226;
-  
-  --ion-toolbar-background: var(--surface-container-lowest);
-  --ion-tab-bar-background: var(--void);
-  --ion-item-background: var(--surface-container-lowest);
-  
-  --ion-safe-area-top: env(safe-area-inset-top);
-  --ion-safe-area-bottom: env(safe-area-inset-bottom);
-  --ion-safe-area-left: env(safe-area-inset-left);
-  --ion-safe-area-right: env(safe-area-inset-right);
-  
-  --ion-grid-padding: 16px;
-  --ion-item-border-color: var(--color-border);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   TAILWIND THEME EXTENSION
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-@theme {
-  --color-bg: var(--void);
-  --color-bg-elevated: var(--surface-container-lowest);
-  --color-surface: var(--surface-container);
-  --color-surface-elevated: var(--surface-container-high);
-  
-  --color-border: var(--color-border);
-  --color-border-strong: var(--color-border-strong);
-  
-  --color-fg: var(--text-primary);
-  --color-fg-strong: #ffffff;
-  --color-muted: var(--text-tertiary);
-  --color-muted-light: var(--text-secondary);
-  
-  --color-accent: var(--matrix-green);
-  --color-accent-light: var(--cyan-accent);
-  --color-accent-soft: var(--matrix-green-surface);
-  
-  --color-success: var(--success);
-  --color-success-soft: var(--success-soft);
-  --color-warning: var(--warning);
-  --color-warning-soft: var(--warning-soft);
-  --color-danger: var(--neon-red);
-  --color-danger-soft: var(--danger-soft);
-  
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
-  
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
-  --radius-2xl: var(--radius-2xl);
-  --radius-full: var(--radius-full);
-  
-  --shadow-float: var(--shadow-md);
-  --shadow-float-lg: var(--shadow-lg);
-  --shadow-glow: var(--shadow-glow-primary);
-  --shadow-glow-accent: var(--shadow-glow-primary-strong);
-  
-  --ease-smooth: var(--ease-out);
-  --ease-bounce: var(--ease-bounce);
-  --ease-snappy: var(--ease-snappy);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    BASE STYLES
    ═══════════════════════════════════════════════════════════════════════════ */
 
-:root {
-  color-scheme: dark;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html {
-  background: var(--void);
-  background-attachment: fixed;
-  color: var(--text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  font-family: var(--font-sans);
-}
-
 body {
   margin: 0;
   min-height: 100vh;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
   background: var(--void);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', system-ui, sans-serif;
 }
 
-/* Kinetic Terminal selection */
 ::selection {
   background-color: var(--matrix-green);
   color: var(--void);
 }
 
-* {
-  box-sizing: border-box;
-}
-
-:focus-visible {
-  outline: none;
-  box-shadow: 
-    0 0 0 2px var(--void),
-    0 0 0 4px var(--matrix-green);
-}
-
 /* ═══════════════════════════════════════════════════════════════════════════
-   SCROLLBAR - Terminal Style
+   CUSTOM SCROLLBAR — Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
-::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
-}
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: var(--surface-container-high); }
+::-webkit-scrollbar-thumb:hover { background: var(--matrix-green); }
 
-::-webkit-scrollbar-track {
-  background: var(--void);
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--surface-container-high);
-  border-radius: 0;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--matrix-green);
-}
+.terminal-scroll::-webkit-scrollbar { width: 3px; }
+.terminal-scroll::-webkit-scrollbar-track { background: transparent; }
+.terminal-scroll::-webkit-scrollbar-thumb { background: rgba(0, 255, 65, 0.2); }
+.terminal-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 65, 0.5); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    MATERIAL SYMBOLS
@@ -341,511 +217,33 @@ body {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   KEYFRAME ANIMATIONS
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fade-in-up {
-  from { 
-    opacity: 0; 
-    transform: translateY(12px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
-}
-
-@keyframes scale-in {
-  from { 
-    opacity: 0; 
-    transform: scale(0.95); 
-  }
-  to { 
-    opacity: 1; 
-    transform: scale(1); 
-  }
-}
-
-@keyframes slide-up {
-  from { 
-    opacity: 0; 
-    transform: translateY(100%); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
-}
-
-@keyframes pulse-live {
-  0%, 100% { 
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% { 
-    opacity: 0.5;
-    transform: scale(0.8);
-  }
-}
-
-@keyframes pulse-danger {
-  0%, 100% { box-shadow: 0 0 5px rgba(255, 0, 60, 0.6); }
-  50% { box-shadow: 0 0 20px rgba(255, 0, 60, 1); }
-}
-
-@keyframes glow-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 var(--matrix-green-glow); }
-  50% { box-shadow: 0 0 20px 4px var(--matrix-green-glow); }
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
-}
-
-@keyframes skeleton-shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   ANIMATION UTILITIES
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.animate-fade-in {
-  animation: fade-in var(--duration-normal) var(--ease-out) forwards;
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up var(--duration-slow) var(--ease-out) forwards;
-}
-
-.animate-scale-in {
-  animation: scale-in var(--duration-normal) var(--ease-spring) forwards;
-}
-
-.animate-slide-up {
-  animation: slide-up var(--duration-slow) var(--ease-bounce) forwards;
-}
-
-.animate-glow-pulse {
-  animation: glow-pulse 2s ease-in-out infinite;
-}
-
-.animate-pulse-live {
-  animation: pulse-live 2s ease-in-out infinite;
-}
-
-.animate-pulse-danger {
-  animation: pulse-danger 2s ease-in-out infinite;
-}
-
-.animate-blink {
-  animation: blink 1s step-end infinite;
-}
-
-/* Stagger children */
-.stagger-children > * {
-  opacity: 0;
-  animation: fade-in-up var(--duration-slow) var(--ease-out) forwards;
-}
-
-.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
-.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   TERMINAL GLOW UTILITIES
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.glow-primary {
-  box-shadow: var(--shadow-glow-primary);
-}
-
-.glow-primary-strong {
-  box-shadow: var(--shadow-glow-primary-strong);
-}
-
-.glow-danger {
-  box-shadow: var(--shadow-glow-danger);
-}
-
-.glow-cyan {
-  box-shadow: var(--shadow-glow-cyan);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   BUTTONS - Terminal Style
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-2.5) var(--space-5);
-  border-radius: var(--radius-lg);
-  font-size: var(--text-sm);
-  font-weight: var(--weight-semibold);
-  line-height: 1;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all var(--duration-normal) var(--ease-snappy);
-  white-space: nowrap;
-  min-height: 44px;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Primary Button - Matrix Green */
-.btn-primary {
-  background: var(--matrix-green);
-  color: var(--void);
-  border-color: var(--matrix-green);
-  box-shadow: var(--shadow-glow-primary);
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: var(--matrix-green-fixed);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow-glow-primary-strong);
-}
-
-.btn-primary:active:not(:disabled) {
-  transform: translateY(0);
-  background: var(--matrix-green-dim);
-}
-
-/* Secondary Button - Cyan */
-.btn-secondary {
-  background: transparent;
-  color: var(--cyan-accent);
-  border-color: var(--cyan-accent);
-}
-
-.btn-secondary:hover:not(:disabled) {
-  background: var(--cyan-accent);
-  color: var(--void);
-}
-
-/* Ghost Button */
-.btn-ghost {
-  background: transparent;
-  color: var(--text-secondary);
-  border-color: transparent;
-}
-
-.btn-ghost:hover:not(:disabled) {
-  background: var(--surface-container);
-  color: var(--text-primary);
-}
-
-/* Icon Button */
-.btn-icon {
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  background: transparent;
-  color: var(--text-secondary);
-  border-color: transparent;
-  border-radius: var(--radius-md);
-}
-
-.btn-icon:hover:not(:disabled) {
-  background: var(--surface-container);
-  color: var(--text-primary);
-}
-
-/* Danger Button - Neon Red */
-.btn-danger {
-  background: var(--neon-red-surface);
-  color: var(--neon-red);
-  border-color: rgba(255, 0, 60, 0.2);
-}
-
-.btn-danger:hover:not(:disabled) {
-  background: var(--neon-red);
-  color: white;
-}
-
-/* Stop Button - Terminal style */
-.btn-stop {
-  background: var(--matrix-green-surface);
-  color: var(--matrix-green);
-  border: 1px solid var(--matrix-green);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.05em;
-}
-
-.btn-stop:hover:not(:disabled) {
-  background: var(--matrix-green);
-  color: var(--void);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   INPUTS - Terminal Style
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.input {
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  min-height: 48px;
-  border-radius: var(--radius-lg);
-  background: var(--surface-container-lowest);
-  color: var(--matrix-green);
-  font-size: var(--text-base);
-  font-family: var(--font-mono);
-  border: none;
-  border-bottom: 1px solid var(--surface-container-high);
-  transition: all var(--duration-normal) var(--ease-snappy);
-}
-
-.input::placeholder {
-  color: var(--text-quaternary);
-  opacity: 0.5;
-  font-style: italic;
-}
-
-.input:focus {
-  outline: none;
-  border-bottom-color: var(--matrix-green);
-  box-shadow: none;
-}
-
-/* Terminal input with prompt */
-.input-terminal {
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--surface-container-high);
-  padding-left: 2rem;
-}
-
-.input-terminal:focus {
-  border-bottom-color: var(--matrix-green);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   CARDS - Terminal Style
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.card {
-  padding: var(--space-5);
-  border-radius: var(--radius-xl);
-  background: var(--surface-container);
-  border: 1px solid var(--outline-variant);
-  transition: all var(--duration-normal) var(--ease-snappy);
-}
-
-.card-interactive {
-  cursor: pointer;
-}
-
-.card-interactive:hover {
-  background: var(--surface-container-high);
-  border-color: var(--cyan-accent);
-}
-
-/* Terminal card with accent border */
-.card-terminal {
-  background: var(--surface-container-low);
-  border-left: 2px solid var(--matrix-green);
-  padding: var(--space-4);
-  font-family: var(--font-mono);
-}
-
-/* Session Card */
-.session-card {
-  display: block;
-  padding: 1rem 1.25rem;
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--surface-container-high);
-  background: var(--surface-container);
-  cursor: pointer;
-  transition: all var(--duration-normal) var(--ease-snappy);
-  min-height: 44px;
-}
-
-.session-card:hover {
-  border-color: var(--outline);
-  background: var(--surface-container-high);
-}
-
-.session-card:active {
-  transform: scale(0.98);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   BADGES - Terminal Style
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2.5);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-2xs);
-  font-weight: var(--weight-semibold);
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-  background: var(--surface-container-high);
-  color: var(--text-secondary);
-  border: 1px solid var(--outline-variant);
-  font-family: var(--font-mono);
-}
-
-.badge-success {
-  background: var(--success-soft);
-  color: var(--success);
-  border-color: rgba(16, 185, 129, 0.2);
-}
-
-.badge-warning {
-  background: var(--warning-soft);
-  color: var(--warning);
-  border-color: rgba(245, 158, 11, 0.2);
-}
-
-.badge-danger {
-  background: var(--danger-soft);
-  color: var(--danger);
-  border-color: rgba(255, 0, 60, 0.2);
-}
-
-.badge-info {
-  background: var(--info-soft);
-  color: var(--info);
-  border-color: rgba(6, 182, 212, 0.2);
-}
-
-/* Matrix badge */
-.badge-matrix {
-  background: var(--matrix-green-surface);
-  color: var(--matrix-green);
-  border-color: rgba(0, 255, 65, 0.3);
-}
-
-/* Cyan badge */
-.badge-cyan {
-  background: rgba(0, 255, 255, 0.1);
-  color: var(--cyan-accent);
-  border-color: rgba(0, 255, 255, 0.3);
-}
-
-/* Live badge with pulsing dot */
-.badge-live {
-  background: var(--success-soft);
-  color: var(--success);
-  border-color: rgba(16, 185, 129, 0.3);
-}
-
-.badge-live::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--success);
-  animation: pulse-live 2s infinite;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   STATUS INDICATORS - Terminal Style
-   ═══════════════════════════════════════════════════════════════════════════ */
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.status-dot-success {
-  background: var(--matrix-green);
-  box-shadow: 0 0 8px var(--matrix-green-glow);
-}
-
-.status-dot-warning {
-  background: var(--warning);
-  box-shadow: 0 0 8px var(--warning-glow);
-}
-
-.status-dot-danger {
-  background: var(--neon-red);
-  box-shadow: 0 0 8px var(--neon-red-glow);
-}
-
-.status-dot-idle {
-  background: var(--text-quaternary);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
-   HEADER - Terminal Style
+   HEADER — HUD Glassmorphism
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .header-terminal {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-header);
   background: rgba(0, 0, 0, 0.85);
   backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(0, 255, 65, 0.3);
   box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
-  padding-top: env(safe-area-inset-top);
-}
-
-.header-terminal-height {
-  height: 56px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SIDEBAR - Terminal Style
+   SIDEBAR — Terminal Navigation
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .sidebar-terminal {
-  position: fixed;
-  inset-block: 0;
-  inset-inline-start: 0;
-  z-index: var(--z-header);
-  width: 320px;
   background: var(--surface-container-lowest);
   border-right: 1px solid rgba(0, 255, 255, 0.3);
   box-shadow: 5px 0 20px rgba(0, 0, 0, 0.9);
-  display: flex;
-  flex-direction: column;
 }
 
 .sidebar-nav-item {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-3) var(--space-4);
-  font-family: var(--font-mono);
-  font-size: 14px;
-  transition: all var(--duration-normal) var(--ease-snappy);
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: var(--cyan-accent);
+  transition: all 150ms ease;
   border-left: 4px solid transparent;
 }
 
@@ -856,32 +254,27 @@ body {
 
 .sidebar-nav-item-active {
   background: var(--cyan-accent);
-  color: var(--void);
-  font-weight: var(--weight-bold);
+  color: #000;
+  font-weight: 700;
+  border-left-color: var(--matrix-green);
 }
 
-.sidebar-nav-item-danger:hover {
-  background: var(--neon-red-surface);
+.sidebar-nav-item-danger {
   color: var(--neon-red);
 }
 
+.sidebar-nav-item-danger:hover {
+  background: rgba(255, 0, 60, 0.1);
+  border-left-color: var(--neon-red);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
-   TAB BAR - Mobile Terminal Style
+   TAB BAR — Mobile Terminal Style
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .tab-bar-terminal {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-tab-bar);
   background: var(--void);
   border-top: 1px solid rgba(0, 255, 65, 0.3);
-  padding-bottom: env(safe-area-inset-bottom);
-  display: flex;
-  justify-content: space-around;
-  align-items: stretch;
-  height: 64px;
 }
 
 .tab-item-terminal {
@@ -889,58 +282,136 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex: 1;
-  padding: var(--space-2) var(--space-4);
-  font-family: var(--font-mono);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  padding: 0.5rem;
   color: var(--matrix-green);
   opacity: 0.5;
-  transition: all var(--duration-fast) var(--ease-snappy);
+  transition: all 150ms;
+  gap: 0.25rem;
 }
 
 .tab-item-terminal:hover {
-  background: rgba(0, 255, 65, 0.2);
   opacity: 1;
+  background: rgba(0, 255, 65, 0.2);
 }
 
 .tab-item-terminal-active {
-  background: var(--matrix-green);
-  color: var(--void);
   opacity: 1;
-  border-left: 1px solid var(--matrix-green);
-  border-right: 1px solid var(--matrix-green);
+  background: var(--matrix-green);
+  color: #000;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   SKELETON LOADERS
+   BUTTONS — Command Variants
    ═══════════════════════════════════════════════════════════════════════════ */
 
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--surface-container-low) 25%,
-    var(--surface-container) 50%,
-    var(--surface-container-low) 75%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s infinite;
-  border-radius: var(--radius-md);
+.btn-primary {
+  background: var(--matrix-green);
+  color: var(--void);
+  padding: 0.5rem 1.5rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  transition: all 150ms;
 }
 
-.skeleton-text {
-  height: 14px;
-  width: 100%;
+.btn-primary:hover {
+  background: #72ff70;
 }
 
-.skeleton-heading {
-  height: 24px;
-  width: 60%;
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--matrix-green);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  padding: 0.5rem 1rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.btn-ghost:hover {
+  background: rgba(0, 255, 65, 0.1);
+  border-color: var(--matrix-green);
+}
+
+.btn-stop {
+  background: rgba(0, 255, 65, 0.1);
+  color: var(--matrix-green);
+  border: 1px solid var(--matrix-green);
+  padding: 0.25rem 0.75rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 150ms;
+}
+
+.btn-stop:hover {
+  background: var(--matrix-green);
+  color: var(--void);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   EMPTY STATE
+   SURFACE COMPONENTS — Data Blocks
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.surface-floating {
+  background: var(--surface-container-low);
+  border: 1px solid rgba(0, 255, 65, 0.08);
+  transition: border-color 150ms ease;
+}
+
+.surface-floating:hover {
+  border-color: rgba(0, 255, 65, 0.2);
+}
+
+/* Session card — left accent bar on hover */
+.session-card {
+  background: var(--surface-container-lowest);
+  border: 1px solid rgba(0, 255, 65, 0.06);
+  padding: 1rem;
+  transition: all 150ms ease;
+}
+
+.session-card:hover {
+  background: var(--surface-container-low);
+  border-color: rgba(0, 255, 65, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   STATUS & INDICATORS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 0;
+}
+
+/* Blink indicator — 4x4px live pulse square */
+.blink-indicator {
+  width: 4px;
+  height: 4px;
+  background: var(--matrix-green);
+  animation: blink 1s step-end infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EMPTY STATES
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .empty-state {
@@ -948,138 +419,34 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 2.5rem 1rem;
+  padding: 3rem 1rem;
 }
 
 .empty-state-icon {
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: var(--radius-xl);
-  background: var(--matrix-green-surface);
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1rem;
-  color: var(--matrix-green);
+  background: rgba(0, 255, 65, 0.08);
+  border: 1px solid rgba(0, 255, 65, 0.15);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   UTILITY CLASSES
+   TOUCH TARGETS — Mobile Accessibility
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .touch-target {
-  min-height: 44px;
-  min-width: 44px;
-}
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border-width: 0;
-}
-
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, var(--matrix-green-fixed) 0%, var(--matrix-green) 50%, var(--matrix-green-dim) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Terminal prompt */
-.terminal-prompt::before {
-  content: '>';
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--matrix-green);
-  font-family: var(--font-mono);
-  font-weight: var(--weight-bold);
-}
-
-/* Safe area insets */
-.safe-area-inset {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
-}
-
-/* Custom scrollbar for terminal */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: var(--void);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: var(--surface-container-high);
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: var(--matrix-green);
-}
-
-/* Terminal scroll */
-.terminal-scroll::-webkit-scrollbar {
-  width: 4px;
-}
-
-.terminal-scroll::-webkit-scrollbar-track {
-  background: var(--void);
-}
-
-.terminal-scroll::-webkit-scrollbar-thumb {
-  background: var(--matrix-green);
+  min-height: 48px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   IONIC OVERRIDES FOR TERMINAL THEME
+   IONIC OVERRIDES — Force Kinetic Terminal theme
    ═══════════════════════════════════════════════════════════════════════════ */
 
-ion-content {
-  --background: var(--void);
-}
-
-ion-toolbar {
-  --background: var(--surface-container-lowest);
-  --border-color: rgba(0, 255, 65, 0.3);
-}
-
-ion-tab-bar {
-  --background: var(--void);
-  --border: 1px solid rgba(0, 255, 65, 0.3);
-}
-
-ion-tab-button {
-  --color: var(--text-tertiary);
-  --color-selected: var(--matrix-green);
-}
-
-ion-item {
-  --background: var(--surface-container-lowest);
-  --border-color: var(--color-border);
-}
-
-ion-modal {
-  --background: var(--surface-container);
-}
+ion-content { --background: var(--void); }
+ion-toolbar { --background: var(--surface-container-lowest); --border-color: rgba(0, 255, 65, 0.3); }
+ion-tab-bar { --background: var(--void); --border: 1px solid rgba(0, 255, 65, 0.3); }
+ion-tab-button { --color: var(--text-tertiary); --color-selected: var(--matrix-green); }
+ion-item { --background: var(--surface-container-lowest); }
+ion-modal { --background: var(--surface-container); }

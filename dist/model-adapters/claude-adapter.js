@@ -100,6 +100,36 @@ export class ClaudeAdapter extends BaseAdapter {
         return 'Anthropic';
     }
     /**
+     * Check if a model supports vision/image input based on its name.
+     * Vision-capable: opus, sonnet-4, claude-3-5-sonnet, claude-3-opus
+     * Non-vision (text-only): haiku models
+     */
+    supportsVision(modelId) {
+        const lower = modelId.toLowerCase();
+        // Vision-capable patterns
+        if (lower.includes('opus') || lower.includes('sonnet-4') || lower.includes('claude-3-5-sonnet') || lower.includes('claude-3-opus')) {
+            return true;
+        }
+        // Non-vision patterns (haiku is text-only)
+        if (lower.includes('haiku')) {
+            return false;
+        }
+        // Default to true for unknown claude models (most support vision)
+        return true;
+    }
+    /**
+     * Check if a model supports image generation/output.
+     * Currently only haiku-4 and some Sonnet models support image output.
+     */
+    supportsImages(modelId) {
+        const lower = modelId.toLowerCase();
+        // Haiku-4 supports image generation
+        if (lower.includes('haiku-4')) {
+            return true;
+        }
+        return false;
+    }
+    /**
      * Extract models from environment variables.
      */
     extractModels(env, provider) {
@@ -109,15 +139,18 @@ export class ClaudeAdapter extends BaseAdapter {
         }
         // Extract Opus-level model
         if (env.ANTHROPIC_DEFAULT_OPUS_MODEL) {
-            models.push(this.createModel(env.ANTHROPIC_DEFAULT_OPUS_MODEL, env.ANTHROPIC_DEFAULT_OPUS_MODEL, provider));
+            const modelId = env.ANTHROPIC_DEFAULT_OPUS_MODEL;
+            models.push(this.createModel(modelId, modelId, provider, this.supportsVision(modelId), this.supportsImages(modelId)));
         }
         // Extract Sonnet-level model
         if (env.ANTHROPIC_DEFAULT_SONNET_MODEL) {
-            models.push(this.createModel(env.ANTHROPIC_DEFAULT_SONNET_MODEL, env.ANTHROPIC_DEFAULT_SONNET_MODEL, provider));
+            const modelId = env.ANTHROPIC_DEFAULT_SONNET_MODEL;
+            models.push(this.createModel(modelId, modelId, provider, this.supportsVision(modelId), this.supportsImages(modelId)));
         }
         // Extract Haiku-level model
         if (env.ANTHROPIC_DEFAULT_HAIKU_MODEL) {
-            models.push(this.createModel(env.ANTHROPIC_DEFAULT_HAIKU_MODEL, env.ANTHROPIC_DEFAULT_HAIKU_MODEL, provider));
+            const modelId = env.ANTHROPIC_DEFAULT_HAIKU_MODEL;
+            models.push(this.createModel(modelId, modelId, provider, this.supportsVision(modelId), this.supportsImages(modelId)));
         }
         return models;
     }

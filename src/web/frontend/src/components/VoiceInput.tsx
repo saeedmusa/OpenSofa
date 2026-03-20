@@ -8,6 +8,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Mic, MicOff } from 'lucide-react';
 import { clsx } from 'clsx';
+import { safeVibrate } from '../utils/haptics';
 
 interface VoiceInputProps {
     /** Called with final transcription when the user stops speaking */
@@ -64,7 +65,7 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
         setIsListening(true);
 
         // Haptic feedback on start
-        if (navigator.vibrate) navigator.vibrate(30);
+        safeVibrate(30);
     }, [disabled, onTranscript, stopListening]);
 
     // Cleanup on unmount
@@ -90,7 +91,7 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
                 'rounded-xl transition-all duration-200',
                 isListening
                     ? 'bg-red-500/20 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.3)]'
-                    : 'btn-ghost text-muted hover:text-fg-strong',
+                    : 'btn-ghost text-[rgba(255,255,255,0.5)] hover:text-fg-strong',
                 disabled && 'opacity-40 pointer-events-none',
             )}
             aria-label={isListening ? 'Stop recording' : 'Voice input'}

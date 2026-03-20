@@ -259,20 +259,20 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md bg-surface-container-lowest border border-matrix-green/30 shadow-[0_0_20px_rgba(0,255,65,0.15)] animate-scale-in">
+      <div className="w-full max-w-md bg-[#0e0e0e] border border-[#00FF41]/30 shadow-[0_0_20px_rgba(0,255,65,0.15)] animate-scale-in">
 
         {/* Header - Kinetic Terminal Style */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-matrix-green/30 bg-black">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#00FF41]/30 bg-black">
           <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-matrix-green text-xl">terminal</span>
+            <span className="material-symbols-outlined text-[#00FF41] text-xl">terminal</span>
             <div>
-              <h2 className="text-sm font-mono font-bold text-matrix-green uppercase tracking-wider">New Session</h2>
-              <p className="text-[10px] font-mono text-cyan-accent">ROOT@OPENSOFA:~#</p>
+              <h2 className="text-sm font-mono font-bold text-[#00FF41] uppercase tracking-wider">New Session</h2>
+              <p className="text-[10px] font-mono text-[#00FFFF]">ROOT@OPENSOFA:~#</p>
             </div>
           </div>
           <button
             onClick={() => { onClose(); resetForm(); }}
-            className="p-2 text-matrix-green/60 hover:text-matrix-green hover:bg-matrix-green/10 transition-colors"
+            className="p-2 text-[#00FF41]/60 hover:text-[#00FF41] hover:bg-[#00FF41]/10 transition-colors"
           >
             <X size={18} />
           </button>
@@ -282,10 +282,10 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
         <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
           {step === 'agent' && (
             <div className="space-y-4">
-              <p className="text-xs font-mono text-cyan-accent uppercase tracking-widest mb-3">Select Coding Agent</p>
+              <p className="text-xs font-mono text-[#00FFFF] uppercase tracking-widest mb-3">Select Coding Agent</p>
               {agentsLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-matrix-green" />
+                  <Loader2 className="w-6 h-6 animate-spin text-[#00FF41]" />
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -299,19 +299,19 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                       className={clsx(
                         'w-full flex items-center gap-3 p-4 border transition-all',
                         selectedAgent === agent.type
-                          ? 'bg-matrix-green/10 border-matrix-green text-matrix-green'
-                          : 'bg-surface-container-low border-matrix-green/20 hover:border-matrix-green/50 text-matrix-green/80'
+                          ? 'bg-[#00FF41]/10 border-[#00FF41] text-[#00FF41]'
+                          : 'bg-[#1b1b1b] border-[#00FF41]/20 hover:border-[#00FF41]/50 text-[#00FF41]/80'
                       )}
                     >
                       <div className="flex-1 text-left">
                         <div className="font-mono font-bold text-sm">{agent.displayName}</div>
-                        <div className="text-[10px] font-mono text-matrix-green/60">{agent.type}</div>
+                        <div className="text-[10px] font-mono text-[#00FF41]/60">{agent.type}</div>
                       </div>
-                      <ChevronRight size={18} className="text-matrix-green/40" />
+                      <ChevronRight size={18} className="text-[#00FF41]/40" />
                     </button>
                   ))}
                   {agents.filter(a => a.installed).length === 0 && (
-                    <div className="text-center py-8 font-mono text-matrix-green/60">
+                    <div className="text-center py-8 font-mono text-[#00FF41]/60">
                       No agents installed. Install claude, aider, or opencode first.
                     </div>
                   )}
@@ -325,30 +325,30 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
               <div className="flex items-center gap-2 font-mono text-xs">
                 <button
                   onClick={() => setStep('agent')}
-                  className="text-cyan-accent hover:underline"
+                  className="text-[#00FFFF] hover:underline"
                 >
                   ← Back
                 </button>
-                <span className="text-matrix-green/40">|</span>
-                <span className="text-matrix-green/60">Agent: <span className="text-matrix-green">{selectedAgent}</span></span>
+                <span className="text-[#00FF41]/40">|</span>
+                <span className="text-[#00FF41]/60">Agent: <span className="text-[#00FF41]">{selectedAgent}</span></span>
               </div>
 
-              <p className="text-xs font-mono text-cyan-accent uppercase tracking-widest">Select Project Directory</p>
+              <p className="text-xs font-mono text-[#00FFFF] uppercase tracking-widest">Select Project Directory</p>
 
               {/* Path breadcrumb */}
-              <div className="flex items-center gap-1 text-xs bg-surface-container-low p-3 overflow-x-auto border border-matrix-green/20">
+              <div className="flex items-center gap-1 text-xs bg-[#1b1b1b] p-3 overflow-x-auto border border-[#00FF41]/20">
                 <button
                   onClick={() => setCurrentPath('')}
-                  className="text-matrix-green hover:underline whitespace-nowrap font-mono"
+                  className="text-[#00FF41] hover:underline whitespace-nowrap font-mono"
                 >
                   ~/
                 </button>
                 {currentPath.split('/').filter(Boolean).map((part, idx, arr) => (
                   <span key={idx} className="flex items-center gap-1">
-                    <span className="text-matrix-green/40">/</span>
+                    <span className="text-[#00FF41]/40">/</span>
                     <button
                       onClick={() => setCurrentPath(arr.slice(0, idx + 1).join('/'))}
-                      className="text-matrix-green hover:underline whitespace-nowrap font-mono"
+                      className="text-[#00FF41] hover:underline whitespace-nowrap font-mono"
                     >
                       {part}
                     </button>
@@ -358,16 +358,16 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
               {/* Model selection */}
               <div>
-                <label className="flex items-center gap-2 text-xs font-mono text-cyan-accent uppercase tracking-widest mb-2">
+                <label className="flex items-center gap-2 text-xs font-mono text-[#00FFFF] uppercase tracking-widest mb-2">
                   <Cpu size={14} />
                   Model
-                  {modelsLoading && <span className="text-matrix-green/60">(loading...)</span>}
-                  {modelsError && <span className="text-neon-red">({modelsError})</span>}
+                  {modelsLoading && <span className="text-[#00FF41]/60">(loading...)</span>}
+                  {modelsError && <span className="text-[#FF003C]">({modelsError})</span>}
                 </label>
                 <select
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
-                  className="w-full bg-surface-container-low border border-matrix-green/30 text-matrix-green font-mono px-3 py-2 text-sm focus:border-matrix-green focus:outline-none"
+                  className="w-full bg-[#1b1b1b] border border-[#00FF41]/30 text-[#00FF41] font-mono px-3 py-2 text-sm focus:border-[#00FF41] focus:outline-none"
                   disabled={modelsLoading || !!modelsError}
                 >
                   {modelsLoading ? (
@@ -393,16 +393,16 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
                 {/* Vision Warning */}
                 {isNonVisionModel && (
-                  <div className="mt-2 px-3 py-2 bg-neon-red/10 border border-neon-red/30 flex items-center gap-2">
-                    <AlertTriangle size={12} className="text-neon-red shrink-0" />
-                    <span className="text-[10px] font-mono text-neon-red uppercase">
+                  <div className="mt-2 px-3 py-2 bg-[#FF003C]/10 border border-[#FF003C]/30 flex items-center gap-2">
+                    <AlertTriangle size={12} className="text-[#FF003C] shrink-0" />
+                    <span className="text-[10px] font-mono text-[#FF003C] uppercase">
                       Text Only - This model cannot process images
                     </span>
                   </div>
                 )}
 
                 {!modelsLoading && !modelsError && modelProviders.length > 0 && (
-                  <p className="text-[10px] font-mono text-matrix-green/60 mt-1">
+                  <p className="text-[10px] font-mono text-[#00FF41]/60 mt-1">
                     {modelProviders.reduce((sum, p) => sum + p.models.length, 0)} models from {modelProviders.filter(p => p.agent === selectedAgent).length} provider(s)
                   </p>
                 )}
@@ -415,7 +415,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                     setSelectedDir(`~/${currentPath}`);
                     setStep('prompt');
                   }}
-                  className="w-full p-3 bg-matrix-green text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-matrix-green-fixed transition-colors flex items-center justify-center gap-2"
+                  className="w-full p-3 bg-[#00FF41] text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#00FF41]-fixed transition-colors flex items-center justify-center gap-2"
                 >
                   <Sparkles size={16} />
                   Continue with ~/{currentPath}
@@ -424,26 +424,26 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
               {/* New folder input */}
               {showNewFolderInput ? (
-                <div className="flex gap-2 items-center p-3 bg-surface-container-low border border-matrix-green/30">
-                  <FolderPlus size={16} className="text-cyan-accent" />
+                <div className="flex gap-2 items-center p-3 bg-[#1b1b1b] border border-[#00FF41]/30">
+                  <FolderPlus size={16} className="text-[#00FFFF]" />
                   <input
                     type="text"
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
                     placeholder="folder name"
-                    className="flex-1 bg-transparent outline-none text-matrix-green font-mono text-sm placeholder:text-matrix-green/40"
+                    className="flex-1 bg-transparent outline-none text-[#00FF41] font-mono text-sm placeholder:text-[#00FF41]/40"
                     autoFocus
                     onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
                   />
                   <button
                     onClick={handleCreateFolder}
-                    className="px-3 py-1 bg-matrix-green text-black font-mono text-xs font-bold hover:bg-matrix-green-fixed"
+                    className="px-3 py-1 bg-[#00FF41] text-black font-mono text-xs font-bold hover:bg-[#00FF41]-fixed"
                   >
                     Create
                   </button>
                   <button
                     onClick={() => { setShowNewFolderInput(false); setNewFolderName(''); }}
-                    className="p-1.5 text-matrix-green/60 hover:text-matrix-green"
+                    className="p-1.5 text-[#00FF41]/60 hover:text-[#00FF41]"
                   >
                     <X size={14} />
                   </button>
@@ -451,7 +451,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
               ) : (
                 <button
                   onClick={() => setShowNewFolderInput(true)}
-                  className="w-full flex items-center gap-2 p-3 border border-dashed border-matrix-green/30 text-matrix-green/60 hover:text-matrix-green hover:border-matrix-green/50 font-mono text-xs transition-colors"
+                  className="w-full flex items-center gap-2 p-3 border border-dashed border-[#00FF41]/30 text-[#00FF41]/60 hover:text-[#00FF41] hover:border-[#00FF41]/50 font-mono text-xs transition-colors"
                 >
                   <FolderPlus size={16} />
                   <span>Create new folder</span>
@@ -461,7 +461,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
               {/* File list */}
               {browseLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-matrix-green" />
+                  <Loader2 className="w-6 h-6 animate-spin text-[#00FF41]" />
                 </div>
               ) : (
                 <div className="space-y-1 max-h-64 overflow-y-auto">
@@ -472,7 +472,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                         parts.pop();
                         setCurrentPath(parts.join('/'));
                       }}
-                      className="w-full flex items-center gap-3 p-3 hover:bg-surface-container-low text-matrix-green/60 font-mono"
+                      className="w-full flex items-center gap-3 p-3 hover:bg-[#1b1b1b] text-[#00FF41]/60 font-mono"
                     >
                       <span>..</span>
                     </button>
@@ -484,21 +484,21 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                         key={entry.name}
                         onClick={() => setCurrentPath(currentPath ? `${currentPath}/${entry.name}` : entry.name)}
                         className={clsx(
-                          'w-full flex items-center gap-3 p-3 hover:bg-surface-container-low transition-colors border-l-2',
+                          'w-full flex items-center gap-3 p-3 hover:bg-[#1b1b1b] transition-colors border-l-2',
                           entry.isWorktree ? 'border-l-neon-red/30 opacity-50' : 'border-l-transparent'
                         )}
                       >
                         <div className="p-1">
-                          <Folder size={16} className="text-cyan-accent" />
+                          <Folder size={16} className="text-[#00FFFF]" />
                         </div>
-                        <span className="flex-1 text-left font-mono text-sm text-matrix-green truncate">{entry.name}</span>
+                        <span className="flex-1 text-left font-mono text-sm text-[#00FF41] truncate">{entry.name}</span>
                         {entry.isGitRepo && !entry.isWorktree && (
-                          <GitBranch size={12} className="text-matrix-green" />
+                          <GitBranch size={12} className="text-[#00FF41]" />
                         )}
                         {entry.isWorktree && (
-                          <span className="text-[10px] font-mono text-matrix-green/60">worktree</span>
+                          <span className="text-[10px] font-mono text-[#00FF41]/60">worktree</span>
                         )}
-                        <ChevronRight size={14} className="text-matrix-green/40" />
+                        <ChevronRight size={14} className="text-[#00FF41]/40" />
                       </button>
                     ))}
                 </div>
@@ -511,25 +511,25 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
               <div className="flex items-center gap-2 font-mono text-xs">
                 <button
                   onClick={() => setStep('directory')}
-                  className="text-cyan-accent hover:underline"
+                  className="text-[#00FFFF] hover:underline"
                 >
                   ← Back
                 </button>
               </div>
 
               <div className="text-center mb-4">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-matrix-green/10 mb-3 border border-matrix-green/30">
-                  <Sparkles size={20} className="text-matrix-green" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-[#00FF41]/10 mb-3 border border-[#00FF41]/30">
+                  <Sparkles size={20} className="text-[#00FF41]" />
                 </div>
-                <h3 className="text-sm font-mono font-bold text-matrix-green uppercase tracking-wider">Instruct Agent</h3>
-                <p className="text-[10px] font-mono text-matrix-green/60 mt-1">Describe what you want to accomplish</p>
+                <h3 className="text-sm font-mono font-bold text-[#00FF41] uppercase tracking-wider">Instruct Agent</h3>
+                <p className="text-[10px] font-mono text-[#00FF41]/60 mt-1">Describe what you want to accomplish</p>
               </div>
 
               {/* Vision Warning */}
               {isNonVisionModel && (
-                <div className="px-3 py-2 bg-neon-red/10 border border-neon-red/30 flex items-center gap-2 mb-3">
-                  <AlertTriangle size={12} className="text-neon-red shrink-0" />
-                  <span className="text-[10px] font-mono text-neon-red uppercase">
+                <div className="px-3 py-2 bg-[#FF003C]/10 border border-[#FF003C]/30 flex items-center gap-2 mb-3">
+                  <AlertTriangle size={12} className="text-[#FF003C] shrink-0" />
+                  <span className="text-[10px] font-mono text-[#FF003C] uppercase">
                     Note: Selected model cannot process images
                   </span>
                 </div>
@@ -537,12 +537,12 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-mono text-cyan-accent uppercase tracking-widest mb-2">Your Request</label>
+                  <label className="block text-xs font-mono text-[#00FFFF] uppercase tracking-widest mb-2">Your Request</label>
                   <textarea
                     value={initialMessage}
                     onChange={(e) => setInitialMessage(e.target.value)}
                     placeholder="e.g., Help me add a new feature..."
-                    className="w-full min-h-[120px] bg-surface-container-low border border-matrix-green/30 text-matrix-green font-mono px-3 py-2 text-sm placeholder:text-matrix-green/30 focus:border-matrix-green focus:outline-none resize-none"
+                    className="w-full min-h-[120px] bg-[#1b1b1b] border border-[#00FF41]/30 text-[#00FF41] font-mono px-3 py-2 text-sm placeholder:text-[#00FF41]/30 focus:border-[#00FF41] focus:outline-none resize-none"
                     autoFocus
                   />
                 </div>
@@ -553,10 +553,10 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
         {/* Footer */}
         {step === 'prompt' && (
-          <div className="flex gap-3 p-4 border-t border-matrix-green/30 bg-black">
+          <div className="flex gap-3 p-4 border-t border-[#00FF41]/30 bg-black">
             <button
               onClick={() => { onClose(); resetForm(); }}
-              className="flex-1 py-3 border border-matrix-green/30 text-matrix-green font-mono text-xs uppercase tracking-wider hover:bg-matrix-green/10 transition-colors disabled:opacity-40"
+              className="flex-1 py-3 border border-[#00FF41]/30 text-[#00FF41] font-mono text-xs uppercase tracking-wider hover:bg-[#00FF41]/10 transition-colors disabled:opacity-40"
               disabled={createMutation.isPending}
             >
               Cancel
@@ -564,7 +564,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
             <button
               onClick={handleConfirmCreate}
               disabled={createMutation.isPending || !initialMessage.trim()}
-              className="flex-1 py-3 bg-matrix-green text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-matrix-green-fixed transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
+              className="flex-1 py-3 bg-[#00FF41] text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#00FF41]-fixed transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {createMutation.isPending ? (
                 <>

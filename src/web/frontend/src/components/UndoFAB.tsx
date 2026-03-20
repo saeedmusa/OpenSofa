@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Undo2, Loader2 } from 'lucide-react';
 import { api } from '../utils/api';
 import { useWebSocket } from '../providers/WebSocketProvider';
+import { safeVibrate } from '../utils/haptics';
 
 const UNDO_VISIBLE_MS = 60_000; // 60 seconds per Architecture §1.3
 
@@ -48,7 +49,7 @@ export function UndoFAB({ sessionName }: UndoFABProps) {
             await api.sessions.undo(sessionName);
             setResult('success');
             // Haptic feedback
-            if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            safeVibrate([50, 30, 50]);
             // Auto-hide after success toast
             setTimeout(() => {
                 setVisible(false);
@@ -57,7 +58,7 @@ export function UndoFAB({ sessionName }: UndoFABProps) {
             }, 3000);
         } catch {
             setResult('error');
-            if (navigator.vibrate) navigator.vibrate([30, 50, 30, 50, 30]);
+            safeVibrate([30, 50, 30, 50, 30]);
         } finally {
             setUndoing(false);
         }
@@ -79,7 +80,7 @@ export function UndoFAB({ sessionName }: UndoFABProps) {
                     >
                         <div className="p-5">
                             <h3 className="text-sm font-semibold text-fg-strong mb-1">Roll Back Changes?</h3>
-                            <p className="text-xs text-muted leading-relaxed">
+                            <p className="text-xs text-[rgba(255,255,255,0.5)] leading-relaxed">
                                 This will restore the project to its state before the last destructive command using <code className="text-accent font-mono">git stash pop</code>.
                             </p>
                         </div>
@@ -99,7 +100,7 @@ export function UndoFAB({ sessionName }: UndoFABProps) {
                         <div className="flex border-t border-border">
                             <button
                                 onClick={() => setShowConfirm(false)}
-                                className="flex-1 py-3.5 text-sm text-muted font-medium hover:bg-surface transition-colors"
+                                className="flex-1 py-3.5 text-sm text-[rgba(255,255,255,0.5)] font-medium hover:bg-surface transition-colors"
                                 disabled={undoing}
                             >
                                 Cancel
