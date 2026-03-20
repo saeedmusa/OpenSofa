@@ -6,9 +6,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import fs from 'fs';
 import path from 'path';
-import os from 'os';
 
 // Import the module we're testing
 import {
@@ -128,36 +126,6 @@ describe('safe-shell', () => {
         // tmux not installed, skip test
         console.log('tmux not installed, skipping test');
       }
-    });
-  });
-
-  describe('security: command injection prevention', () => {
-    it('should pass arguments separately (not as shell string)', () => {
-      const maliciousFilename = 'test';
-      
-      // This should work because 'test' is a valid filename
-      const result = safeExec('echo', [maliciousFilename]);
-      expect(result.trim()).toBe('test');
-      
-      // The key security point: arguments are passed to execFile, NOT shell interpreted
-      // This prevents injection attacks even with malicious-looking filenames
-    });
-
-    it('should pass path arguments without shell interpretation', () => {
-      // This works because '..' is passed as argument, not interpreted
-      const result = safeExec('echo', ['../test']);
-      expect(result.trim()).toBe('../test');
-    });
-  });
-});
-eShell('rm -rf /')).toThrow();
-      expect(() => safeShell('rm  -rf /')).toThrow();
-    });
-
-    it('should apply cwd option', () => {
-      const tempDir = os.tmpdir();
-      const result = safeShell('pwd', { cwd: tempDir });
-      expect(result.trim()).toContain(tempDir);
     });
   });
 

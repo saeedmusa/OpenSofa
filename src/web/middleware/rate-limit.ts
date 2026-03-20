@@ -8,6 +8,17 @@ interface RateLimitTracker {
 
 const memoryStore = new Map<string, RateLimitTracker>();
 
+// Periodic cleanup to prevent memory leaks (every 5 minutes)
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
+setInterval(() => {
+    const now = Date.now();
+    for (const [ip, tracker] of memoryStore) {
+        if (now > tracker.resetTime) {
+            memoryStore.delete(ip);
+        }
+    }
+}, CLEANUP_INTERVAL_MS).unref(); // .unref() prevents the timer from keeping the process alive
+
 /**
  * Extract client IP from request, with security considerations
  * Only trust Cloudflare headers (cf-connecting-ip) when we know we're behind Cloudflare

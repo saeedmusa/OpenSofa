@@ -43,13 +43,13 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
 
   // POST /api/sessions - Create a new session
   app.post('/', async (c) => {
-    const body = await c.req.json().catch(() => ({}));
-    const { name, dir, agent, model } = body as {
-      name?: string;
-      dir?: string;
-      agent?: string;
-      model?: string;
-    };
+    let body: { name?: string; dir?: string; agent?: string; model?: string };
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json(error('Invalid JSON body', 'BAD_REQUEST'), 400);
+    }
+    const { name, dir, agent, model } = body;
 
     if (!name || typeof name !== 'string') {
       return c.json(error('name is required and must be a string', 'INVALID_BODY'), 400);

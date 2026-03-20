@@ -8,7 +8,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
-import { detectLanguage, isPathWithinDir, formatFileSize } from '../../src/web/routes/files.js';
+import { detectLanguage, formatFileSize } from '../../src/web/routes/files.js';
+import { isPathWithinDir } from '../../src/utils/path-utils.js';
 
 describe('files routes utilities', () => {
   describe('detectLanguage', () => {

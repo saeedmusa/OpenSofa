@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { createLogger } from '../../utils/logger.js';
 import type { Notifier } from '../notifier.js';
-import fs from 'fs';
+import fs from 'fs/promises';
 import yaml from 'js-yaml';
 import { getConfigPath } from '../../utils/expand-path.js';
 
@@ -35,11 +35,14 @@ export const createNotificationsRoutes = (deps: NotificationsRoutesDeps): Hono =
       
       // Persist to YAML config file
       const configPath = getConfigPath();
-      if (fs.existsSync(configPath)) {
-        const raw = fs.readFileSync(configPath, 'utf8');
+      try {
+        const raw = await fs.readFile(configPath, 'utf8');
         const parsed = yaml.load(raw) as Record<string, any>;
         parsed.ntfyTopic = topic;
-        fs.writeFileSync(configPath, yaml.dump(parsed), 'utf8');
+        await fs.writeFile(configPath, yaml.dump(parsed), 'utf8');
+      } catch {
+        // Config file doesn't exist or can't be read — skip persistence
+        log.debug('Config file not found, skipping persistence');
       }
 
       return c.json({ success: true, data: { ntfyTopic: topic } });

@@ -227,7 +227,7 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     app.use('*', cors({
       origin: (origin) => {
         if (!origin) return '';
-        const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+        const isLocalhost = origin === `http://localhost:${WEB_PORT}` || origin === `http://127.0.0.1:${WEB_PORT}`;
         const tunnelUrl = tunnelManager?.getUrl();
         const isTunnel = tunnelUrl ? origin === tunnelUrl || origin.startsWith(tunnelUrl) : false;
         if (isLocalhost || isTunnel) {
@@ -307,6 +307,7 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
       getUptime,
       getSystemResources,
       revokeToken,
+      token,
     });
     app.route('/api', apiRoutes);
 

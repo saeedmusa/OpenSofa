@@ -10,17 +10,12 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { createLogger } from '../../utils/logger.js';
+import { isPathWithinDir } from '../../utils/path-utils.js';
 import { success, error } from '../types.js';
 
 const log = createLogger('web:routes:browse');
 
 const MAX_ENTRIES = 100;
-
-const isPathWithinDir = (targetPath: string, allowedDir: string): boolean => {
-  const resolvedTarget = path.resolve(targetPath);
-  const resolvedAllowed = path.resolve(allowedDir);
-  return resolvedTarget.startsWith(resolvedAllowed + path.sep) || resolvedTarget === resolvedAllowed;
-};
 
 const isGitRepo = async (dirPath: string): Promise<boolean> => {
   try {

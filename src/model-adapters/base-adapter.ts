@@ -78,13 +78,12 @@ export abstract class BaseAdapter implements ModelAdapter {
   }
   
   /**
-   * Execute a shell command using execSync.
+   * Execute a shell command safely using execFileSync.
    * Uses enriched PATH to find binaries.
    */
-  protected executeShell(command: string, timeout = 30000): string {
-    const { execSync } = require('child_process');
+  protected executeShell(command: string, args: string[], timeout = 30000): string {
     try {
-      const output = execSync(command, {
+      const output = execFileSync(command, args, {
         encoding: 'utf-8',
         timeout,
         env: getEnrichedEnv(),
@@ -92,7 +91,7 @@ export abstract class BaseAdapter implements ModelAdapter {
       });
       return output.trim();
     } catch (err) {
-      log.warn(`Shell command failed: ${command}`, { 
+      log.warn(`Shell command failed: ${command} ${args.join(' ')}`, { 
         error: String(err),
         agent: this.agent 
       });

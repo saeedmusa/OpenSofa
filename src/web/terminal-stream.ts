@@ -111,7 +111,6 @@ export const createTerminalStream = (deps?: TerminalStreamDeps): TerminalStream 
   const tailProcesses = new Map<number, ChildProcess>();
   const logPaths = new Map<number, string>();
   const subscribers = new Map<WebSocket, number>();
-  const broadcastBuffers = new Map<number, Buffer[]>();
 
   const broadcastToSubscribers = (port: number, data: Buffer): void => {
     if (deps?.onOutput) {

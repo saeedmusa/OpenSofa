@@ -8,6 +8,7 @@ import { Hono } from 'hono';
 import fs from 'fs';
 import path from 'path';
 import { createLogger } from '../../utils/logger.js';
+import { isPathWithinDir } from '../../utils/path-utils.js';
 import { success, error, type FileListResponse, type FileContentResponse } from '../types.js';
 
 const log = createLogger('web:routes:files');
@@ -49,15 +50,6 @@ const LANGUAGE_MAP: Record<string, string> = {
 export const detectLanguage = (filePath: string): string => {
   const ext = path.extname(filePath).toLowerCase();
   return LANGUAGE_MAP[ext] ?? 'plaintext';
-};
-
-/**
- * Check if path is within allowed directory (prevent traversal)
- */
-export const isPathWithinDir = (targetPath: string, allowedDir: string): boolean => {
-  const resolvedTarget = path.resolve(targetPath);
-  const resolvedAllowed = path.resolve(allowedDir);
-  return resolvedTarget.startsWith(resolvedAllowed + path.sep) || resolvedTarget === resolvedAllowed;
 };
 
 /**

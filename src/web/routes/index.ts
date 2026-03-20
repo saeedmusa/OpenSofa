@@ -14,6 +14,7 @@ import { createAdminRoutes } from './admin.js';
 import { createBrowseRoutes } from './browse.js';
 import { createOpenCodeModelsRoutes } from './opencode-models.js';
 import { createModelDiscoveryRoutes } from './model-discovery.js';
+import { createTOTPRoutes } from './totp.js';
 import type { SessionManager } from '../../session-manager.js';
 import type { AgentRegistry } from '../../agent-registry.js';
 import type { TunnelManager } from '../tunnel.js';
@@ -30,6 +31,7 @@ export interface RoutesDeps {
   getUptime: () => number;
   getSystemResources: () => { cpu: string; freeMem: string };
   revokeToken: () => void;
+  token: string;
 }
 
 // ──────────────────────────────────────
@@ -80,6 +82,9 @@ export const createApiRoutes = (deps: RoutesDeps): Hono => {
 
   // Mount admin routes
   app.route('/admin', createAdminRoutes({ revokeToken: deps.revokeToken }));
+
+  // Mount TOTP routes (step-up auth for destructive commands)
+  app.route('/totp', createTOTPRoutes(deps.token));
 
   return app;
 };

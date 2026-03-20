@@ -27,7 +27,8 @@ function initSchema(database: BetterSqlite3Database): void {
         payload TEXT NOT NULL,
         session_name TEXT,
         sequence INTEGER NOT NULL,
-        timestamp INTEGER NOT NULL
+        timestamp INTEGER NOT NULL,
+        event_id TEXT
       );
 
       CREATE TABLE IF NOT EXISTS ip_bans (
