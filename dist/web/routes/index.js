@@ -10,6 +10,9 @@ import { createAgentsRoutes } from './agents.js';
 import { createSystemRoutes } from './system.js';
 import { createNotificationsRoutes } from './notifications.js';
 import { createAdminRoutes } from './admin.js';
+import { createBrowseRoutes } from './browse.js';
+import { createOpenCodeModelsRoutes } from './opencode-models.js';
+import { createModelDiscoveryRoutes } from './model-discovery.js';
 // ──────────────────────────────────────
 // Factory - creates all routes
 // ──────────────────────────────────────
@@ -30,6 +33,12 @@ export const createApiRoutes = (deps) => {
         agentRegistry: deps.agentRegistry,
     };
     app.route('/agents', createAgentsRoutes(agentsDeps));
+    // Mount browse routes (for directory selection before session creation)
+    app.route('/browse', createBrowseRoutes({}));
+    // Mount opencode models routes (dynamic model discovery)
+    app.route('/opencode', createOpenCodeModelsRoutes());
+    // Mount unified model discovery routes
+    app.route('/models', createModelDiscoveryRoutes());
     // Mount system routes
     const systemDeps = {
         getTunnelManager: deps.getTunnelManager,

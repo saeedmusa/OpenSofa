@@ -1,0 +1,27 @@
+{
+  "id": "unified-model-discovery-07",
+  "seq": "07",
+  "title": "Testing - Adapters and Discovery Endpoint",
+  "status": "pending",
+  "depends_on": ["05", "06"],
+  "parallel": false,
+  "suggested_agent": "TestEngineer",
+  "context_files": [],
+  "reference_files": [
+    "tests/event-parser/acp-parser.test.ts"
+  ],
+  "acceptance_criteria": [
+    "Unit tests for OpenCodeAdapter discover() method",
+    "Unit tests for ClaudeAdapter discover() method",
+    "Unit tests for AdapterRegistry",
+    "Integration tests for /api/models/discover endpoint",
+    "All tests pass (npm test passes)",
+    "Test coverage for error paths (agent not installed, parse errors)"
+  ],
+  "deliverables": [
+    "tests/model-adapters/opencode-adapter.test.ts",
+    "tests/model-adapters/claude-adapter.test.ts",
+    "tests/model-adapters/adapter-registry.test.ts",
+    "tests/routes/model-discovery.test.ts"
+  ]
+}

@@ -378,13 +378,8 @@ export class SessionManager extends EventEmitter {
         try {
             safeGitExec(expandedDir, ['worktree', 'add', workDir, '-b', branch], 30000);
         }
-        catch {
-            try {
-                safeGitExec(expandedDir, ['worktree', 'add', 'workDir', branch], 30000);
-            }
-            catch (err) {
-                throw new Error(`Failed to create worktree: ${String(err)}`);
-            }
+        catch (err) {
+            throw new Error(`Failed to create worktree: ${String(err)}`);
         }
         return { workDir, branch };
     }

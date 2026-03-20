@@ -1,0 +1,25 @@
+{
+  "id": "unified-model-discovery-06",
+  "seq": "06",
+  "title": "Frontend API Integration for Model Discovery",
+  "status": "pending",
+  "depends_on": ["04"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [],
+  "reference_files": [
+    "src/web/frontend/src/utils/api.ts",
+    "src/web/frontend/src/components/NewSessionModal.tsx"
+  ],
+  "acceptance_criteria": [
+    "Frontend API utility added for /api/models/discover endpoint",
+    "Query function created with proper typing for response",
+    "Used in NewSessionModal for model selection",
+    "Proper token handling with Authorization header",
+    "Error handling for failed discovery requests"
+  ],
+  "deliverables": [
+    "Updated src/web/frontend/src/utils/api.ts",
+    "Updated src/web/frontend/src/components/NewSessionModal.tsx"
+  ]
+}

@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Loader2, CheckCircle2, Zap } from 'lucide-react';
 import { api } from '../utils/api';
 
 interface ModelPickerProps {
     sessionName: string;
+    agentType: string;  // 'claude' or 'opencode'
     currentModel?: string;
     onClose: () => void;
     onModelChanged?: (newModel: string) => void;
@@ -16,29 +17,67 @@ interface ModelOption {
     description: string;
 }
 
-/** 
- * Common models grouped by provider — per Architecture §1.10.1, §1.11
- * Users can select from these when doing mid-session handoff (US-17)
- */
-const MODEL_OPTIONS: ModelOption[] = [
-    { id: 'anthropic/claude-sonnet-4-5', provider: 'Anthropic', name: 'Claude Sonnet 4.5', description: 'Fast, balanced' },
-    { id: 'anthropic/claude-opus-4', provider: 'Anthropic', name: 'Claude Opus 4', description: 'Most capable' },
-    { id: 'anthropic/claude-haiku-3-5', provider: 'Anthropic', name: 'Claude Haiku 3.5', description: 'Fastest, cheapest' },
-    { id: 'openai/gpt-4o', provider: 'OpenAI', name: 'GPT-4o', description: 'Multimodal, fast' },
-    { id: 'openai/o3', provider: 'OpenAI', name: 'o3', description: 'Deep reasoning' },
-    { id: 'google/gemini-2.5-pro', provider: 'Google', name: 'Gemini 2.5 Pro', description: 'Large context' },
-    { id: 'openrouter/auto', provider: 'OpenRouter', name: 'Auto', description: 'Best model for task' },
-];
-
 /**
  * Modal for switching the agent's model mid-session (US-17).
+ * Fetches available models from the discovery API.
  * Architecture Ref: §1.3 Mid-Session Handoff, §1.10.1 Model Selection
  */
-export function ModelPicker({ sessionName, currentModel, onClose, onModelChanged }: ModelPickerProps) {
+export function ModelPicker({ sessionName, agentType, currentModel, onClose, onModelChanged }: ModelPickerProps) {
     const [selected, setSelected] = useState(currentModel || '');
     const [switching, setSwitching] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [options, setOptions] = useState<ModelOption[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
+
+    // Fetch models from discovery API
+    useEffect(() => {
+        let cancelled = false;
+        
+        async function fetchModels() {
+            setLoading(true);
+            setLoadError(null);
+            
+            try {
+                const result = await api.models.discover([agentType]);
+                
+                if (cancelled) return;
+                
+                if (result.success && result.providers.length > 0) {
+                    // Flatten providers into options
+                    const fetchedOptions: ModelOption[] = result.providers.flatMap(provider =>
+                        provider.models.map(model => ({
+                            id: model.id,
+                            name: model.name,
+                            provider: provider.name,
+                            description: `via ${provider.name}`,
+                        }))
+                    );
+                    setOptions(fetchedOptions);
+                } else {
+                    setOptions([]);
+                    if (result.errors?.length) {
+                        setLoadError(result.errors[0]);
+                    }
+                }
+            } catch (err) {
+                if (cancelled) return;
+                setLoadError(err instanceof Error ? err.message : 'Failed to load models');
+                setOptions([]);
+            } finally {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            }
+        }
+        
+        fetchModels();
+        
+        return () => {
+            cancelled = true;
+        };
+    }, [agentType]);
 
     const handleSwitch = async () => {
         if (!selected || selected === currentModel) return;
@@ -61,7 +100,7 @@ export function ModelPicker({ sessionName, currentModel, onClose, onModelChanged
     };
 
     // Group models by provider
-    const grouped = MODEL_OPTIONS.reduce((acc, model) => {
+    const grouped = options.reduce((acc, model) => {
         if (!acc[model.provider]) acc[model.provider] = [];
         acc[model.provider]!.push(model);
         return acc;
@@ -118,45 +157,64 @@ export function ModelPicker({ sessionName, currentModel, onClose, onModelChanged
 
                 {/* Model list */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {Object.entries(grouped).map(([provider, models]) => (
-                        <div key={provider}>
-                            <p className="text-xs text-muted font-medium uppercase tracking-wider mb-2 px-1">{provider}</p>
-                            <div className="space-y-1.5">
-                                {models.map(model => {
-                                    const isCurrent = model.id === currentModel;
-                                    const isSelected = model.id === selected;
-                                    return (
-                                        <button
-                                            key={model.id}
-                                            onClick={() => setSelected(model.id)}
-                                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all min-h-[48px] ${isSelected
-                                                ? 'bg-accent-soft border border-accent/30'
-                                                : 'bg-surface border border-transparent hover:border-border'
-                                                }`}
-                                            aria-pressed={isSelected}
-                                        >
-                                            {/* Radio indicator */}
-                                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'border-accent bg-accent' : 'border-border'
-                                                }`}>
-                                                {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-sm font-medium text-fg-strong">{model.name}</span>
-                                                    {isCurrent && (
-                                                        <span className="px-2 py-0.5 rounded-full bg-accent/20 text-accent text-[10px] font-semibold uppercase">
-                                                            Current
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                <p className="text-xs text-muted mt-0.5">{model.description}</p>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-                            </div>
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <Loader2 size={32} className="animate-spin text-accent mb-3" />
+                            <p className="text-sm text-muted">Loading models...</p>
                         </div>
-                    ))}
+                    ) : loadError ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <p className="text-sm text-danger mb-2">Failed to load models</p>
+                            <p className="text-xs text-muted">{loadError}</p>
+                        </div>
+                    ) : options.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12">
+                            <p className="text-sm text-muted">No models available</p>
+                            <p className="text-xs text-muted mt-1">
+                                Configure a provider for {agentType} first
+                            </p>
+                        </div>
+                    ) : (
+                        Object.entries(grouped).map(([provider, models]) => (
+                            <div key={provider}>
+                                <p className="text-xs text-muted font-medium uppercase tracking-wider mb-2 px-1">{provider}</p>
+                                <div className="space-y-1.5">
+                                    {models.map(model => {
+                                        const isCurrent = model.id === currentModel;
+                                        const isSelected = model.id === selected;
+                                        return (
+                                            <button
+                                                key={model.id}
+                                                onClick={() => setSelected(model.id)}
+                                                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all min-h-[48px] ${isSelected
+                                                    ? 'bg-accent-soft border border-accent/30'
+                                                    : 'bg-surface border border-transparent hover:border-border'
+                                                    }`}
+                                                aria-pressed={isSelected}
+                                            >
+                                                {/* Radio indicator */}
+                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${isSelected ? 'border-accent bg-accent' : 'border-border'
+                                                    }`}>
+                                                    {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-sm font-medium text-fg-strong">{model.name}</span>
+                                                        {isCurrent && (
+                                                            <span className="px-2 py-0.5 rounded-full bg-accent/20 text-accent text-[10px] font-semibold uppercase">
+                                                                Current
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <p className="text-xs text-muted mt-0.5">{model.description}</p>
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </div>
 
                 {/* Error */}
@@ -170,10 +228,16 @@ export function ModelPicker({ sessionName, currentModel, onClose, onModelChanged
                 <div className="px-5 py-4 border-t border-border flex-shrink-0">
                     <button
                         onClick={handleSwitch}
-                        disabled={!selected || selected === currentModel || switching}
+                        disabled={!selected || selected === currentModel || switching || loading}
                         className="btn btn-primary w-full py-3 font-medium disabled:opacity-40"
                     >
-                        {selected === currentModel ? 'Already using this model' : `Switch to ${MODEL_OPTIONS.find(m => m.id === selected)?.name || 'selected'}`}
+                        {loading ? (
+                            'Loading models...'
+                        ) : selected === currentModel ? (
+                            'Already using this model'
+                        ) : (
+                            `Switch to ${options.find(m => m.id === selected)?.name || 'selected'}`
+                        )}
                     </button>
                 </div>
 

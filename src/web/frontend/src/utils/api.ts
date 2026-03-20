@@ -1,4 +1,4 @@
-import type { Session, SessionDetail, Agent, SystemStatus, FileListResponse, FileContentResponse } from '../types';
+import type { Session, SessionDetail, Agent, SystemStatus, FileListResponse, FileContentResponse, ModelDiscoveryResult } from '../types';
 import { useSessionStore, canAcceptMessages, canQueueMessages } from '../stores/sessionStore';
 
 const API_BASE = '/api';
@@ -230,5 +230,12 @@ export const api = {
         method: 'POST',
         body: JSON.stringify({ code }),
       }),
+  },
+
+  models: {
+    discover: (agents?: string[]) => {
+      const query = agents?.length ? `?agents=${agents.join(',')}` : '';
+      return fetchAPI<ModelDiscoveryResult>(`/models/discover${query}`);
+    },
   },
 };

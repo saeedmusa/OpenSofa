@@ -11,6 +11,9 @@ import { createAgentsRoutes, type AgentsRoutesDeps } from './agents.js';
 import { createSystemRoutes, type SystemRoutesDeps } from './system.js';
 import { createNotificationsRoutes } from './notifications.js';
 import { createAdminRoutes } from './admin.js';
+import { createBrowseRoutes } from './browse.js';
+import { createOpenCodeModelsRoutes } from './opencode-models.js';
+import { createModelDiscoveryRoutes } from './model-discovery.js';
 import type { SessionManager } from '../../session-manager.js';
 import type { AgentRegistry } from '../../agent-registry.js';
 import type { TunnelManager } from '../tunnel.js';
@@ -53,6 +56,15 @@ export const createApiRoutes = (deps: RoutesDeps): Hono => {
     agentRegistry: deps.agentRegistry,
   };
   app.route('/agents', createAgentsRoutes(agentsDeps));
+
+  // Mount browse routes (for directory selection before session creation)
+  app.route('/browse', createBrowseRoutes({}));
+
+  // Mount opencode models routes (dynamic model discovery)
+  app.route('/opencode', createOpenCodeModelsRoutes());
+
+  // Mount unified model discovery routes
+  app.route('/models', createModelDiscoveryRoutes());
 
   // Mount system routes
   const systemDeps: SystemRoutesDeps = {

@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>OpenSofa Design System - Premium PWA</title>
+  <meta name="theme-color" content="#030308">
+  <meta name="description" content="A billion-dollar design for AI coding agents">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Design System CSS -->
+  <link rel="stylesheet" href="theme_premium.css">
+  
+  <style>
+    /* Demo page specific styles */
+    .demo-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem 6rem;
+    }
+    
+    .demo-section {
+      margin-bottom: 4rem;
+    }
+    
+    .demo-section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--ash);
+    }
+    
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .demo-card {
+      padding: 1.5rem;
+      border-radius: var(--radius-xl);
+      background: var(--slate-80);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--ash);
+    }
+    
+    .demo-label {
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 0.75rem;
+    }
+    
+    .color-swatch {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    
+    .swatch {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .swatch-color {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--ash-strong);
+      flex-shrink: 0;
+    }
+    
+    .swatch-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+    
+    .swatch-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    
+    .swatch-hex {
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-tertiary);
+    }
+    
+    .button-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    
+    .logo-demo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem;
+    }
+    
+    .logo-demo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .logo-demo-label {
+      font-size: 0.6875rem;
+      color: var(--text-tertiary);
+    }
+    
+    .input-demo-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .animation-demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .animation-demo-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 2rem 1rem;
+      border-radius: var(--radius-xl);
+      background: var(--slate-80);
+      border: 1px solid var(--ash);
+    }
+    
+    .animation-target {
+      width: 64px;
+      height: 64px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-dim) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .animation-label {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      text-align: center;
+    }
+    
+    .badge-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    
+    .status-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .status-label {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+    }
+    
+    .glass-card-demo {
+      width: 100%;
+      max-width: 300px;
+      height: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border-radius: var(--radius-2xl);
+    }
+    
+    .hero-section {
+      text-align: center;
+      padding: 4rem 1rem;
+      margin-bottom: 3rem;
+    }
+    
+    .hero-logo {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 1.5rem;
+    }
+    
+    .hero-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+    
+    .hero-subtitle {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    
+    .divider {
+      height: 1px;
+      background: var(--ash);
+      margin: 3rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Hero -->
+    <section class="hero-section">
+      <svg class="hero-logo animate-float" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="32" cy="32" r="28" stroke="url(#emerald-gradient)" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="32" cy="32" r="16" fill="url(#emerald-gradient)" fill-opacity="0.15" stroke="url(#emerald-gradient)" stroke-width="2"/>
+        <circle cx="32" cy="32" r="4" fill="url(#emerald-gradient)"/>
+        <defs>
+          <linearGradient id="emerald-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#34d399"/>
+            <stop offset="100%" stop-color="#10b981"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h1 class="hero-title gradient-text">OpenSofa Design System</h1>
+      <p class="hero-subtitle">A billion-dollar design language for the future of AI-powered coding agents. Premium, refined, and built for professionals.</p>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Colors -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Color Palette</h2>
+      
+      <div class="demo-grid">
+        <!-- Foundation -->
+        <div class="demo-card">
+          <div class="demo-label">Foundation</div>
+          <div class="color-swatch">
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--void);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Void Black</span>
+                <span class="swatch-hex">#030308</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--obsidian);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Obsidian</span>
+                <span class="swatch-hex">#0a0a0f</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--slate);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Slate</span>
+                <span class="swatch-hex">#12121a</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--graphite);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Graphite</span>
+                <span class="swatch-hex">#1a1a24</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Emerald Accent -->
+        <div class="demo-card">
+          <div class="demo-label">Emerald Accent</div>
+          <div class="color-swatch">
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--emerald-bright);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Emerald Bright</span>
+                <span class="swatch-hex">#34d399</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--emerald);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Emerald</span>
+                <span class="swatch-hex">#10b981</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--emerald-dim);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Emerald Dim</span>
+                <span class="swatch-hex">#059669</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--emerald-glow); border-color: var(--emerald);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Emerald Glow</span>
+                <span class="swatch-hex">rgba(16,185,129,0.15)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Status -->
+        <div class="demo-card">
+          <div class="demo-label">Status Colors</div>
+          <div class="color-swatch">
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--success);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Success</span>
+                <span class="swatch-hex">#10b981</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--warning);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Warning</span>
+                <span class="swatch-hex">#f59e0b</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--danger);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Danger</span>
+                <span class="swatch-hex">#f43f5e</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--info);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Info</span>
+                <span class="swatch-hex">#06b6d4</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Text -->
+        <div class="demo-card">
+          <div class="demo-label">Text Hierarchy</div>
+          <div class="color-swatch">
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--text-primary); border-color: var(--ash);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Primary</span>
+                <span class="swatch-hex">#ffffff</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--text-secondary); border-color: var(--ash);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Secondary</span>
+                <span class="swatch-hex">rgba(255,255,255,0.7)</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--text-tertiary); border-color: var(--ash);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Tertiary</span>
+                <span class="swatch-hex">rgba(255,255,255,0.5)</span>
+              </div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-color" style="background: var(--text-quaternary); border-color: var(--ash);"></div>
+              <div class="swatch-info">
+                <span class="swatch-name">Quaternary</span>
+                <span class="swatch-hex">rgba(255,255,255,0.3)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Typography -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Typography</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-label">Type Scale</div>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div style="font-size: var(--text-4xl); font-weight: 700; letter-spacing: -0.02em;">Display 36px</div>
+            <div style="font-size: var(--text-3xl); font-weight: 700; letter-spacing: -0.02em;">Heading 28px</div>
+            <div style="font-size: var(--text-2xl); font-weight: 600;">Title 22px</div>
+            <div style="font-size: var(--text-xl); font-weight: 600;">Section 18px</div>
+            <div style="font-size: var(--text-lg); font-weight: 500;">Subhead 16px</div>
+            <div style="font-size: var(--text-base); color: var(--text-secondary);">Body 14px - The quick brown fox jumps over the lazy dog.</div>
+            <div style="font-size: var(--text-sm); color: var(--text-tertiary);">Small 12px - Secondary information and captions.</div>
+            <div style="font-size: var(--text-xs); color: var(--text-quaternary);">Extra Small 11px - Fine print and metadata.</div>
+          </div>
+        </div>
+        
+        <div class="demo-card">
+          <div class="demo-label">Monospace</div>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem; font-family: var(--font-mono);">
+            <div style="font-size: var(--text-sm); color: var(--emerald);">const agent = await AI.activate()</div>
+            <div style="font-size: var(--text-sm); color: var(--text-secondary);">// Loading session data...</div>
+            <div style="font-size: var(--text-sm); color: var(--warning);">⚠ Warning: Large file detected</div>
+            <div style="font-size: var(--text-sm); color: var(--success);">✓ Session connected successfully</div>
+            <div style="font-size: var(--text-sm); color: var(--text-tertiary);">POST /api/sessions [200 OK]</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Buttons -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Buttons</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-label">Primary</div>
+          <div class="button-demo">
+            <button class="btn btn-primary">Get Started</button>
+            <button class="btn btn-primary" disabled>Disabled</button>
+            <button class="btn btn-primary btn-sm">Small</button>
+          </div>
+        </div>
+        
+        <div class="demo-card">
+          <div class="demo-label">Secondary</div>
+          <div class="button-demo">
+            <button class="btn btn-secondary">Secondary</button>
+            <button class="btn btn-secondary" disabled>Disabled</button>
+          </div>
+        </div>
+        
+        <div class="demo-card">
+          <div class="demo-label">Ghost</div>
+          <div class="button-demo">
+            <button class="btn btn-ghost">Ghost</button>
+            <button class="btn btn-ghost" disabled>Disabled</button>
+          </div>
+        </div>
+        
+        <div class="demo-card">
+          <div class="demo-label">Danger</div>
+          <div class="button-demo">
+            <button class="btn btn-danger">Delete Session</button>
+            <button class="btn btn-danger" disabled>Disabled</button>
+          </div>
+        </div>
+        
+        <div class="demo-card">
+          <div class="demo-label">Icon</div>
+          <div class="button-demo">
+            <button class="btn btn-icon btn-primary" aria-label="Add new session">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+            <button class="btn btn-icon btn-secondary" aria-label="Settings">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+              </svg>
+            </button>
+            <button class="btn btn-icon btn-ghost" aria-label="Close">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Inputs -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Inputs</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-label">Text Input</div>
+          <div class="input-demo-wrapper">
+            <input type="text" class="input" placeholder="Enter session name...">
+            <input type="text" class="input" placeholder="Disabled" disabled>
+          </div>
+        </div>
+        
+        <div class="demo-card">
+          <div class="demo-label">With Icon</div>
+          <div class="input-demo-wrapper">
+            <div class="input-wrapper">
+              <svg class="input-icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" class="input" placeholder="Search sessions...">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Badges -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Badges</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-label">Badges</div>
+          <div class="badge-demo">
+            <span class="badge">Default</span>
+            <span class="badge badge-success">Success</span>
+            <span class="badge badge-warning">Warning</span>
+            <span class="badge badge-danger">Danger</span>
+            <span class="badge badge-info">Info</span>
+          </div>
+        </div>
+        
+        <div class="demo-card">
+          <div class="demo-label">Live Status</div>
+          <div class="badge-demo">
+            <span class="badge badge-live">Live</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Status Indicators -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Status Indicators</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-label">Status Dots</div>
+          <div class="status-demo">
+            <div class="status-item">
+              <div class="status-dot status-dot-success"></div>
+              <span class="status-label">Success</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot status-dot-warning"></div>
+              <span class="status-label">Warning</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot status-dot-danger"></div>
+              <span class="status-label">Danger</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot status-dot-idle"></div>
+              <span class="status-label">Idle</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Cards -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Cards</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card card-interactive">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Interactive Card</div>
+          <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">Hover to see the lift effect. Cards respond to interaction with subtle elevation changes.</p>
+        </div>
+        
+        <div class="demo-card card-floating" style="text-align: center; padding: 2rem;">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Floating Card</div>
+          <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">For elevated surfaces like modals and notifications.</p>
+        </div>
+        
+        <div class="demo-card card-accent">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Accent Card</div>
+          <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">Features a subtle emerald gradient border at the top.</p>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Glassmorphism -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Glassmorphism</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card glass" style="text-align: center; padding: 2rem;">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Glass Base</div>
+          <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">20px blur, subtle borders for layering.</p>
+        </div>
+        
+        <div class="demo-card glass-floating" style="text-align: center; padding: 2rem;">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Glass Floating</div>
+          <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">24px blur with inner glow for cards and modals.</p>
+        </div>
+        
+        <div class="demo-card glass-overlay" style="text-align: center; padding: 2rem;">
+          <div style="font-weight: 600; margin-bottom: 0.5rem;">Glass Overlay</div>
+          <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">32px blur for modal backdrops and sheets.</p>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Logo -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Logo</h2>
+      
+      <div class="demo-card">
+        <div class="demo-label">The Portal</div>
+        <div class="logo-demo" style="flex-wrap: wrap;">
+          <div class="logo-demo-item">
+            <svg width="32" height="32" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="28" stroke="url(#emerald-gradient)" stroke-width="3" fill="none"/>
+              <circle cx="32" cy="32" r="16" fill="url(#emerald-gradient)" fill-opacity="0.15" stroke="url(#emerald-gradient)" stroke-width="2"/>
+              <circle cx="32" cy="32" r="4" fill="url(#emerald-gradient)"/>
+            </svg>
+            <span class="logo-demo-label">Compact (32px)</span>
+          </div>
+          
+          <div class="logo-demo-item">
+            <svg width="48" height="48" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="28" stroke="url(#emerald-gradient)" stroke-width="3" fill="none"/>
+              <circle cx="32" cy="32" r="16" fill="url(#emerald-gradient)" fill-opacity="0.15" stroke="url(#emerald-gradient)" stroke-width="2"/>
+              <circle cx="32" cy="32" r="4" fill="url(#emerald-gradient)"/>
+            </svg>
+            <span class="logo-demo-label">Standard (48px)</span>
+          </div>
+          
+          <div class="logo-demo-item">
+            <svg width="80" height="80" viewBox="0 0 64 64" fill="none">
+              <circle cx="32" cy="32" r="28" stroke="url(#emerald-gradient)" stroke-width="3" fill="none"/>
+              <circle cx="32" cy="32" r="16" fill="url(#emerald-gradient)" fill-opacity="0.15" stroke="url(#emerald-gradient)" stroke-width="2"/>
+              <circle cx="32" cy="32" r="4" fill="url(#emerald-gradient)"/>
+            </svg>
+            <span class="logo-demo-label">Large (80px)</span>
+          </div>
+          
+          <div class="logo-demo-item">
+            <svg width="48" height="48" viewBox="0 0 64 64" fill="none"></svg>
+            <div class="logo" style="gap: 0.75rem;">
+              <svg width="48" height="48" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="28" stroke="url(#emerald-gradient)" stroke-width="3" fill="none"/>
+                <circle cx="32" cy="32" r="16" fill="url(#emerald-gradient)" fill-opacity="0.15" stroke="url(#emerald-gradient)" stroke-width="2"/>
+                <circle cx="32" cy="32" r="4" fill="url(#emerald-gradient)"/>
+              </svg>
+              <span class="logo-wordmark">OpenSofa</span>
+            </div>
+            <span class="logo-demo-label">With Wordmark</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Animations -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Animations</h2>
+      
+      <div class="animation-demo-grid">
+        <div class="animation-demo-item">
+          <div class="animation-target" style="animation: fade-in 0.3s ease forwards;"></div>
+          <span class="animation-label">Fade In</span>
+        </div>
+        
+        <div class="animation-demo-item">
+          <div class="animation-target" style="animation: fade-in-up 0.4s ease forwards;"></div>
+          <span class="animation-label">Fade In Up</span>
+        </div>
+        
+        <div class="animation-demo-item">
+          <div class="animation-target" style="animation: scale-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;"></div>
+          <span class="animation-label">Scale In (Bounce)</span>
+        </div>
+        
+        <div class="animation-demo-item">
+          <div class="animation-target" style="animation: float 3s ease-in-out infinite;"></div>
+          <span class="animation-label">Float</span>
+        </div>
+        
+        <div class="animation-demo-item">
+          <div class="animation-target" style="animation: glow-pulse 2s ease-in-out infinite; background: var(--emerald-glow); border: 1px solid var(--emerald);"></div>
+          <span class="animation-label">Glow Pulse</span>
+        </div>
+        
+        <div class="animation-demo-item">
+          <div class="status-dot status-dot-success" style="width: 16px; height: 16px; animation: pulse-live 2s infinite;"></div>
+          <span class="animation-label">Live Pulse</span>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Skeleton -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Skeleton Loaders</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card">
+          <div class="demo-label">Skeleton States</div>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div class="skeleton skeleton-avatar"></div>
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+                <div class="skeleton skeleton-heading" style="width: 40%;"></div>
+                <div class="skeleton skeleton-text"></div>
+              </div>
+            </div>
+            <div class="skeleton skeleton-text"></div>
+            <div class="skeleton skeleton-text" style="width: 80%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <div class="divider"></div>
+    
+    <!-- Modal Preview -->
+    <section class="demo-section">
+      <h2 class="demo-section-title">Modal & Sheet</h2>
+      
+      <div class="demo-grid">
+        <div class="demo-card" style="text-align: center;">
+          <div class="demo-label">Modal</div>
+          <div class="modal" style="position: relative; transform: none; top: auto; left: auto; width: 100%; max-width: 100%; margin-top: 1rem; animation: none;">
+            <div style="padding: 1.5rem;">
+              <div style="font-weight: 600; margin-bottom: 0.5rem;">Modal Content</div>
+              <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0 0 1rem;">This demonstrates the modal styling with glassmorphism and proper border radius.</p>
+              <div style="display: flex; gap: 0.75rem;">
+                <button class="btn btn-primary" style="flex: 1;">Confirm</button>
+                <button class="btn btn-secondary" style="flex: 1;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="demo-card" style="text-align: center;">
+          <div class="demo-label">Bottom Sheet</div>
+          <div class="sheet" style="position: relative; bottom: auto; left: auto; right: auto; width: 100%; max-height: 200px; margin-top: 1rem; animation: none;">
+            <div style="padding: 2rem 1.5rem 1.5rem;">
+              <div style="font-weight: 600; margin-bottom: 0.5rem;">Sheet Content</div>
+              <p style="font-size: var(--text-sm); color: var(--text-secondary); margin: 0;">Mobile-friendly bottom sheet with drag handle.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  </div>
+  
+  <!-- SVG Gradient definition for demo -->
+  <svg width="0" height="0" style="position: absolute;">
+    <defs>
+      <linearGradient id="emerald-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#34d399"/>
+        <stop offset="100%" stop-color="#10b981"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</body>
+</html>

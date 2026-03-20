@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/dom';
 import { BrowserRouter } from 'react-router-dom';
 import { SessionCard } from '../components/SessionCard';
 import { ToastProvider } from '../components/Toast';

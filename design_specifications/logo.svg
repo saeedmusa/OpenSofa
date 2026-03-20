@@ -1,0 +1,40 @@
+<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer ring - The portal/doorway -->
+  <circle 
+    cx="32" 
+    cy="32" 
+    r="28" 
+    stroke="url(#emerald-gradient)" 
+    stroke-width="3" 
+    fill="none"
+    stroke-linecap="round"
+  />
+  
+  <!-- Inner portal - The AI agent space -->
+  <circle 
+    cx="32" 
+    cy="32" 
+    r="16" 
+    fill="url(#emerald-gradient)"
+    fill-opacity="0.12"
+    stroke="url(#emerald-gradient)"
+    stroke-width="2"
+  />
+  
+  <!-- Central intelligence - The spark -->
+  <circle 
+    cx="32" 
+    cy="32" 
+    r="5"
+    fill="url(#emerald-gradient)"
+  />
+  
+  <!-- Gradient definitions -->
+  <defs>
+    <linearGradient id="emerald-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+</svg>

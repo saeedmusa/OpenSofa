@@ -1,0 +1,33 @@
+{
+  "id": "unified-model-discovery-01",
+  "seq": "01",
+  "title": "Model Discovery Infrastructure - Interfaces and Base Adapter",
+  "status": "completed",
+  "agent_id": "coder-agent",
+  "started_at": "2026-03-19T00:00:00Z",
+  "completed_at": "2026-03-19T00:00:00Z",
+  "completion_summary": "Created types.ts, base-adapter.ts, registry.ts, and index.ts for model discovery infrastructure",
+  "depends_on": [],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "src/types.ts",
+    "src/agent-registry.ts"
+  ],
+  "reference_files": [
+    "src/web/routes/opencode-models.ts"
+  ],
+  "acceptance_criteria": [
+    "ModelProvider interface defined with name, agent, models, and configured fields",
+    "ModelAdapter interface defined with discover(), getName(), isConfigured() methods",
+    "Base adapter class created with error handling and logging",
+    "AdapterRegistry class created to manage multiple adapters",
+    "Directory src/model-adapters/ created with index.ts export"
+  ],
+  "deliverables": [
+    "src/model-adapters/interfaces.ts",
+    "src/model-adapters/base-adapter.ts",
+    "src/model-adapters/adapter-registry.ts",
+    "src/model-adapters/index.ts"
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "id": "unified-model-discovery",
+  "name": "Unified Model Discovery API",
+  "status": "active",
+  "objective": "Implement a unified model discovery system that allows OpenSofa PWA to access models from all coding agents using their existing API keys and configurations",
+  "context_files": [
+    "src/agent-registry.ts",
+    "src/web/routes/opencode-models.ts",
+    "src/types.ts"
+  ],
+  "reference_files": [
+    "src/web/frontend/src/components/NewSessionModal.tsx",
+    "src/session-manager.ts",
+    "src/agentapi-client.ts"
+  ],
+  "exit_criteria": [
+    "GET /api/models/discover returns models grouped by provider",
+    "OpenCode models discoverable via opencode models command",
+    "Claude Code models discoverable via settings.json parsing",
+    "Frontend shows model selector grouped by provider",
+    "Session creation works with selected model",
+    "Tests pass for adapters and endpoint",
+    "Code reviewed and approved"
+  ],
+  "subtask_count": 8,
+  "completed_count": 0,
+  "created_at": "2026-03-19T00:00:00Z"
+}

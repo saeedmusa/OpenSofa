@@ -88,14 +88,14 @@ export function HomeView() {
 
   if (!api.getToken()) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] p-6">
-        <div className="surface-floating p-8 text-center max-w-sm animate-scale-in">
-          <Logo size="lg" className="justify-center mb-4" />
-          <h2 className="text-lg font-semibold text-fg-strong mb-2">Authentication Required</h2>
-          <p className="text-muted text-sm mb-4">
+      <div className="flex flex-col items-center justify-center min-h-[80vh] p-8">
+        <div className="surface-floating p-10 text-center max-w-md animate-scale-in rounded-3xl">
+          <Logo size="xl" className="justify-center mb-6" />
+          <h2 className="text-xl font-semibold text-fg-strong mb-3">Authentication Required</h2>
+          <p className="text-muted mb-6">
             Scan the QR code from your terminal to get started
           </p>
-          <p className="text-muted/60 text-xs">
+          <p className="text-muted/60 text-sm">
             Run <code className="bg-surface px-2 py-1 rounded-lg text-accent">opensofa web</code> to get a link
           </p>
         </div>

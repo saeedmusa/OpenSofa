@@ -1,5 +1,6 @@
 import { useEffect, useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { IonApp, IonContent } from '@ionic/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WebSocketProvider } from './providers/WebSocketProvider';
 import { DesktopLayout } from './layouts/DesktopLayout';
@@ -9,6 +10,7 @@ import { ToastProvider } from './components/Toast';
 import { PageLoader } from './components/PageLoader';
 import { SkipLink } from './components/SkipLink';
 import { FocusTrap } from './components/FocusTrap';
+import { Logo } from './components/Logo';
 import { api } from './utils/api';
 
 const HomeView = lazy(() => import('./views/HomeView').then(m => ({ default: m.HomeView })));
@@ -27,9 +29,51 @@ const queryClient = new QueryClient({
 export default function App() {
   const [pendingApproval, setPendingApproval] = useState<string | null>(null);
   const [hasToken, setHasToken] = useState(() => !!api.getToken());
+
+  // Auth guard: show auth-required screen if no token (spec US-1.4)
+  if (!hasToken) {
+    return (
+      <IonApp>
+        <IonContent class="ion-bg-dark">
+          <div className="flex flex-col items-center justify-center min-h-full p-8">
+            <div className="surface-floating p-10 text-center max-w-md animate-scale-in rounded-3xl">
+              <Logo size="xl" className="justify-center mb-6" />
+              <h2 className="text-xl font-semibold text-fg-strong mb-3">Authentication Required</h2>
+              <p className="text-muted mb-6">
+                Scan the QR code from your terminal or open the link with a valid token.
+              </p>
+              <p className="text-muted/60 text-sm">
+                Run <code className="bg-surface px-2 py-1 rounded-lg text-accent">opensofa web</code> in your terminal to get a new link.
+              </p>
+            </div>
+          </div>
+        </IonContent>
+      </IonApp>
+    );
+  }
+
+  return (
+    <IonApp>
+      <IonContent class="ion-bg-dark" fullscreen>
+        <QueryClientProvider client={queryClient}>
+          <ErrorBoundary>
+            <ToastProvider>
+              <WebSocketProvider>
+                <BrowserRouter>
+                  <RouterApp pendingApproval={pendingApproval} setPendingApproval={setPendingApproval} setHasToken={setHasToken} />
+                </BrowserRouter>
+              </WebSocketProvider>
+            </ToastProvider>
+          </ErrorBoundary>
+        </QueryClientProvider>
+      </IonContent>
+    </IonApp>
+  );
+}
+
+function RouterApp({ pendingApproval, setPendingApproval, setHasToken }: { pendingApproval: string | null; setPendingApproval: (v: string | null) => void; setHasToken: (v: boolean) => void }) {
   const navigate = useNavigate();
 
-  // Handle viewing missed events - navigate to home with activity tab
   const handleViewEvents = () => {
     navigate('/?tab=activity');
   };
@@ -46,51 +90,24 @@ export default function App() {
     }
 
     // Handle deep link: ?session=foo&action=approve
-    // This pattern is valid: synchronously deriving state from URL on mount
     const session = params.get('session');
     const action = params.get('action');
     if (session && action === 'approve') {
-       
       setPendingApproval(session);
-      // Clean URL params
       const url = new URL(window.location.href);
       url.searchParams.delete('session');
       url.searchParams.delete('action');
       window.history.replaceState({}, '', url.toString());
     }
-  }, []);
+  }, [setHasToken, setPendingApproval]);
 
   const handleDismissApproval = () => setPendingApproval(null);
 
-  // Auth guard: show auth-required screen if no token (spec US-1.4)
-  if (!hasToken) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-bg text-fg">
-        <div className="surface-floating p-8 text-center max-w-sm animate-scale-in">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-accent to-coral flex items-center justify-center">
-            <span className="text-3xl">🔒</span>
-          </div>
-          <h2 className="text-lg font-semibold text-fg-strong mb-2">Authentication Required</h2>
-          <p className="text-muted text-sm mb-4">
-            Scan the QR code from your terminal or open the link with a valid token.
-          </p>
-          <p className="text-muted/60 text-xs">
-            Run <code className="bg-surface px-2 py-1 rounded-lg text-accent">opensofa web</code> in your terminal to get a new link.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <ErrorBoundary>
-        <ToastProvider>
-          <WebSocketProvider>
-            <BrowserRouter>
-              <SkipLink />
-              <ConnectionStatus onViewEvents={handleViewEvents} />
-              <div id="main-content" role="main">
+    <IonContent fullscreen className="ion-bg-dark">
+      <SkipLink />
+      <ConnectionStatus onViewEvents={handleViewEvents} />
+      <div id="main-content" role="main" className="relative z-10">
                 {/* Deep link approval modal */}
                 {pendingApproval && (
                   <DeepLinkApprovalModal
@@ -128,11 +145,7 @@ export default function App() {
                   </Route>
                 </Routes>
               </div>
-            </BrowserRouter>
-          </WebSocketProvider>
-        </ToastProvider>
-      </ErrorBoundary>
-    </QueryClientProvider>
+    </IonContent>
   );
 }
 

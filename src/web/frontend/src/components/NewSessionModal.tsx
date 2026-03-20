@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../utils/api';
+import type { ModelProvider } from '../types';
 import { useToast } from './Toast';
-import { X, Folder, GitBranch, ChevronRight, Loader2, Plus, Cpu } from 'lucide-react';
+import { X, Folder, GitBranch, ChevronRight, Loader2, Cpu, FolderPlus, Send, Sparkles } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface BrowseEntry {
@@ -18,65 +20,92 @@ interface NewSessionModalProps {
 }
 
 export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
-  const [step, setStep] = useState<'agent' | 'directory' | 'name'>('agent');
+  const navigate = useNavigate();
+  const [step, setStep] = useState<'agent' | 'directory' | 'prompt'>('agent');
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [selectedDir, setSelectedDir] = useState<string>('');
-  const [sessionName, setSessionName] = useState('');
+  const [initialMessage, setInitialMessage] = useState('');
   const [currentPath, setCurrentPath] = useState('');
+  const [showNewFolderInput, setShowNewFolderInput] = useState(false);
+  const [newFolderName, setNewFolderName] = useState('');
   const toast = useToast();
   const queryClient = useQueryClient();
 
-  // Models per agent type
-  const modelsByAgent: Record<string, string[]> = {
-    claude: [
-      'anthropic/claude-sonnet-4-5-20250514',
-      'anthropic/claude-sonnet-4-5',
-      'anthropic/claude-sonnet-4',
-      'anthropic/claude-3-5-sonnet-20241022',
-      'anthropic/claude-3-5-sonnet',
-      'anthropic/claude-3-opus',
-      'anthropic/claude-3-sonnet',
-      'anthropic/claude-3-haiku',
-    ],
-    openai: [
-      'openai/gpt-4o',
-      'openai/gpt-4o-mini',
-      'openai/gpt-4-turbo',
-      'openai/gpt-4',
-    ],
-    google: [
-      'google/gemini-2.0-flash-exp',
-      'google/gemini-1.5-pro',
-      'google/gemini-1.5-flash',
-    ],
-    aider: [
-      'anthropic/claude-sonnet-4-5-20250514',
-      'anthropic/claude-sonnet-4-5',
-      'openai/gpt-4o',
-      'openai/gpt-4o-mini',
-    ],
-    opencode: [
-      'anthropic/claude-sonnet-4-5-20250514',
-      'anthropic/claude-sonnet-4-5',
-      'anthropic/claude-sonnet-4',
-      'anthropic/claude-3-5-sonnet-20241022',
-      'openai/gpt-4o',
-      'openai/gpt-4o-mini',
-      'google/gemini-2.0-flash-exp',
-      'google/gemini-1.5-pro',
-    ],
+  // Auto-save token from URL on component mount
+  useEffect(() => {
+    const urlToken = new URLSearchParams(window.location.search).get('token');
+    if (urlToken) {
+      localStorage.setItem('opensofa_token', urlToken);
+      // Clean URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete('token');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, []);
+
+  // Auto-generate session name from initial message
+  const generateSessionName = (message: string): string => {
+    if (!message.trim()) return '';
+    // Take first few words, lowercase, replace spaces with hyphens, max 30 chars
+    const words = message.trim().split(/\s+/).slice(0, 4);
+    const name = words.join('-').toLowerCase().replace(/[^a-z0-9-]/g, '').substring(0, 28);
+    return name || `session-${Date.now()}`;
   };
 
-  // Get models for selected agent
-  const availableModels = selectedAgent ? modelsByAgent[selectedAgent] || [] : [];
+  // State for unified model discovery
+  const [modelProviders, setModelProviders] = useState<ModelProvider[]>([]);
+  const [modelsLoading, setModelsLoading] = useState(false);
+  const [modelsError, setModelsError] = useState<string | null>(null);
 
-  // Update selected model when agent changes
+  // Fetch models using unified discovery API
   useEffect(() => {
-    if (availableModels.length > 0) {
-      setSelectedModel(availableModels[0]);
+    if (!selectedAgent) {
+      setModelProviders([]);
+      return;
     }
+
+    let cancelled = false;
+    setModelsLoading(true);
+    setModelsError(null);
+
+    api.models.discover([selectedAgent])
+      .then(result => {
+        if (cancelled) return;
+        if (result.success && result.providers) {
+          setModelProviders(result.providers);
+        } else {
+          setModelProviders([]);
+          setModelsError(result.errors?.[0] || 'Failed to load models');
+        }
+      })
+      .catch(err => {
+        if (cancelled) return;
+        setModelsError(err instanceof Error ? err.message : 'Failed to load models');
+        setModelProviders([]);
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setModelsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedAgent]);
+
+  // Update selected model when agent changes and models are loaded
+  useEffect(() => {
+    if (modelProviders.length > 0) {
+      const firstProvider = modelProviders[0];
+      if (firstProvider.models.length > 0) {
+        setSelectedModel(firstProvider.models[0].id);
+      }
+    } else if (!modelsLoading && !modelsError) {
+      setSelectedModel('');
+    }
+  }, [selectedAgent, modelProviders, modelsLoading, modelsError]);
 
   const { data: agentsData, isLoading: agentsLoading } = useQuery({
     queryKey: ['agents'],
@@ -87,24 +116,77 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   const { data: browseData, isLoading: browseLoading } = useQuery({
     queryKey: ['browse', currentPath],
     queryFn: async () => {
-      const res = await fetch(`/api/browse?path=${encodeURIComponent(currentPath)}`);
+      const token = api.getToken();
+      const headers = { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) };
+      const res = await fetch(`/api/browse?path=${encodeURIComponent(currentPath)}`, { headers });
       return res.json();
     },
     enabled: isOpen && step === 'directory',
   });
 
   const createMutation = useMutation({
-    mutationFn: (data: { name: string; dir: string; agent: string; model?: string }) =>
-      fetch('/api/sessions', {
+    mutationFn: async (data: { name: string; dir: string; agent: string; model?: string; message?: string }) => {
+      // Create session
+      const token = api.getToken();
+      const res = await fetch('/api/sessions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(data),
-      }).then(r => r.json()),
-    onSuccess: () => {
-      toast.success('Session creation started! Check the activity feed for progress.');
+      });
+      const result = await res.json();
+      
+      // If there's an initial message, wait for session to be ready then send it
+      if (data.message && result.success) {
+        // Poll session status until it's active (max 120 seconds)
+        const maxAttempts = 60;
+        const pollInterval = 2000; // 2 seconds
+        let attempts = 0;
+        
+        while (attempts < maxAttempts) {
+          try {
+            const statusRes = await fetch(`/api/sessions/${data.name}`, {
+              headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
+            });
+            if (statusRes.ok) {
+              const statusData = await statusRes.json();
+              if (statusData.data?.status === 'active') {
+                // Session is ready, send the initial message
+                await fetch(`/api/sessions/${data.name}/message`, {
+                  method: 'POST',
+                  headers: { 
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+                  },
+                  body: JSON.stringify({ content: data.message }),
+                });
+                break;
+              }
+            }
+          } catch {
+            // Ignore errors during polling, keep trying
+          }
+          attempts++;
+          await new Promise(resolve => setTimeout(resolve, pollInterval));
+        }
+      }
+      
+      return { ...result, name: data.name };
+    },
+    onSuccess: (data) => {
+      const sessionName = typeof data === 'object' && data !== null && 'name' in data 
+        ? (data as { name: string }).name 
+        : name;
+      toast.success('Session created! Navigating to chat...');
       queryClient.invalidateQueries({ queryKey: ['sessions'] });
       onClose();
       resetForm();
+      // Navigate to the session view
+      if (sessionName) {
+        navigate(`/session/${encodeURIComponent(sessionName)}`);
+      }
     },
     onError: (err: Error) => {
       toast.error(err.message || 'Failed to create session');
@@ -116,25 +198,52 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
     setSelectedAgent('');
     setSelectedModel('');
     setSelectedDir('');
-    setSessionName('');
+    setInitialMessage('');
     setCurrentPath('');
   };
 
-  const handleCreate = () => {
-    if (!sessionName.trim()) {
-      toast.error('Please enter a session name');
-      return;
-    }
-    if (!/^[a-zA-Z0-9-]{1,30}$/.test(sessionName)) {
-      toast.error('Name must be 1-30 chars: letters, numbers, hyphens only');
+  const handleConfirmCreate = () => {
+    const name = generateSessionName(initialMessage);
+    if (!name) {
+      toast.error('Please enter a message');
       return;
     }
     createMutation.mutate({
-      name: sessionName.trim(),
+      name,
       dir: selectedDir,
       agent: selectedAgent,
       model: selectedModel,
+      message: initialMessage.trim(),
     });
+  };
+
+  const handleCreateFolder = async () => {
+    if (!newFolderName.trim()) return;
+    
+    const token = api.getToken();
+    const targetPath = currentPath ? `${currentPath}/${newFolderName}` : newFolderName;
+    
+    try {
+      const res = await fetch('/api/browse', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ path: targetPath, create: true }),
+      });
+      
+      if (res.ok) {
+        setNewFolderName('');
+        setShowNewFolderInput(false);
+        queryClient.invalidateQueries({ queryKey: ['browse', currentPath] });
+        toast.success('Directory created!');
+      } else {
+        toast.error('Failed to create directory');
+      }
+    } catch {
+      toast.error('Failed to create directory');
+    }
   };
 
   if (!isOpen) return null;
@@ -234,17 +343,94 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                 ))}
               </div>
 
+              {/* Model selection */}
+              <div>
+                <label className="flex items-center gap-2 text-sm text-muted mb-2">
+                  <Cpu size={14} />
+                  Model
+                  {modelsLoading && <span className="text-xs">(loading...)</span>}
+                  {modelsError && <span className="text-xs text-error">({modelsError})</span>}
+                </label>
+                <select
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  className="input-field w-full"
+                  disabled={modelsLoading || !!modelsError}
+                >
+                  {modelsLoading ? (
+                    <option value="">Loading models...</option>
+                  ) : modelsError ? (
+                    <option value="">No models available</option>
+                  ) : modelProviders.length === 0 ? (
+                    <option value="">No models available for {selectedAgent}</option>
+                  ) : (
+                    modelProviders
+                      .filter(p => p.agent === selectedAgent)
+                      .map(provider => (
+                        <optgroup key={provider.id} label={provider.name}>
+                          {provider.models.map(model => (
+                            <option key={model.id} value={model.id}>
+                              {model.name}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))
+                  )}
+                </select>
+                {!modelsLoading && !modelsError && modelProviders.length > 0 && (
+                  <p className="text-xs text-muted mt-1">
+                    {modelProviders.reduce((sum, p) => sum + p.models.length, 0)} models from {modelProviders.filter(p => p.agent === selectedAgent).length} provider(s)
+                  </p>
+                )}
+              </div>
+
               {/* Quick select current directory */}
               {currentPath && (
                 <button
                   onClick={() => {
                     setSelectedDir(`~/${currentPath}`);
-                    setStep('name');
+                    setStep('prompt');
                   }}
                   className="w-full p-3 rounded-xl bg-accent text-white font-medium hover:bg-accent/90 transition-colors flex items-center justify-center gap-2"
                 >
-                  <Plus size={18} />
-                  Use this directory: ~/{currentPath}
+                  <Sparkles size={18} />
+                  Continue with ~/{currentPath}
+                </button>
+              )}
+
+              {/* New folder input */}
+              {showNewFolderInput ? (
+                <div className="flex gap-2 items-center p-3 rounded-xl bg-surface-elevated border border-accent/30">
+                  <FolderPlus size={18} className="text-accent" />
+                  <input
+                    type="text"
+                    value={newFolderName}
+                    onChange={(e) => setNewFolderName(e.target.value)}
+                    placeholder="folder name"
+                    className="flex-1 bg-transparent outline-none text-fg placeholder:text-muted"
+                    autoFocus
+                    onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
+                  />
+                  <button
+                    onClick={handleCreateFolder}
+                    className="px-3 py-1.5 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent/90"
+                  >
+                    Create
+                  </button>
+                  <button
+                    onClick={() => { setShowNewFolderInput(false); setNewFolderName(''); }}
+                    className="p-1.5 rounded-lg hover:bg-surface text-muted"
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+              ) : (
+                <button
+                  onClick={() => setShowNewFolderInput(true)}
+                  className="w-full flex items-center gap-2 p-3 rounded-xl border border-dashed border-border hover:border-accent/50 text-muted hover:text-accent transition-colors"
+                >
+                  <FolderPlus size={18} />
+                  <span className="text-sm">Create new folder</span>
                 </button>
               )}
 
@@ -264,7 +450,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                       }}
                       className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-elevated text-muted"
                     >
-                      <span>..</span>
+                      <span className="text-muted">..</span>
                     </button>
                   )}
                   {entries
@@ -296,7 +482,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
             </div>
           )}
 
-          {step === 'name' && (
+          {step === 'prompt' && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <button
@@ -307,53 +493,24 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                 </button>
               </div>
 
+              <div className="text-center mb-4">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-accent to-coral mb-3">
+                  <Sparkles size={24} className="text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-fg-strong">What would you like help with?</h3>
+                <p className="text-sm text-muted mt-1">Describe what you want to accomplish</p>
+              </div>
+
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm text-muted mb-2">Agent</label>
-                  <div className="p-3 rounded-xl bg-surface-elevated text-fg">{selectedAgent}</div>
-                </div>
-
-                <div>
-                  <label className="block text-sm text-muted mb-2">Directory</label>
-                  <div className="p-3 rounded-xl bg-surface-elevated text-fg font-mono text-sm truncate">
-                    {selectedDir}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-2 text-sm text-muted mb-2">
-                    <Cpu size={14} />
-                    Model
-                  </label>
-                  <select
-                    value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    className="input-field w-full"
-                  >
-                    {availableModels.map((model) => (
-                      <option key={model} value={model}>
-                        {model.split('/').pop()}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-xs text-muted mt-1">
-                    {selectedModel}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm text-muted mb-2">Session Name</label>
-                  <input
-                    type="text"
-                    value={sessionName}
-                    onChange={(e) => setSessionName(e.target.value)}
-                    placeholder="e.g., my-feature"
-                    className="input-field w-full"
+                  <label className="block text-sm text-muted mb-2">Your request</label>
+                  <textarea
+                    value={initialMessage}
+                    onChange={(e) => setInitialMessage(e.target.value)}
+                    placeholder="e.g., Help me add a new feature to the homepage, or review this code..."
+                    className="input-field w-full min-h-[120px] resize-none"
                     autoFocus
                   />
-                  <p className="text-xs text-muted mt-1">
-                    1-30 characters: letters, numbers, hyphens only
-                  </p>
                 </div>
               </div>
             </div>
@@ -361,7 +518,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
         </div>
 
         {/* Footer */}
-        {step === 'name' && (
+        {step === 'prompt' && (
           <div className="flex gap-3 p-5 border-t border-border">
             <button
               onClick={() => { onClose(); resetForm(); }}
@@ -371,8 +528,8 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
               Cancel
             </button>
             <button
-              onClick={handleCreate}
-              disabled={!sessionName.trim() || createMutation.isPending}
+              onClick={handleConfirmCreate}
+              disabled={createMutation.isPending || !initialMessage.trim()}
               className="btn btn-primary flex-1 flex items-center justify-center gap-2"
             >
               {createMutation.isPending ? (
@@ -382,8 +539,8 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                 </>
               ) : (
                 <>
-                  <Plus size={16} />
-                  Create Session
+                  <Send size={16} />
+                  Start Session
                 </>
               )}
             </button>

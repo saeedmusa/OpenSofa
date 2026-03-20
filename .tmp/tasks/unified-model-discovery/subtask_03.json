@@ -1,0 +1,27 @@
+{
+  "id": "unified-model-discovery-03",
+  "seq": "03",
+  "title": "Claude Code Model Adapter Implementation",
+  "status": "pending",
+  "depends_on": ["01"],
+  "parallel": true,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "src/model-adapters/interfaces.ts",
+    "src/model-adapters/base-adapter.ts"
+  ],
+  "reference_files": [
+    "src/agent-registry.ts"
+  ],
+  "acceptance_criteria": [
+    "ClaudeAdapter class extends BaseAdapter",
+    "parses ~/.claude/settings.json to extract provider and models",
+    "extracts Z.AI provider configuration correctly",
+    "maps models from settings.json to provider",
+    "handles case when settings.json doesn't exist gracefully"
+  ],
+  "deliverables": [
+    "src/model-adapters/claude-adapter.ts",
+    "Updated src/model-adapters/index.ts exports"
+  ]
+}

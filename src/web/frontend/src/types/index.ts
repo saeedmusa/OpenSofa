@@ -112,3 +112,39 @@ export interface ActivityEvent {
   };
   actionable?: boolean;
 }
+
+// Agent types - must match backend AgentType in src/types.ts
+export type AgentType = 
+  | 'claude' 
+  | 'aider' 
+  | 'goose' 
+  | 'gemini' 
+  | 'codex' 
+  | 'amp' 
+  | 'opencode' 
+  | 'copilot' 
+  | 'cursor' 
+  | 'auggie' 
+  | 'amazonq' 
+  | 'custom';
+
+export interface DiscoveredModel {
+  id: string;
+  name: string;
+  provider: string;
+  agent: AgentType;
+}
+
+export interface ModelProvider {
+  name: string;
+  id: string;
+  agent: AgentType;
+  models: DiscoveredModel[];
+  configured: boolean;
+}
+
+export interface ModelDiscoveryResult {
+  success: boolean;
+  providers: ModelProvider[];
+  errors?: string[];
+}

@@ -1,0 +1,26 @@
+{
+  "id": "unified-model-discovery-08",
+  "seq": "08",
+  "title": "Code Review - Architecture and Security",
+  "status": "pending",
+  "depends_on": ["07"],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [],
+  "reference_files": [
+    "src/model-adapters/",
+    "src/web/routes/model-discovery.ts"
+  ],
+  "acceptance_criteria": [
+    "Architecture reviewed - adapter pattern implemented correctly",
+    "Security reviewed - API keys never leave laptop",
+    "Error handling verified for all edge cases",
+    "TypeScript types are consistent with existing codebase",
+    "Code follows existing patterns in agent-registry.ts",
+    "No duplicate functionality with existing opencode-models.ts"
+  ],
+  "deliverables": [
+    "Code review notes documented",
+    "Any refactoring issues addressed"
+  ]
+}

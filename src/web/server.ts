@@ -582,6 +582,10 @@ function wireSessionEvents(
     broadcaster.broadcast(createEvent('session_created', sessionToSummary(session)));
     terminalStream.start(session.port);
 
+    // Set transport to ACP since we're passing --experimental-acp to AgentAPI
+    // This enables the ACP event parser below
+    session.transport = 'acp';
+
     // Set up ACP event handling if transport is ACP
     if (session.transport === 'acp') {
       const acpParser = new ACPEventParser();
@@ -728,9 +732,11 @@ function getSocketForClient(clientId: string): WebSocket | undefined {
 
 async function displayQRCode(url: string): Promise<void> {
   try {
+    // Use utf8 type which outputs █ (filled) and ░ (empty) block characters
+    // This renders correctly on both light and dark terminals
     const qrString = await qrcode.toString(url, {
-      type: 'terminal',
-      small: true,
+      type: 'utf8',
+      width: 40,
     });
     console.log('\n' + qrString);
     console.log(`\n🌐 Web Interface: ${url}\n`);

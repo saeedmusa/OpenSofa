@@ -1,0 +1,29 @@
+{
+  "id": "unified-model-discovery-04",
+  "seq": "04",
+  "title": "Unified Discovery Endpoint - /api/models/discover",
+  "status": "pending",
+  "depends_on": ["02", "03"],
+  "parallel": false,
+  "suggested_agent": "CoderAgent",
+  "context_files": [
+    "src/model-adapters/interfaces.ts",
+    "src/model-adapters/adapter-registry.ts"
+  ],
+  "reference_files": [
+    "src/web/routes/opencode-models.ts",
+    "src/web/server.ts"
+  ],
+  "acceptance_criteria": [
+    "GET /api/models/discover endpoint created in Hono",
+    "supports ?agents= query param to filter by agent type",
+    "aggregates results from all registered adapters",
+    "returns response in specified JSON format with providers array",
+    "handles adapter errors gracefully (one failing adapter doesn't break all)",
+    "registers routes in server.ts"
+  ],
+  "deliverables": [
+    "src/web/routes/model-discovery.ts",
+    "Updated src/web/server.ts to register routes"
+  ]
+}
