@@ -8,7 +8,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { spawn, execSync } from 'child_process';
+import { spawn, execSync, execFileSync } from 'child_process';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -640,15 +640,57 @@ export class SessionManager extends EventEmitter {
   }
 
   /**
-   * Kill a process by PID
+   * Verify a PID belongs to an agent/tmux process before killing.
+   * Prevents killing wrong process if PID was reused by OS.
+   */
+  private verifyProcessOwnership(pid: number): boolean {
+    if (!pid || pid === 0) return false;
+    try {
+      // Check process exists and get command name
+      // macOS: ps -p PID -o comm=
+      // Linux: ps -p PID -o comm= or /proc/PID/comm
+      const comm = execFileSync('ps', ['-p', String(pid), '-o', 'comm='], {
+        encoding: 'utf-8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+        timeout: 1000,
+      }).trim();
+      
+      // Allowlist: only kill if it's agentapi, tmux, or known agent binaries
+      const allowed = ['agentapi', 'tmux', 'node', 'claude', 'opencode', 'aider', 'goose', 'codex', 'gemini', 'amp', 'copilot', 'cursor', 'auggie', 'amazonq'];
+      const isOwned = allowed.some(name => comm.toLowerCase().includes(name));
+      
+      if (!isOwned) {
+        log.warn('PID ownership verification failed - not killing', { pid, comm });
+      }
+      return isOwned;
+    } catch {
+      // Process doesn't exist or ps failed
+      return false;
+    }
+  }
+
+  /**
+   * Kill a process by PID with ownership verification
    */
   private killProcess(pid: number): void {
     if (!pid || pid === 0) return;
+    
+    // Verify this is actually our process before killing
+    const isOwned = this.verifyProcessOwnership(pid);
+    if (!isOwned) {
+      log.debug('Skipping kill - PID not owned by agent', { pid });
+      return;
+    }
+    
     try {
       process.kill(pid, 'SIGTERM');
       setTimeout(() => {
         try {
-          process.kill(pid, 'SIGKILL');
+          // Re-verify before SIGKILL in case PID was reused during timeout
+          const isStillOwned = this.verifyProcessOwnership(pid);
+          if (isStillOwned) {
+            process.kill(pid, 'SIGKILL');
+          }
         } catch {
           // Already dead
         }

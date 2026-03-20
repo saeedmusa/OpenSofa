@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../utils/api';
-import type { ModelProvider } from '../types';
+import type { ModelProvider, DiscoveredModel } from '../types';
 import { useToast } from './Toast';
-import { X, Folder, GitBranch, ChevronRight, Loader2, Cpu, FolderPlus, Send, Sparkles } from 'lucide-react';
+import { X, Folder, GitBranch, ChevronRight, Loader2, Cpu, FolderPlus, Send, Sparkles, AlertTriangle } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface BrowseEntry {
@@ -57,6 +57,12 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   const [modelProviders, setModelProviders] = useState<ModelProvider[]>([]);
   const [modelsLoading, setModelsLoading] = useState(false);
   const [modelsError, setModelsError] = useState<string | null>(null);
+
+  // Get current selected model info for vision warning
+  const selectedModelInfo: DiscoveredModel | undefined = modelProviders
+    .flatMap(p => p.models)
+    .find(m => m.id === selectedModel);
+  const isNonVisionModel = selectedModelInfo && !selectedModelInfo.supportsVision;
 
   // Fetch models using unified discovery API
   useEffect(() => {
@@ -130,21 +136,21 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
       const token = api.getToken();
       const res = await fetch('/api/sessions', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify(data),
       });
       const result = await res.json();
-      
+
       // If there's an initial message, wait for session to be ready then send it
       if (data.message && result.success) {
         // Poll session status until it's active (max 120 seconds)
         const maxAttempts = 60;
         const pollInterval = 2000; // 2 seconds
         let attempts = 0;
-        
+
         while (attempts < maxAttempts) {
           try {
             const statusRes = await fetch(`/api/sessions/${data.name}`, {
@@ -156,7 +162,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                 // Session is ready, send the initial message
                 await fetch(`/api/sessions/${data.name}/message`, {
                   method: 'POST',
-                  headers: { 
+                  headers: {
                     'Content-Type': 'application/json',
                     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
                   },
@@ -172,12 +178,12 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
           await new Promise(resolve => setTimeout(resolve, pollInterval));
         }
       }
-      
+
       return { ...result, name: data.name };
     },
     onSuccess: (data) => {
-      const sessionName = typeof data === 'object' && data !== null && 'name' in data 
-        ? (data as { name: string }).name 
+      const sessionName = typeof data === 'object' && data !== null && 'name' in data
+        ? (data as { name: string }).name
         : name;
       toast.success('Session created! Navigating to chat...');
       queryClient.invalidateQueries({ queryKey: ['sessions'] });
@@ -219,20 +225,20 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
   const handleCreateFolder = async () => {
     if (!newFolderName.trim()) return;
-    
+
     const token = api.getToken();
     const targetPath = currentPath ? `${currentPath}/${newFolderName}` : newFolderName;
-    
+
     try {
       const res = await fetch('/api/browse', {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ path: targetPath, create: true }),
       });
-      
+
       if (res.ok) {
         setNewFolderName('');
         setShowNewFolderInput(false);
@@ -253,26 +259,33 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="w-full max-w-md bg-surface rounded-2xl border border-border shadow-2xl animate-scale-in">
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-border">
-          <h2 className="text-lg font-semibold text-fg-strong">New Session</h2>
+      <div className="w-full max-w-md bg-surface-container-lowest border border-matrix-green/30 shadow-[0_0_20px_rgba(0,255,65,0.15)] animate-scale-in">
+
+        {/* Header - Kinetic Terminal Style */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-matrix-green/30 bg-black">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-matrix-green text-xl">terminal</span>
+            <div>
+              <h2 className="text-sm font-mono font-bold text-matrix-green uppercase tracking-wider">New Session</h2>
+              <p className="text-[10px] font-mono text-cyan-accent">ROOT@OPENSOFA:~#</p>
+            </div>
+          </div>
           <button
             onClick={() => { onClose(); resetForm(); }}
-            className="p-2 rounded-xl hover:bg-surface-elevated text-muted hover:text-fg transition-colors"
+            className="p-2 text-matrix-green/60 hover:text-matrix-green hover:bg-matrix-green/10 transition-colors"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-5 max-h-[60vh] overflow-y-auto">
+        <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
           {step === 'agent' && (
             <div className="space-y-4">
-              <p className="text-sm text-muted">Select a coding agent:</p>
+              <p className="text-xs font-mono text-cyan-accent uppercase tracking-widest mb-3">Select Coding Agent</p>
               {agentsLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-accent" />
+                  <Loader2 className="w-6 h-6 animate-spin text-matrix-green" />
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -284,21 +297,21 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                         setStep('directory');
                       }}
                       className={clsx(
-                        'w-full flex items-center gap-3 p-4 rounded-xl border transition-all',
+                        'w-full flex items-center gap-3 p-4 border transition-all',
                         selectedAgent === agent.type
-                          ? 'bg-accent-soft border-accent text-accent'
-                          : 'bg-surface-elevated border-border hover:border-accent/50'
+                          ? 'bg-matrix-green/10 border-matrix-green text-matrix-green'
+                          : 'bg-surface-container-low border-matrix-green/20 hover:border-matrix-green/50 text-matrix-green/80'
                       )}
                     >
                       <div className="flex-1 text-left">
-                        <div className="font-medium">{agent.displayName}</div>
-                        <div className="text-xs text-muted">{agent.type}</div>
+                        <div className="font-mono font-bold text-sm">{agent.displayName}</div>
+                        <div className="text-[10px] font-mono text-matrix-green/60">{agent.type}</div>
                       </div>
-                      <ChevronRight size={18} className="text-muted" />
+                      <ChevronRight size={18} className="text-matrix-green/40" />
                     </button>
                   ))}
                   {agents.filter(a => a.installed).length === 0 && (
-                    <div className="text-center py-8 text-muted">
+                    <div className="text-center py-8 font-mono text-matrix-green/60">
                       No agents installed. Install claude, aider, or opencode first.
                     </div>
                   )}
@@ -309,33 +322,33 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
           {step === 'directory' && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 font-mono text-xs">
                 <button
                   onClick={() => setStep('agent')}
-                  className="text-sm text-accent hover:underline"
+                  className="text-cyan-accent hover:underline"
                 >
                   ← Back
                 </button>
-                <span className="text-muted">|</span>
-                <span className="text-sm text-muted">Agent: <span className="text-fg">{selectedAgent}</span></span>
+                <span className="text-matrix-green/40">|</span>
+                <span className="text-matrix-green/60">Agent: <span className="text-matrix-green">{selectedAgent}</span></span>
               </div>
-              
-              <p className="text-sm text-muted">Select a project directory:</p>
-              
+
+              <p className="text-xs font-mono text-cyan-accent uppercase tracking-widest">Select Project Directory</p>
+
               {/* Path breadcrumb */}
-              <div className="flex items-center gap-1 text-xs bg-surface-elevated p-3 rounded-xl overflow-x-auto">
+              <div className="flex items-center gap-1 text-xs bg-surface-container-low p-3 overflow-x-auto border border-matrix-green/20">
                 <button
                   onClick={() => setCurrentPath('')}
-                  className="text-accent hover:underline whitespace-nowrap"
+                  className="text-matrix-green hover:underline whitespace-nowrap font-mono"
                 >
-                  ~
+                  ~/
                 </button>
                 {currentPath.split('/').filter(Boolean).map((part, idx, arr) => (
                   <span key={idx} className="flex items-center gap-1">
-                    <span className="text-muted">/</span>
+                    <span className="text-matrix-green/40">/</span>
                     <button
                       onClick={() => setCurrentPath(arr.slice(0, idx + 1).join('/'))}
-                      className="text-accent hover:underline whitespace-nowrap"
+                      className="text-matrix-green hover:underline whitespace-nowrap font-mono"
                     >
                       {part}
                     </button>
@@ -345,16 +358,16 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
               {/* Model selection */}
               <div>
-                <label className="flex items-center gap-2 text-sm text-muted mb-2">
+                <label className="flex items-center gap-2 text-xs font-mono text-cyan-accent uppercase tracking-widest mb-2">
                   <Cpu size={14} />
                   Model
-                  {modelsLoading && <span className="text-xs">(loading...)</span>}
-                  {modelsError && <span className="text-xs text-error">({modelsError})</span>}
+                  {modelsLoading && <span className="text-matrix-green/60">(loading...)</span>}
+                  {modelsError && <span className="text-neon-red">({modelsError})</span>}
                 </label>
                 <select
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
-                  className="input-field w-full"
+                  className="w-full bg-surface-container-low border border-matrix-green/30 text-matrix-green font-mono px-3 py-2 text-sm focus:border-matrix-green focus:outline-none"
                   disabled={modelsLoading || !!modelsError}
                 >
                   {modelsLoading ? (
@@ -377,8 +390,19 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                       ))
                   )}
                 </select>
+
+                {/* Vision Warning */}
+                {isNonVisionModel && (
+                  <div className="mt-2 px-3 py-2 bg-neon-red/10 border border-neon-red/30 flex items-center gap-2">
+                    <AlertTriangle size={12} className="text-neon-red shrink-0" />
+                    <span className="text-[10px] font-mono text-neon-red uppercase">
+                      Text Only - This model cannot process images
+                    </span>
+                  </div>
+                )}
+
                 {!modelsLoading && !modelsError && modelProviders.length > 0 && (
-                  <p className="text-xs text-muted mt-1">
+                  <p className="text-[10px] font-mono text-matrix-green/60 mt-1">
                     {modelProviders.reduce((sum, p) => sum + p.models.length, 0)} models from {modelProviders.filter(p => p.agent === selectedAgent).length} provider(s)
                   </p>
                 )}
@@ -391,53 +415,53 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                     setSelectedDir(`~/${currentPath}`);
                     setStep('prompt');
                   }}
-                  className="w-full p-3 rounded-xl bg-accent text-white font-medium hover:bg-accent/90 transition-colors flex items-center justify-center gap-2"
+                  className="w-full p-3 bg-matrix-green text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-matrix-green-fixed transition-colors flex items-center justify-center gap-2"
                 >
-                  <Sparkles size={18} />
+                  <Sparkles size={16} />
                   Continue with ~/{currentPath}
                 </button>
               )}
 
               {/* New folder input */}
               {showNewFolderInput ? (
-                <div className="flex gap-2 items-center p-3 rounded-xl bg-surface-elevated border border-accent/30">
-                  <FolderPlus size={18} className="text-accent" />
+                <div className="flex gap-2 items-center p-3 bg-surface-container-low border border-matrix-green/30">
+                  <FolderPlus size={16} className="text-cyan-accent" />
                   <input
                     type="text"
                     value={newFolderName}
                     onChange={(e) => setNewFolderName(e.target.value)}
                     placeholder="folder name"
-                    className="flex-1 bg-transparent outline-none text-fg placeholder:text-muted"
+                    className="flex-1 bg-transparent outline-none text-matrix-green font-mono text-sm placeholder:text-matrix-green/40"
                     autoFocus
                     onKeyDown={(e) => e.key === 'Enter' && handleCreateFolder()}
                   />
                   <button
                     onClick={handleCreateFolder}
-                    className="px-3 py-1.5 rounded-lg bg-accent text-white text-sm font-medium hover:bg-accent/90"
+                    className="px-3 py-1 bg-matrix-green text-black font-mono text-xs font-bold hover:bg-matrix-green-fixed"
                   >
                     Create
                   </button>
                   <button
                     onClick={() => { setShowNewFolderInput(false); setNewFolderName(''); }}
-                    className="p-1.5 rounded-lg hover:bg-surface text-muted"
+                    className="p-1.5 text-matrix-green/60 hover:text-matrix-green"
                   >
-                    <X size={16} />
+                    <X size={14} />
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setShowNewFolderInput(true)}
-                  className="w-full flex items-center gap-2 p-3 rounded-xl border border-dashed border-border hover:border-accent/50 text-muted hover:text-accent transition-colors"
+                  className="w-full flex items-center gap-2 p-3 border border-dashed border-matrix-green/30 text-matrix-green/60 hover:text-matrix-green hover:border-matrix-green/50 font-mono text-xs transition-colors"
                 >
-                  <FolderPlus size={18} />
-                  <span className="text-sm">Create new folder</span>
+                  <FolderPlus size={16} />
+                  <span>Create new folder</span>
                 </button>
               )}
 
               {/* File list */}
               {browseLoading ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-accent" />
+                  <Loader2 className="w-6 h-6 animate-spin text-matrix-green" />
                 </div>
               ) : (
                 <div className="space-y-1 max-h-64 overflow-y-auto">
@@ -448,9 +472,9 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                         parts.pop();
                         setCurrentPath(parts.join('/'));
                       }}
-                      className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-elevated text-muted"
+                      className="w-full flex items-center gap-3 p-3 hover:bg-surface-container-low text-matrix-green/60 font-mono"
                     >
-                      <span className="text-muted">..</span>
+                      <span>..</span>
                     </button>
                   )}
                   {entries
@@ -460,21 +484,21 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                         key={entry.name}
                         onClick={() => setCurrentPath(currentPath ? `${currentPath}/${entry.name}` : entry.name)}
                         className={clsx(
-                          'w-full flex items-center gap-3 p-3 rounded-xl hover:bg-surface-elevated transition-colors',
-                          entry.isWorktree && 'opacity-50'
+                          'w-full flex items-center gap-3 p-3 hover:bg-surface-container-low transition-colors border-l-2',
+                          entry.isWorktree ? 'border-l-neon-red/30 opacity-50' : 'border-l-transparent'
                         )}
                       >
-                        <div className="p-1.5 rounded-lg bg-warning-soft">
-                          <Folder size={16} className="text-warning" />
+                        <div className="p-1">
+                          <Folder size={16} className="text-cyan-accent" />
                         </div>
-                        <span className="flex-1 text-left truncate">{entry.name}</span>
+                        <span className="flex-1 text-left font-mono text-sm text-matrix-green truncate">{entry.name}</span>
                         {entry.isGitRepo && !entry.isWorktree && (
-                          <GitBranch size={14} className="text-success" />
+                          <GitBranch size={12} className="text-matrix-green" />
                         )}
                         {entry.isWorktree && (
-                          <span className="text-xs text-muted">worktree</span>
+                          <span className="text-[10px] font-mono text-matrix-green/60">worktree</span>
                         )}
-                        <ChevronRight size={16} className="text-muted" />
+                        <ChevronRight size={14} className="text-matrix-green/40" />
                       </button>
                     ))}
                 </div>
@@ -484,31 +508,41 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
           {step === 'prompt' && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 font-mono text-xs">
                 <button
                   onClick={() => setStep('directory')}
-                  className="text-sm text-accent hover:underline"
+                  className="text-cyan-accent hover:underline"
                 >
                   ← Back
                 </button>
               </div>
 
               <div className="text-center mb-4">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-accent to-coral mb-3">
-                  <Sparkles size={24} className="text-white" />
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-matrix-green/10 mb-3 border border-matrix-green/30">
+                  <Sparkles size={20} className="text-matrix-green" />
                 </div>
-                <h3 className="text-lg font-semibold text-fg-strong">What would you like help with?</h3>
-                <p className="text-sm text-muted mt-1">Describe what you want to accomplish</p>
+                <h3 className="text-sm font-mono font-bold text-matrix-green uppercase tracking-wider">Instruct Agent</h3>
+                <p className="text-[10px] font-mono text-matrix-green/60 mt-1">Describe what you want to accomplish</p>
               </div>
+
+              {/* Vision Warning */}
+              {isNonVisionModel && (
+                <div className="px-3 py-2 bg-neon-red/10 border border-neon-red/30 flex items-center gap-2 mb-3">
+                  <AlertTriangle size={12} className="text-neon-red shrink-0" />
+                  <span className="text-[10px] font-mono text-neon-red uppercase">
+                    Note: Selected model cannot process images
+                  </span>
+                </div>
+              )}
 
               <div className="space-y-3">
                 <div>
-                  <label className="block text-sm text-muted mb-2">Your request</label>
+                  <label className="block text-xs font-mono text-cyan-accent uppercase tracking-widest mb-2">Your Request</label>
                   <textarea
                     value={initialMessage}
                     onChange={(e) => setInitialMessage(e.target.value)}
-                    placeholder="e.g., Help me add a new feature to the homepage, or review this code..."
-                    className="input-field w-full min-h-[120px] resize-none"
+                    placeholder="e.g., Help me add a new feature..."
+                    className="w-full min-h-[120px] bg-surface-container-low border border-matrix-green/30 text-matrix-green font-mono px-3 py-2 text-sm placeholder:text-matrix-green/30 focus:border-matrix-green focus:outline-none resize-none"
                     autoFocus
                   />
                 </div>
@@ -519,10 +553,10 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
         {/* Footer */}
         {step === 'prompt' && (
-          <div className="flex gap-3 p-5 border-t border-border">
+          <div className="flex gap-3 p-4 border-t border-matrix-green/30 bg-black">
             <button
               onClick={() => { onClose(); resetForm(); }}
-              className="btn btn-secondary flex-1"
+              className="flex-1 py-3 border border-matrix-green/30 text-matrix-green font-mono text-xs uppercase tracking-wider hover:bg-matrix-green/10 transition-colors disabled:opacity-40"
               disabled={createMutation.isPending}
             >
               Cancel
@@ -530,16 +564,16 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
             <button
               onClick={handleConfirmCreate}
               disabled={createMutation.isPending || !initialMessage.trim()}
-              className="btn btn-primary flex-1 flex items-center justify-center gap-2"
+              className="flex-1 py-3 bg-matrix-green text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-matrix-green-fixed transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
             >
               {createMutation.isPending ? (
                 <>
-                  <Loader2 size={16} className="animate-spin" />
+                  <Loader2 size={14} className="animate-spin" />
                   Creating...
                 </>
               ) : (
                 <>
-                  <Send size={16} />
+                  <Send size={14} />
                   Start Session
                 </>
               )}
