@@ -47,6 +47,7 @@ export interface SessionDetailResponse extends SessionSummary {
     workDir: string;
     repoDir: string;
     port: number;
+    autoApprove?: boolean;
     pendingApproval: {
         detectedAt: number;
         command: string | null;

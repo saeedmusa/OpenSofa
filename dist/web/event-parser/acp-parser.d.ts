@@ -10,6 +10,9 @@
 import { EventEmitter } from 'events';
 /**
  * ACP SessionUpdate notification structure from agentapi
+ *
+ * Current AgentAPI v0.12.1 provides: Kind, Title, Status
+ * Future fields (when AgentAPI adds full ACP support): toolCallId, Content, Locations, RawInput
  */
 export interface ACPSessionUpdate {
     AgentMessageChunk?: {
@@ -22,10 +25,44 @@ export interface ACPSessionUpdate {
     ToolCall?: {
         Kind?: string;
         Title?: string;
+        toolCallId?: string;
+        Content?: unknown[];
+        Locations?: Array<{
+            path: string;
+            line?: number;
+        }>;
+        RawInput?: Record<string, unknown>;
+        [key: string]: unknown;
     };
     ToolCallUpdate?: {
         Status?: string;
+        toolCallId?: string;
+        Content?: unknown[];
+        [key: string]: unknown;
     };
+}
+/**
+ * Parsed tool call event with all available fields
+ */
+export interface ACPToolCallEvent {
+    kind: string;
+    title: string;
+    toolCallId?: string;
+    content?: unknown[];
+    locations?: Array<{
+        path: string;
+        line?: number;
+    }>;
+    rawInput?: Record<string, unknown>;
+}
+/**
+ * Parsed tool call update event
+ */
+export interface ACPToolCallUpdateEvent {
+    status: string;
+    toolName?: string;
+    toolCallId?: string;
+    content?: unknown[];
 }
 /**
  * ACP StatusChange notification structure from agentapi

@@ -7,7 +7,7 @@
 import { createLogger } from './utils/logger.js';
 import { getConfigPath } from './utils/expand-path.js';
 import { initConfig } from './config.js';
-import { PermissionClassifier } from './permission-classifier.js';
+import { AgentStateMachine } from './agent-state-machine.js';
 import { SessionManager } from './session-manager.js';
 import { AgentRegistry } from './agent-registry.js';
 import { StatePersistence, serializeSessions } from './state-persistence.js';
@@ -45,7 +45,7 @@ async function main() {
     statePersistence = new StatePersistence(() => serializeSessions(sessionManager.getSessionsMap()));
     const persistedState = statePersistence.load();
     // 3. Initialize shared components
-    const classifier = new PermissionClassifier();
+    const classifier = new AgentStateMachine();
     const agentRegistry = new AgentRegistry();
     // Log agent discovery at startup
     agentRegistry.logDiscovery();

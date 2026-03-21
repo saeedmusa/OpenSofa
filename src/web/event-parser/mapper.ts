@@ -6,7 +6,7 @@
  */
 
 import { createLogger } from '../../utils/logger.js';
-import type { ActivityEvent } from '../activity-parser.js';
+import type { ActivityEvent, ACPToolKind } from '../activity-parser.js';
 import {
   type AGUIEvent,
   type ToolCallStartEvent,
@@ -24,6 +24,60 @@ let eventCounter = 0;
 function generateId(): string {
   return `evt_${Date.now()}_${++eventCounter}`;
 }
+
+// ──────────────────────────────────────
+// ACP Kind-based activity mapping
+// ──────────────────────────────────────
+
+interface KindMapping {
+  type: ActivityEvent['type'];
+  icon: string;
+  summaryPrefix: string;
+}
+
+/** Map ACP ToolCall.Kind to activity event properties */
+const KIND_ACTIVITY_MAP: Record<string, KindMapping> = {
+  read:   { type: 'agent_message', icon: '📖', summaryPrefix: 'Reading' },
+  edit:   { type: 'file_edited',   icon: '✏️', summaryPrefix: 'Editing' },
+  delete: { type: 'file_deleted',  icon: '🗑️', summaryPrefix: 'Deleting' },
+  execute:{ type: 'command_run',   icon: '⚡', summaryPrefix: 'Running' },
+  search: { type: 'agent_message', icon: '🔍', summaryPrefix: 'Searching' },
+  think:  { type: 'agent_message', icon: '🤔', summaryPrefix: 'Thinking' },
+  fetch:  { type: 'agent_message', icon: '🌐', summaryPrefix: 'Fetching' },
+};
+
+/** Normalize ACP Kind to lowercase for lookup */
+const normalizeKind = (kind: string): string => kind.toLowerCase();
+
+/** Determine ACP tool kind from a tool name string */
+function resolveToolKind(toolName: string): ACPToolKind {
+  const normalized = normalizeKind(toolName);
+  if (normalized in KIND_ACTIVITY_MAP) return normalized as ACPToolKind;
+  
+  // Fallback: infer kind from common tool names (for non-ACP agents)
+  if (TOOL_NAME_TO_KIND[normalized]) return TOOL_NAME_TO_KIND[normalized];
+  return 'other';
+}
+
+/** Fallback mapping from common tool names to ACP kinds (non-ACP agents) */
+const TOOL_NAME_TO_KIND: Record<string, ACPToolKind> = {
+  bash: 'execute', shell: 'execute', command: 'execute', cmd: 'execute',
+  write: 'edit', create: 'edit', new_file: 'edit', create_file: 'edit',
+  replace: 'edit', modify: 'edit', str_replace_editor: 'edit',
+  remove: 'delete', rm: 'delete', unlink: 'delete',
+  read: 'read', read_file: 'read', cat: 'read',
+  glob: 'search', grep: 'search', find: 'search',
+  webfetch: 'fetch', websearch: 'fetch',
+  test: 'execute', pytest: 'execute', jest: 'execute', vitest: 'execute',
+  build: 'execute', compile: 'execute', run: 'execute', install: 'execute',
+};
+
+/** Tool names that represent file creation (not editing) */
+const FILE_CREATION_TOOLS = new Set(['write', 'create', 'new_file', 'create_file']);
+
+// ──────────────────────────────────────
+// Helper functions
+// ──────────────────────────────────────
 
 /**
  * Check if a tool call is pending approval
@@ -49,190 +103,63 @@ function extractApprovalCommand(event: ToolCallStartEvent): string | null {
 }
 
 /**
- * Maps a tool call start to ActivityEvent
+ * Extract file path from tool call input
+ */
+function extractFilePath(input?: Record<string, unknown>): string | undefined {
+  if (!input) return undefined;
+  return (input.file_path as string) || 
+         (input.path as string) || 
+         (input.file as string) || 
+         undefined;
+}
+
+/**
+ * Maps a tool call start to ActivityEvent using ACP Kind as primary categorization.
+ * Falls back to tool name matching for non-ACP agents.
  */
 function mapToolCallStart(event: ToolCallStartEvent, sessionName: string): ActivityEvent {
   const isApproval = isPendingApproval(event);
-  const tool = event.toolName.toLowerCase();
   const command = extractApprovalCommand(event);
+  const toolLower = event.toolName.toLowerCase();
+  const kind = resolveToolKind(toolLower);
+  const mapping = KIND_ACTIVITY_MAP[kind] ?? { type: 'command_run' as const, icon: '🔧', summaryPrefix: 'Tool' };
+  const filePath = extractFilePath(event.input);
   
-  // Check if it's a bash/command tool
-  if (tool === 'bash' || tool === 'shell' || tool === 'command' || tool === 'cmd') {
-    return {
-      id: generateId(),
-      type: isApproval ? 'approval_needed' : 'command_run',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: isApproval 
-        ? `Needs approval: ${command?.slice(0, 50) || 'command'}`
-        : `Running: ${command?.slice(0, 50) || 'command'}`,
-      icon: isApproval ? '⚠️' : '⚡',
-      details: { 
-        command: command || undefined,
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-      actionable: isApproval,
-    };
-  }
+  // File creation tools (write, create) should be file_created, not file_edited
+  const isFileCreation = FILE_CREATION_TOOLS.has(toolLower);
+  const activityType = isApproval ? 'approval_needed' 
+    : isFileCreation ? 'file_created'
+    : mapping.type;
+  const icon = isApproval ? '⚠️' 
+    : isFileCreation ? '📄'
+    : mapping.icon;
   
-  // File operations
-  if (tool === 'write' || tool === 'create' || tool === 'new_file' || tool === 'create_file') {
-    const filePath = (event.input?.file_path as string) || 
-                     (event.input?.path as string) ||
-                     (event.input?.file as string);
-    return {
-      id: generateId(),
-      type: 'file_created',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: `Creating: ${filePath || 'file'}`,
-      icon: '📄',
-      details: { 
-        filePath: filePath || undefined,
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-    };
-  }
-  
-  if (tool === 'edit' || tool === 'replace' || tool === 'modify' || tool === 'str_replace_editor') {
-    const filePath = (event.input?.file_path as string) || 
-                     (event.input?.path as string) ||
-                     (event.input?.file as string);
-    return {
-      id: generateId(),
-      type: 'file_edited',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: `Editing: ${filePath || 'file'}`,
-      icon: '✏️',
-      details: { 
-        filePath: filePath || undefined,
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-    };
-  }
-  
-  if (tool === 'delete' || tool === 'remove' || tool === 'rm' || tool === 'unlink') {
-    const filePath = (event.input?.file_path as string) || 
-                     (event.input?.path as string);
-    return {
-      id: generateId(),
-      type: 'file_deleted',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: `Deleting: ${filePath || 'file'}`,
-      icon: '🗑️',
-      details: { 
-        filePath: filePath || undefined,
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-    };
-  }
-  
-  // Glob/search tools
-  if (tool === 'glob' || tool === 'grep' || tool === 'search' || tool === 'find') {
-    return {
-      id: generateId(),
-      type: 'agent_message',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: `Searching: ${JSON.stringify(event.input).slice(0, 50)}`,
-      icon: '🔍',
-      details: { 
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-    };
-  }
-  
-  // Read tool
-  if (tool === 'read' || tool === 'read_file' || tool === 'cat') {
-    const filePath = (event.input?.file_path as string) || 
-                     (event.input?.path as string);
-    return {
-      id: generateId(),
-      type: 'agent_message',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: `Reading: ${filePath || 'file'}`,
-      icon: '📖',
-      details: { 
-        filePath: filePath || undefined,
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-    };
-  }
-  
-  // Web tools
-  if (tool === 'webfetch' || tool === 'websearch' || tool === 'fetch' || tool === 'search') {
-    const query = (event.input?.query as string) || 
-                  (event.input?.url as string) ||
-                  (event.input?.query as string);
-    return {
-      id: generateId(),
-      type: 'agent_message',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: `Web: ${query?.slice(0, 50) || 'fetching'}`,
-      icon: '🌐',
-      details: { 
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-    };
-  }
-  
-  // Test tools
-  if (tool === 'test' || tool === 'pytest' || tool === 'jest' || tool === 'vitest') {
-    return {
-      id: generateId(),
-      type: 'command_run',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: `Running tests`,
-      icon: '🧪',
-      details: { 
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-    };
-  }
-  
-  // Build tools
-  if (tool === 'build' || tool === 'compile' || tool === 'run' || tool === 'install') {
-    return {
-      id: generateId(),
-      type: 'command_run',
-      timestamp: event.timestamp,
-      sessionName,
-      summary: `Building: ${event.toolName}`,
-      icon: '🔨',
-      details: { 
-        toolCallId: event.toolCallId,
-        input: event.input,
-      },
-    };
-  }
-  
-  // Default fallback
+  // Build summary from Kind + title/context
+  const contextLabel = filePath ?? command ?? event.input?.title as string ?? event.toolName;
+  const summaryPrefix = isFileCreation ? 'Creating' : mapping.summaryPrefix;
+  const summary = isApproval 
+    ? `Needs approval: ${command?.slice(0, 50) || 'command'}`
+    : `${summaryPrefix}: ${String(contextLabel).slice(0, 50)}`;
+
   return {
     id: generateId(),
-    type: 'command_run',
+    type: activityType,
     timestamp: event.timestamp,
     sessionName,
-    summary: `Tool: ${event.toolName}`,
-    icon: '🔧',
-    details: { 
+    summary,
+    icon,
+    toolKind: kind,
+    details: {
+      command: command ?? undefined,
+      filePath,
       toolCallId: event.toolCallId,
       input: event.input,
     },
+    actionable: isApproval,
   };
 }
+
+
 
 /**
  * Maps a tool call result to ActivityEvent

@@ -1,0 +1,254 @@
+"filename", "language", "JSON with Comments", "JSON", "TypeScript", "JavaScript", "Markdown", "Shell Script", "CSS", "HTML", "XML", "TypeScript JSX", "comment", "blank", "total"
+"/Users/saeed/development/OpenSofa/.opencode/context/core/standards/code-quality.md", "Markdown", 0, 0, 0, 0, 85, 0, 0, 0, 0, 0, 0, 19, 104
+"/Users/saeed/development/OpenSofa/.opencode/context/core/workflows/testing.md", "Markdown", 0, 0, 0, 0, 144, 0, 0, 0, 0, 0, 0, 43, 187
+"/Users/saeed/development/OpenSofa/.opencode/context/project-intelligence/architecture.md", "Markdown", 0, 0, 0, 0, 115, 0, 0, 0, 0, 0, 0, 21, 136
+"/Users/saeed/development/OpenSofa/.opencode/context/project-intelligence/current-state.md", "Markdown", 0, 0, 0, 0, 128, 0, 0, 0, 0, 0, 0, 32, 160
+"/Users/saeed/development/OpenSofa/.opencode/context/project-intelligence/tech-stack.md", "Markdown", 0, 0, 0, 0, 99, 0, 0, 0, 0, 0, 0, 26, 125
+"/Users/saeed/development/OpenSofa/.opencode/plans/OPENSOFAB_WEB_MVP_SPEC.md", "Markdown", 0, 0, 0, 0, 189, 0, 0, 0, 0, 0, 0, 66, 255
+"/Users/saeed/development/OpenSofa/.opencode/plans/PRODUCT_SPEC_OPENCODE_MOBILE.md", "Markdown", 0, 0, 0, 0, 295, 0, 0, 0, 0, 0, 0, 85, 380
+"/Users/saeed/development/OpenSofa/CODE_REVIEW.md", "Markdown", 0, 0, 0, 0, 152, 0, 0, 0, 0, 0, 0, 31, 183
+"/Users/saeed/development/OpenSofa/README.md", "Markdown", 0, 0, 0, 0, 137, 0, 0, 0, 0, 0, 0, 46, 183
+"/Users/saeed/development/OpenSofa/design_specifications/OPENSFOA_DESIGN_SPEC.md", "Markdown", 0, 0, 0, 0, 1020, 0, 0, 0, 0, 0, 0, 239, 1259
+"/Users/saeed/development/OpenSofa/design_specifications/design_demo.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 689, 0, 0, 20, 95, 804
+"/Users/saeed/development/OpenSofa/design_specifications/logo.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 4, 4, 41
+"/Users/saeed/development/OpenSofa/design_specifications/theme_premium.css", "CSS", 0, 0, 0, 0, 0, 0, 736, 0, 0, 0, 98, 142, 976
+"/Users/saeed/development/OpenSofa/docs/ARCHITECTURAL_GAP_ANALYSIS.md", "Markdown", 0, 0, 0, 0, 627, 0, 0, 0, 0, 0, 0, 142, 769
+"/Users/saeed/development/OpenSofa/docs/OPENSOFA_PRODUCT_SPEC.md", "Markdown", 0, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 27, 75
+"/Users/saeed/development/OpenSofa/docs/US-16-structured-sse-ag-ui.md", "Markdown", 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 13, 40
+"/Users/saeed/development/OpenSofa/docs/USER_STORIES_V2.md", "Markdown", 0, 0, 0, 0, 855, 0, 0, 0, 0, 0, 0, 260, 1115
+"/Users/saeed/development/OpenSofa/docs/review.md", "Markdown", 0, 0, 0, 0, 130, 0, 0, 0, 0, 0, 0, 81, 211
+"/Users/saeed/development/OpenSofa/ecosystem.config.js", "JavaScript", 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 1, 21
+"/Users/saeed/development/OpenSofa/opensofalogo.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 1, 39
+"/Users/saeed/development/OpenSofa/package-lock.json", "JSON", 0, 3879, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3880
+"/Users/saeed/development/OpenSofa/package.json", "JSON", 0, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 49
+"/Users/saeed/development/OpenSofa/scripts/check-prerequisites.ts", "TypeScript", 0, 0, 161, 0, 0, 0, 0, 0, 0, 0, 14, 26, 201
+"/Users/saeed/development/OpenSofa/scripts/opensofa.sh", "Shell Script", 0, 0, 0, 0, 0, 389, 0, 0, 0, 0, 39, 69, 497
+"/Users/saeed/development/OpenSofa/scripts/setup.sh", "Shell Script", 0, 0, 0, 0, 0, 166, 0, 0, 0, 0, 28, 42, 236
+"/Users/saeed/development/OpenSofa/src/agent-registry.ts", "TypeScript", 0, 0, 329, 0, 0, 0, 0, 0, 0, 0, 69, 40, 438
+"/Users/saeed/development/OpenSofa/src/agent-state-machine.ts", "TypeScript", 0, 0, 200, 0, 0, 0, 0, 0, 0, 0, 102, 42, 344
+"/Users/saeed/development/OpenSofa/src/agentapi-client.ts", "TypeScript", 0, 0, 155, 0, 0, 0, 0, 0, 0, 0, 48, 34, 237
+"/Users/saeed/development/OpenSofa/src/command-parser.ts", "TypeScript", 0, 0, 167, 0, 0, 0, 0, 0, 0, 0, 56, 23, 246
+"/Users/saeed/development/OpenSofa/src/config.ts", "TypeScript", 0, 0, 179, 0, 0, 0, 0, 0, 0, 0, 45, 45, 269
+"/Users/saeed/development/OpenSofa/src/db.ts", "TypeScript", 0, 0, 81, 0, 0, 0, 0, 0, 0, 0, 1, 15, 97
+"/Users/saeed/development/OpenSofa/src/discovery/key-discovery.ts", "TypeScript", 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 11, 10, 54
+"/Users/saeed/development/OpenSofa/src/discovery/mcp-discovery.ts", "TypeScript", 0, 0, 290, 0, 0, 0, 0, 0, 0, 0, 50, 66, 406
+"/Users/saeed/development/OpenSofa/src/discovery/mcp-tool-discovery.ts", "TypeScript", 0, 0, 147, 0, 0, 0, 0, 0, 0, 0, 34, 32, 213
+"/Users/saeed/development/OpenSofa/src/discovery/project-discovery.ts", "TypeScript", 0, 0, 170, 0, 0, 0, 0, 0, 0, 0, 61, 36, 267
+"/Users/saeed/development/OpenSofa/src/feedback-controller.ts", "TypeScript", 0, 0, 288, 0, 0, 0, 0, 0, 0, 0, 84, 50, 422
+"/Users/saeed/development/OpenSofa/src/main.ts", "TypeScript", 0, 0, 203, 0, 0, 0, 0, 0, 0, 0, 46, 41, 290
+"/Users/saeed/development/OpenSofa/src/message-queue.ts", "TypeScript", 0, 0, 165, 0, 0, 0, 0, 0, 0, 0, 6, 34, 205
+"/Users/saeed/development/OpenSofa/src/model-adapters/aider-adapter.ts", "TypeScript", 0, 0, 84, 0, 0, 0, 0, 0, 0, 0, 6, 18, 108
+"/Users/saeed/development/OpenSofa/src/model-adapters/base-adapter.ts", "TypeScript", 0, 0, 96, 0, 0, 0, 0, 0, 0, 0, 44, 13, 153
+"/Users/saeed/development/OpenSofa/src/model-adapters/claude-adapter.ts", "TypeScript", 0, 0, 154, 0, 0, 0, 0, 0, 0, 0, 46, 29, 229
+"/Users/saeed/development/OpenSofa/src/model-adapters/codex-adapter.ts", "TypeScript", 0, 0, 64, 0, 0, 0, 0, 0, 0, 0, 7, 16, 87
+"/Users/saeed/development/OpenSofa/src/model-adapters/gemini-adapter.ts", "TypeScript", 0, 0, 65, 0, 0, 0, 0, 0, 0, 0, 9, 17, 91
+"/Users/saeed/development/OpenSofa/src/model-adapters/goose-adapter.ts", "TypeScript", 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 6, 18, 90
+"/Users/saeed/development/OpenSofa/src/model-adapters/index.ts", "TypeScript", 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 5, 2, 10
+"/Users/saeed/development/OpenSofa/src/model-adapters/opencode-adapter.ts", "TypeScript", 0, 0, 182, 0, 0, 0, 0, 0, 0, 0, 75, 39, 296
+"/Users/saeed/development/OpenSofa/src/model-adapters/registry.ts", "TypeScript", 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, 58, 24, 175
+"/Users/saeed/development/OpenSofa/src/model-adapters/types.ts", "TypeScript", 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 17, 10, 55
+"/Users/saeed/development/OpenSofa/src/prerequisites-check.ts", "TypeScript", 0, 0, 103, 0, 0, 0, 0, 0, 0, 0, 15, 19, 137
+"/Users/saeed/development/OpenSofa/src/resource-monitor.ts", "TypeScript", 0, 0, 281, 0, 0, 0, 0, 0, 0, 0, 89, 51, 421
+"/Users/saeed/development/OpenSofa/src/screenshot-service.ts", "TypeScript", 0, 0, 82, 0, 0, 0, 0, 0, 0, 0, 14, 19, 115
+"/Users/saeed/development/OpenSofa/src/session-manager.ts", "TypeScript", 0, 0, 1138, 0, 0, 0, 0, 0, 0, 0, 184, 207, 1529
+"/Users/saeed/development/OpenSofa/src/state-persistence.ts", "TypeScript", 0, 0, 110, 0, 0, 0, 0, 0, 0, 0, 41, 22, 173
+"/Users/saeed/development/OpenSofa/src/template-manager.ts", "TypeScript", 0, 0, 68, 0, 0, 0, 0, 0, 0, 0, 22, 13, 103
+"/Users/saeed/development/OpenSofa/src/types.ts", "TypeScript", 0, 0, 154, 0, 0, 0, 0, 0, 0, 0, 34, 31, 219
+"/Users/saeed/development/OpenSofa/src/types/qrcode-terminal.d.ts", "TypeScript", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/saeed/development/OpenSofa/src/utils/expand-path.ts", "TypeScript", 0, 0, 54, 0, 0, 0, 0, 0, 0, 0, 40, 14, 108
+"/Users/saeed/development/OpenSofa/src/utils/logger.ts", "TypeScript", 0, 0, 52, 0, 0, 0, 0, 0, 0, 0, 17, 8, 77
+"/Users/saeed/development/OpenSofa/src/utils/path-utils.ts", "TypeScript", 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 4, 2, 12
+"/Users/saeed/development/OpenSofa/src/utils/safe-shell.ts", "TypeScript", 0, 0, 44, 0, 0, 0, 0, 0, 0, 0, 25, 8, 77
+"/Users/saeed/development/OpenSofa/src/utils/sleep.ts", "TypeScript", 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 9, 1, 13
+"/Users/saeed/development/OpenSofa/src/web/activity-parser.ts", "TypeScript", 0, 0, 28, 0, 0, 0, 0, 0, 0, 0, 18, 6, 52
+"/Users/saeed/development/OpenSofa/src/web/ag-ui-events.ts", "TypeScript", 0, 0, 262, 0, 0, 0, 0, 0, 0, 0, 114, 61, 437
+"/Users/saeed/development/OpenSofa/src/web/agent-adapters/aider-adapter.ts", "TypeScript", 0, 0, 197, 0, 0, 0, 0, 0, 0, 0, 38, 33, 268
+"/Users/saeed/development/OpenSofa/src/web/agent-adapters/claude-adapter.ts", "TypeScript", 0, 0, 227, 0, 0, 0, 0, 0, 0, 0, 45, 35, 307
+"/Users/saeed/development/OpenSofa/src/web/agent-adapters/mod.ts", "TypeScript", 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 49, 15, 99
+"/Users/saeed/development/OpenSofa/src/web/agent-adapters/opencode-adapter.ts", "TypeScript", 0, 0, 62, 0, 0, 0, 0, 0, 0, 0, 44, 18, 124
+"/Users/saeed/development/OpenSofa/src/web/auth.ts", "TypeScript", 0, 0, 151, 0, 0, 0, 0, 0, 0, 0, 57, 38, 246
+"/Users/saeed/development/OpenSofa/src/web/broadcaster.ts", "TypeScript", 0, 0, 317, 0, 0, 0, 0, 0, 0, 0, 65, 61, 443
+"/Users/saeed/development/OpenSofa/src/web/destructive-tokens.ts", "TypeScript", 0, 0, 83, 0, 0, 0, 0, 0, 0, 0, 31, 19, 133
+"/Users/saeed/development/OpenSofa/src/web/event-parser/acp-mapper.ts", "TypeScript", 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 34, 11, 105
+"/Users/saeed/development/OpenSofa/src/web/event-parser/acp-parser.ts", "TypeScript", 0, 0, 122, 0, 0, 0, 0, 0, 0, 0, 68, 21, 211
+"/Users/saeed/development/OpenSofa/src/web/event-parser/jsonl-parser.ts", "TypeScript", 0, 0, 174, 0, 0, 0, 0, 0, 0, 0, 41, 28, 243
+"/Users/saeed/development/OpenSofa/src/web/event-parser/mapper.ts", "TypeScript", 0, 0, 336, 0, 0, 0, 0, 0, 0, 0, 55, 49, 440
+"/Users/saeed/development/OpenSofa/src/web/event-parser/mod.ts", "TypeScript", 0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 6, 2, 13
+"/Users/saeed/development/OpenSofa/src/web/frontend/eslint.config.js", "JavaScript", 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 2, 24
+"/Users/saeed/development/OpenSofa/src/web/frontend/index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 2, 4, 29
+"/Users/saeed/development/OpenSofa/src/web/frontend/package-lock.json", "JSON", 0, 6695, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6696
+"/Users/saeed/development/OpenSofa/src/web/frontend/package.json", "JSON", 0, 62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 63
+"/Users/saeed/development/OpenSofa/src/web/frontend/postcss.config.js", "JavaScript", 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 0, 1, 7
+"/Users/saeed/development/OpenSofa/src/web/frontend/public/icons/icon.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 6, 0, 0, 1, 7
+"/Users/saeed/development/OpenSofa/src/web/frontend/public/manifest.json", "JSON", 0, 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 46
+"/Users/saeed/development/OpenSofa/src/web/frontend/public/offline.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 46, 0, 0, 0, 1, 47
+"/Users/saeed/development/OpenSofa/src/web/frontend/public/sw.js", "JavaScript", 0, 0, 0, 200, 0, 0, 0, 0, 0, 0, 0, 38, 238
+"/Users/saeed/development/OpenSofa/src/web/frontend/public/vite.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/App.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 221, 5, 23, 249
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/assets/opensofalogo.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 38, 0, 0, 1, 39
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/assets/react.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/ActivityFeed.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 155, 4, 20, 179
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/AddMCPServerModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 167, 9, 15, 191
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/ApprovalCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 76, 3, 11, 90
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/CameraUpload.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 126, 16, 19, 161
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/CatchUpCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 13, 22, 165
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/ConnectionStatus.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 212, 3, 7, 222
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/ConversationHistory.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 295, 34, 41, 370
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/DiffViewer.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 132, 2, 21, 155
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/ErrorBoundary.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 0, 10, 59
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/FileBrowser.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 242, 3, 22, 267
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/FileContent.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 131, 0, 15, 146
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/FileView.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 0, 6, 69
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/FilesChanged.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 99, 3, 15, 117
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/FocusTrap.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 0, 15, 79
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/Header.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 4, 5, 54
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/IOSInstallBanner.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 10, 14, 85
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/LazyFileView.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 4, 19
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/LazyTerminal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 4, 19
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/Logo.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 5, 31
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/MCPServerCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 192, 7, 15, 214
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/MCPServerList.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 65, 1, 9, 75
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/MergeConflictUI.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 179, 16, 19, 214
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/ModelPicker.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 231, 19, 22, 272
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/NewSessionModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 607, 18, 33, 658
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/NotificationSettings.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 171, 2, 14, 187
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/OfflineBanner.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 8, 9, 64
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/PageLoader.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 0, 2, 15
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/PreviewButton.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 9, 6, 47
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/SWUpdatePrompt.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 63, 10, 13, 86
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/SessionCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 111, 5, 11, 127
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/SessionList.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 58, 0, 7, 65
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/ShareButton.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 1, 7, 49
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/ShareCardGenerator.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 142, 24, 24, 190
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/Sidebar.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 68, 4, 9, 81
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/Skeleton.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 97, 0, 9, 106
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/SkipLink.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 0, 1, 11
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/SwipeableSessionCard.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 273, 1, 30, 304
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/TOTPModal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 147, 14, 22, 183
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/TabBar.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 4, 10, 144
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/Terminal.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 279, 9, 38, 326
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/Toast.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 108, 0, 22, 130
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/UndoFAB.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 116, 13, 14, 143
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/components/VoiceInput.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 82, 12, 17, 111
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useKeyboardShortcuts.ts", "TypeScript", 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 7, 43
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useOnlineStatus.ts", "TypeScript", 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 0, 5, 23
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/usePullToRefresh.ts", "TypeScript", 0, 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 10, 71
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useResponsive.ts", "TypeScript", 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 8, 44
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useSwipeGesture.ts", "TypeScript", 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 14, 18, 98
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useTOTP.ts", "TypeScript", 0, 0, 68, 0, 0, 0, 0, 0, 0, 0, 6, 8, 82
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/index.css", "CSS", 0, 0, 0, 0, 0, 0, 328, 0, 0, 0, 61, 64, 453
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/layouts/DesktopLayout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 4, 21
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/main.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 3, 19
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/providers/WebSocketProvider.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 310, 24, 54, 388
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/stores/activityStore.ts", "TypeScript", 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 7, 36
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/stores/securityStore.ts", "TypeScript", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 8, 28
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/stores/sessionStore.ts", "TypeScript", 0, 0, 132, 0, 0, 0, 0, 0, 0, 0, 0, 28, 160
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/SessionCard.test.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 103, 0, 18, 121
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/TabBar.test.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 0, 11, 84
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/Toast.test.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 0, 22, 102
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/activityStore.test.ts", "TypeScript", 0, 0, 81, 0, 0, 0, 0, 0, 0, 0, 0, 10, 91
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/api.test.ts", "TypeScript", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 5, 25
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/sessionStore.test.ts", "TypeScript", 0, 0, 128, 0, 0, 0, 0, 0, 0, 0, 0, 17, 145
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/setup.ts", "TypeScript", 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 1, 15, 82
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/terminal.test.ts", "TypeScript", 0, 0, 105, 0, 0, 0, 0, 0, 0, 0, 5, 24, 134
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/types.test.ts", "TypeScript", 0, 0, 189, 0, 0, 0, 0, 0, 0, 0, 7, 22, 218
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/useOnlineStatus.test.ts", "TypeScript", 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 5, 28
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/test/useResponsive.test.ts", "TypeScript", 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 0, 17, 80
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/types/index.ts", "TypeScript", 0, 0, 146, 0, 0, 0, 0, 0, 0, 0, 7, 18, 171
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/utils/api.ts", "TypeScript", 0, 0, 238, 0, 0, 0, 0, 0, 0, 0, 3, 40, 281
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/utils/diff.ts", "TypeScript", 0, 0, 61, 0, 0, 0, 0, 0, 0, 0, 0, 7, 68
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/utils/format.test.ts", "TypeScript", 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 3, 11, 70
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/utils/format.ts", "TypeScript", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 9, 3, 32
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/utils/haptics.ts", "TypeScript", 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 5, 1, 14
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/utils/terminal.ts", "TypeScript", 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 17, 5, 41
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/views/HomeView.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 253, 9, 24, 286
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/views/SessionView.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 435, 20, 41, 496
+"/Users/saeed/development/OpenSofa/src/web/frontend/src/views/SettingsView.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 6, 5, 36
+"/Users/saeed/development/OpenSofa/src/web/frontend/tailwind.config.js", "JavaScript", 0, 0, 0, 139, 0, 0, 0, 0, 0, 0, 14, 12, 165
+"/Users/saeed/development/OpenSofa/src/web/frontend/tsconfig.app.json", "JSON", 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 29
+"/Users/saeed/development/OpenSofa/src/web/frontend/tsconfig.json", "JSON with Comments", 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/Users/saeed/development/OpenSofa/src/web/frontend/tsconfig.node.json", "JSON", 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 27
+"/Users/saeed/development/OpenSofa/src/web/frontend/vite.config.ts", "TypeScript", 0, 0, 55, 0, 0, 0, 0, 0, 0, 0, 0, 4, 59
+"/Users/saeed/development/OpenSofa/src/web/frontend/vitest.config.ts", "TypeScript", 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 2, 17
+"/Users/saeed/development/OpenSofa/src/web/ip-ban.ts", "TypeScript", 0, 0, 45, 0, 0, 0, 0, 0, 0, 0, 3, 10, 58
+"/Users/saeed/development/OpenSofa/src/web/middleware/auth.ts", "TypeScript", 0, 0, 49, 0, 0, 0, 0, 0, 0, 0, 16, 15, 80
+"/Users/saeed/development/OpenSofa/src/web/middleware/rate-limit.ts", "TypeScript", 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 17, 18, 93
+"/Users/saeed/development/OpenSofa/src/web/notifier.ts", "TypeScript", 0, 0, 53, 0, 0, 0, 0, 0, 0, 0, 1, 15, 69
+"/Users/saeed/development/OpenSofa/src/web/routes/admin.ts", "TypeScript", 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 1, 5, 23
+"/Users/saeed/development/OpenSofa/src/web/routes/agents.ts", "TypeScript", 0, 0, 44, 0, 0, 0, 0, 0, 0, 0, 10, 14, 68
+"/Users/saeed/development/OpenSofa/src/web/routes/browse.ts", "TypeScript", 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 13, 26, 154
+"/Users/saeed/development/OpenSofa/src/web/routes/conversations.ts", "TypeScript", 0, 0, 103, 0, 0, 0, 0, 0, 0, 0, 14, 13, 130
+"/Users/saeed/development/OpenSofa/src/web/routes/files.ts", "TypeScript", 0, 0, 133, 0, 0, 0, 0, 0, 0, 0, 24, 30, 187
+"/Users/saeed/development/OpenSofa/src/web/routes/index.ts", "TypeScript", 0, 0, 61, 0, 0, 0, 0, 0, 0, 0, 25, 21, 107
+"/Users/saeed/development/OpenSofa/src/web/routes/mcp.ts", "TypeScript", 0, 0, 74, 0, 0, 0, 0, 0, 0, 0, 9, 16, 99
+"/Users/saeed/development/OpenSofa/src/web/routes/model-discovery.ts", "TypeScript", 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 25, 26, 117
+"/Users/saeed/development/OpenSofa/src/web/routes/notifications.ts", "TypeScript", 0, 0, 54, 0, 0, 0, 0, 0, 0, 0, 5, 12, 71
+"/Users/saeed/development/OpenSofa/src/web/routes/opencode-models.ts", "TypeScript", 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 16, 18, 107
+"/Users/saeed/development/OpenSofa/src/web/routes/session-changes.ts", "TypeScript", 0, 0, 71, 0, 0, 0, 0, 0, 0, 0, 9, 16, 96
+"/Users/saeed/development/OpenSofa/src/web/routes/sessions.ts", "TypeScript", 0, 0, 274, 0, 0, 0, 0, 0, 0, 0, 34, 55, 363
+"/Users/saeed/development/OpenSofa/src/web/routes/system.ts", "TypeScript", 0, 0, 47, 0, 0, 0, 0, 0, 0, 0, 11, 11, 69
+"/Users/saeed/development/OpenSofa/src/web/routes/templates.ts", "TypeScript", 0, 0, 62, 0, 0, 0, 0, 0, 0, 0, 8, 12, 82
+"/Users/saeed/development/OpenSofa/src/web/routes/totp.ts", "TypeScript", 0, 0, 140, 0, 0, 0, 0, 0, 0, 0, 25, 41, 206
+"/Users/saeed/development/OpenSofa/src/web/routes/upload.ts", "TypeScript", 0, 0, 105, 0, 0, 0, 0, 0, 0, 0, 20, 23, 148
+"/Users/saeed/development/OpenSofa/src/web/server.ts", "TypeScript", 0, 0, 716, 0, 0, 0, 0, 0, 0, 0, 75, 110, 901
+"/Users/saeed/development/OpenSofa/src/web/terminal-stream.ts", "TypeScript", 0, 0, 183, 0, 0, 0, 0, 0, 0, 0, 52, 49, 284
+"/Users/saeed/development/OpenSofa/src/web/tunnel.ts", "TypeScript", 0, 0, 145, 0, 0, 0, 0, 0, 0, 0, 30, 36, 211
+"/Users/saeed/development/OpenSofa/src/web/types.ts", "TypeScript", 0, 0, 178, 0, 0, 0, 0, 0, 0, 0, 35, 37, 250
+"/Users/saeed/development/OpenSofa/test-results/.last-run.json", "JSON", 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/saeed/development/OpenSofa/tests/agent-registry-json.test.ts", "TypeScript", 0, 0, 86, 0, 0, 0, 0, 0, 0, 0, 6, 31, 123
+"/Users/saeed/development/OpenSofa/tests/agent-registry.test.ts", "TypeScript", 0, 0, 163, 0, 0, 0, 0, 0, 0, 0, 8, 35, 206
+"/Users/saeed/development/OpenSofa/tests/agentapi-client.test.ts", "TypeScript", 0, 0, 132, 0, 0, 0, 0, 0, 0, 0, 4, 28, 164
+"/Users/saeed/development/OpenSofa/tests/all-adapters.test.ts", "TypeScript", 0, 0, 341, 0, 0, 0, 0, 0, 0, 0, 3, 60, 404
+"/Users/saeed/development/OpenSofa/tests/auth.test.ts", "TypeScript", 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 19, 30, 176
+"/Users/saeed/development/OpenSofa/tests/command-parser.extended.test.ts", "TypeScript", 0, 0, 279, 0, 0, 0, 0, 0, 0, 0, 4, 50, 333
+"/Users/saeed/development/OpenSofa/tests/command-parser.test.ts", "TypeScript", 0, 0, 180, 0, 0, 0, 0, 0, 0, 0, 3, 30, 213
+"/Users/saeed/development/OpenSofa/tests/config.test.ts", "TypeScript", 0, 0, 115, 0, 0, 0, 0, 0, 0, 0, 6, 26, 147
+"/Users/saeed/development/OpenSofa/tests/conversations.test.ts", "TypeScript", 0, 0, 116, 0, 0, 0, 0, 0, 0, 0, 6, 27, 149
+"/Users/saeed/development/OpenSofa/tests/destructive-patterns.test.ts", "TypeScript", 0, 0, 148, 0, 0, 0, 0, 0, 0, 0, 3, 39, 190
+"/Users/saeed/development/OpenSofa/tests/e2e/auth.spec.ts", "TypeScript", 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 16, 13, 65
+"/Users/saeed/development/OpenSofa/tests/e2e/fixtures.ts", "TypeScript", 0, 0, 26, 0, 0, 0, 0, 0, 0, 0, 18, 7, 51
+"/Users/saeed/development/OpenSofa/tests/e2e/mobile.spec.ts", "TypeScript", 0, 0, 97, 0, 0, 0, 0, 0, 0, 0, 24, 31, 152
+"/Users/saeed/development/OpenSofa/tests/e2e/playwright.config.cjs", "JavaScript", 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 2, 22
+"/Users/saeed/development/OpenSofa/tests/e2e/session-detail.spec.ts", "TypeScript", 0, 0, 92, 0, 0, 0, 0, 0, 0, 0, 23, 34, 149
+"/Users/saeed/development/OpenSofa/tests/e2e/sessions-list.spec.ts", "TypeScript", 0, 0, 104, 0, 0, 0, 0, 0, 0, 0, 21, 30, 155
+"/Users/saeed/development/OpenSofa/tests/e2e/test-results/.last-run.json", "JSON", 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4
+"/Users/saeed/development/OpenSofa/tests/e2e/tests/e2e-report/index.html", "HTML", 0, 0, 0, 0, 0, 0, 0, 82, 0, 0, 0, 3, 85
+"/Users/saeed/development/OpenSofa/tests/event-parser.test.ts", "TypeScript", 0, 0, 482, 0, 0, 0, 0, 0, 0, 0, 4, 85, 571
+"/Users/saeed/development/OpenSofa/tests/event-parser/acp-mapper.test.ts", "TypeScript", 0, 0, 212, 0, 0, 0, 0, 0, 0, 0, 6, 66, 284
+"/Users/saeed/development/OpenSofa/tests/event-parser/acp-parser.test.ts", "TypeScript", 0, 0, 336, 0, 0, 0, 0, 0, 0, 0, 9, 82, 427
+"/Users/saeed/development/OpenSofa/tests/feedback-controller.test.ts", "TypeScript", 0, 0, 117, 0, 0, 0, 0, 0, 0, 0, 3, 19, 139
+"/Users/saeed/development/OpenSofa/tests/key-discovery.test.ts", "TypeScript", 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 4, 17, 77
+"/Users/saeed/development/OpenSofa/tests/message-queue.test.ts", "TypeScript", 0, 0, 157, 0, 0, 0, 0, 0, 0, 0, 16, 44, 217
+"/Users/saeed/development/OpenSofa/tests/model-adapters/claude-adapter.test.ts", "TypeScript", 0, 0, 192, 0, 0, 0, 0, 0, 0, 0, 59, 62, 313
+"/Users/saeed/development/OpenSofa/tests/model-adapters/new-adapters.test.ts", "TypeScript", 0, 0, 171, 0, 0, 0, 0, 0, 0, 0, 3, 44, 218
+"/Users/saeed/development/OpenSofa/tests/model-adapters/opencode-adapter.test.ts", "TypeScript", 0, 0, 98, 0, 0, 0, 0, 0, 0, 0, 17, 27, 142
+"/Users/saeed/development/OpenSofa/tests/model-adapters/registry.test.ts", "TypeScript", 0, 0, 211, 0, 0, 0, 0, 0, 0, 0, 65, 64, 340
+"/Users/saeed/development/OpenSofa/tests/opencode-adapter.test.ts", "TypeScript", 0, 0, 322, 0, 0, 0, 0, 0, 0, 0, 3, 60, 385
+"/Users/saeed/development/OpenSofa/tests/permission-classifier.test.ts", "TypeScript", 0, 0, 67, 0, 0, 0, 0, 0, 0, 0, 3, 18, 88
+"/Users/saeed/development/OpenSofa/tests/phase5-deprecation.test.ts", "TypeScript", 0, 0, 90, 0, 0, 0, 0, 0, 0, 0, 6, 19, 115
+"/Users/saeed/development/OpenSofa/tests/prerequisites-check.test.ts", "TypeScript", 0, 0, 180, 0, 0, 0, 0, 0, 0, 0, 5, 66, 251
+"/Users/saeed/development/OpenSofa/tests/rate-limit.test.ts", "TypeScript", 0, 0, 82, 0, 0, 0, 0, 0, 0, 0, 22, 20, 124
+"/Users/saeed/development/OpenSofa/tests/resource-monitor.test.ts", "TypeScript", 0, 0, 257, 0, 0, 0, 0, 0, 0, 0, 21, 69, 347
+"/Users/saeed/development/OpenSofa/tests/safe-shell.test.ts", "TypeScript", 0, 0, 112, 0, 0, 0, 0, 0, 0, 0, 15, 24, 151
+"/Users/saeed/development/OpenSofa/tests/screenshot-service.extended.test.ts", "TypeScript", 0, 0, 329, 0, 0, 0, 0, 0, 0, 0, 13, 56, 398
+"/Users/saeed/development/OpenSofa/tests/screenshot-service.test.ts", "TypeScript", 0, 0, 57, 0, 0, 0, 0, 0, 0, 0, 3, 12, 72
+"/Users/saeed/development/OpenSofa/tests/security.test.ts", "TypeScript", 0, 0, 221, 0, 0, 0, 0, 0, 0, 0, 24, 52, 297
+"/Users/saeed/development/OpenSofa/tests/session-inflight-worktree.test.ts", "TypeScript", 0, 0, 136, 0, 0, 0, 0, 0, 0, 0, 26, 28, 190
+"/Users/saeed/development/OpenSofa/tests/session-manager-additional.test.ts", "TypeScript", 0, 0, 173, 0, 0, 0, 0, 0, 0, 0, 11, 27, 211
+"/Users/saeed/development/OpenSofa/tests/session-manager-json.test.ts", "TypeScript", 0, 0, 158, 0, 0, 0, 0, 0, 0, 0, 9, 32, 199
+"/Users/saeed/development/OpenSofa/tests/session-manager-ports.test.ts", "TypeScript", 0, 0, 87, 0, 0, 0, 0, 0, 0, 0, 21, 19, 127
+"/Users/saeed/development/OpenSofa/tests/session-manager.edge-cases.test.ts", "TypeScript", 0, 0, 276, 0, 0, 0, 0, 0, 0, 0, 23, 49, 348
+"/Users/saeed/development/OpenSofa/tests/state-persistence.test.ts", "TypeScript", 0, 0, 164, 0, 0, 0, 0, 0, 0, 0, 8, 21, 193
+"/Users/saeed/development/OpenSofa/tests/totp.test.ts", "TypeScript", 0, 0, 147, 0, 0, 0, 0, 0, 0, 0, 12, 31, 190
+"/Users/saeed/development/OpenSofa/tests/utils.test.ts", "TypeScript", 0, 0, 75, 0, 0, 0, 0, 0, 0, 0, 3, 12, 90
+"/Users/saeed/development/OpenSofa/tests/web/auth.test.ts", "TypeScript", 0, 0, 161, 0, 0, 0, 0, 0, 0, 0, 4, 45, 210
+"/Users/saeed/development/OpenSofa/tests/web/broadcaster.test.ts", "TypeScript", 0, 0, 266, 0, 0, 0, 0, 0, 0, 0, 5, 72, 343
+"/Users/saeed/development/OpenSofa/tests/web/files.test.ts", "TypeScript", 0, 0, 124, 0, 0, 0, 0, 0, 0, 0, 5, 32, 161
+"/Users/saeed/development/OpenSofa/tests/web/routes/model-discovery.test.ts", "TypeScript", 0, 0, 148, 0, 0, 0, 0, 0, 0, 0, 34, 40, 222
+"/Users/saeed/development/OpenSofa/tests/web/server.test.ts", "TypeScript", 0, 0, 125, 0, 0, 0, 0, 0, 0, 0, 4, 26, 155
+"/Users/saeed/development/OpenSofa/tests/web/session-manager-events.test.ts", "TypeScript", 0, 0, 111, 0, 0, 0, 0, 0, 0, 0, 9, 22, 142
+"/Users/saeed/development/OpenSofa/tests/web/terminal-stream.test.ts", "TypeScript", 0, 0, 222, 0, 0, 0, 0, 0, 0, 0, 4, 50, 276
+"/Users/saeed/development/OpenSofa/tests/web/tunnel.test.ts", "TypeScript", 0, 0, 244, 0, 0, 0, 0, 0, 0, 0, 4, 60, 308
+"/Users/saeed/development/OpenSofa/tsconfig.json", "JSON with Comments", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23
+"/Users/saeed/development/OpenSofa/vitest.config.ts", "TypeScript", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 22
+"Total", "-", 30, 10783, 20615, 407, 4051, 555, 1064, 840, 117, 6898, 3876, 6817, 56053

@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../utils/api';
 import type { ModelProvider, DiscoveredModel } from '../types';
 import { useToast } from './Toast';
-import { X, Folder, GitBranch, ChevronRight, Loader2, Cpu, FolderPlus, Send, Sparkles, AlertTriangle } from 'lucide-react';
+import { X, Folder, GitBranch, ChevronRight, Loader2, Cpu, FolderPlus, Send, Sparkles, AlertTriangle, Layout } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface BrowseEntry {
@@ -14,6 +14,15 @@ interface BrowseEntry {
   isWorktree?: boolean;
 }
 
+interface SessionTemplate {
+  id: string;
+  name: string;
+  agent: string;
+  model?: string;
+  description?: string;
+  mcpServers?: string[];
+}
+
 interface NewSessionModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,7 +30,7 @@ interface NewSessionModalProps {
 
 export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   const navigate = useNavigate();
-  const [step, setStep] = useState<'agent' | 'directory' | 'prompt'>('agent');
+  const [step, setStep] = useState<'template' | 'agent' | 'directory' | 'prompt'>('template');
   const [selectedAgent, setSelectedAgent] = useState<string>('');
   const [selectedModel, setSelectedModel] = useState<string>('');
   const [selectedDir, setSelectedDir] = useState<string>('');
@@ -29,6 +38,8 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   const [currentPath, setCurrentPath] = useState('');
   const [showNewFolderInput, setShowNewFolderInput] = useState(false);
   const [newFolderName, setNewFolderName] = useState('');
+  const [templates, setTemplates] = useState<SessionTemplate[]>([]);
+  const [templatesLoading, setTemplatesLoading] = useState(false);
   const toast = useToast();
   const queryClient = useQueryClient();
 
@@ -37,12 +48,23 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
     const urlToken = new URLSearchParams(window.location.search).get('token');
     if (urlToken) {
       localStorage.setItem('opensofa_token', urlToken);
-      // Clean URL
       const url = new URL(window.location.href);
       url.searchParams.delete('token');
       window.history.replaceState({}, '', url.toString());
     }
   }, []);
+
+  // Load templates when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+    let cancelled = false;
+    setTemplatesLoading(true);
+    api.templates.list()
+      .then(data => { if (!cancelled) setTemplates(data.templates); })
+      .catch(() => { /* templates are optional */ })
+      .finally(() => { if (!cancelled) setTemplatesLoading(false); });
+    return () => { cancelled = true; };
+  }, [isOpen]);
 
   // Auto-generate session name from initial message
   const generateSessionName = (message: string): string => {
@@ -280,6 +302,55 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
 
         {/* Content */}
         <div className="p-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+          {step === 'template' && (
+            <div className="space-y-4">
+              <p className="text-xs font-mono text-[#00FFFF] uppercase tracking-widest mb-3">Choose Template</p>
+
+              {/* Custom (no template) */}
+              <button
+                onClick={() => setStep('agent')}
+                className="w-full text-left p-3 border border-[#3b4b37]/30 bg-[#0e0e0e] hover:border-[#00FF41]/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Sparkles size={16} className="text-[#00FF41]" />
+                  <div>
+                    <p className="text-sm font-mono text-[#e2e2e2]">Custom</p>
+                    <p className="text-xs font-mono text-[rgba(255,255,255,0.4)]">Start from scratch</p>
+                  </div>
+                </div>
+              </button>
+
+              {/* Templates */}
+              {templatesLoading ? (
+                <div className="flex justify-center py-4">
+                  <Loader2 className="w-5 h-5 animate-spin text-[#00FF41]" />
+                </div>
+              ) : templates.length > 0 ? (
+                templates.map((tmpl) => (
+                  <button
+                    key={tmpl.id}
+                    onClick={() => {
+                      setSelectedAgent(tmpl.agent);
+                      if (tmpl.model) setSelectedModel(tmpl.model);
+                      setStep('directory');
+                    }}
+                    className="w-full text-left p-3 border border-[#3b4b37]/30 bg-[#0e0e0e] hover:border-[#00FF41]/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Layout size={16} className="text-cyan-accent" />
+                      <div>
+                        <p className="text-sm font-mono text-[#e2e2e2]">{tmpl.name}</p>
+                        <p className="text-xs font-mono text-[rgba(255,255,255,0.4)]">
+                          {tmpl.description || `${tmpl.agent}${tmpl.model ? ` / ${tmpl.model}` : ''}`}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))
+              ) : null}
+            </div>
+          )}
+
           {step === 'agent' && (
             <div className="space-y-4">
               <p className="text-xs font-mono text-[#00FFFF] uppercase tracking-widest mb-3">Select Coding Agent</p>

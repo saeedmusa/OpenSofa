@@ -9,6 +9,10 @@ import { createLogger } from '../../utils/logger.js';
 import { AdapterRegistry } from '../../model-adapters/registry.js';
 import { OpenCodeAdapter } from '../../model-adapters/opencode-adapter.js';
 import { ClaudeAdapter } from '../../model-adapters/claude-adapter.js';
+import { AiderAdapter } from '../../model-adapters/aider-adapter.js';
+import { GeminiAdapter } from '../../model-adapters/gemini-adapter.js';
+import { GooseAdapter } from '../../model-adapters/goose-adapter.js';
+import { CodexAdapter } from '../../model-adapters/codex-adapter.js';
 import type { AgentType } from '../../types.js';
 import type { ModelDiscoveryResult } from '../../model-adapters/types.js';
 
@@ -32,6 +36,22 @@ function initializeAdapters(): void {
   // Register Claude adapter
   registry.registerAdapter(new ClaudeAdapter());
   log.debug('Claude adapter registered');
+
+  // Register Aider adapter
+  registry.registerAdapter(new AiderAdapter());
+  log.debug('Aider adapter registered');
+
+  // Register Gemini adapter
+  registry.registerAdapter(new GeminiAdapter());
+  log.debug('Gemini adapter registered');
+
+  // Register Goose adapter
+  registry.registerAdapter(new GooseAdapter());
+  log.debug('Goose adapter registered');
+
+  // Register Codex adapter
+  registry.registerAdapter(new CodexAdapter());
+  log.debug('Codex adapter registered');
 
   initialized = true;
   log.info('Model discovery adapters initialized');

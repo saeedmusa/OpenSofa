@@ -88,8 +88,19 @@ export const createUploadRoutes = (deps) => {
                 size: file.size,
                 type: file.type,
             });
+            // Notify the agent about the uploaded image
+            const relativePath = path.relative(session.workDir, filePath);
+            try {
+                const { AgentAPIClient } = await import('../../agentapi-client.js');
+                const client = new AgentAPIClient(session.port);
+                await client.sendUserMessage(`[User attached image: ${relativePath}]`);
+                log.info('Agent notified of upload', { session: name, relativePath });
+            }
+            catch (notifyErr) {
+                log.warn('Could not notify agent of upload', { session: name, error: String(notifyErr) });
+            }
             return c.json(success({
-                url: path.relative(session.workDir, filePath),
+                url: relativePath,
                 filename,
                 size: file.size,
             }));

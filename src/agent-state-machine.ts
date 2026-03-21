@@ -203,6 +203,64 @@ export class AgentStateMachine {
   }
 
   /**
+   * Check if this is a true approval request (destructive action) vs a conversational question.
+   * 
+   * Approval request: has pending execute tool call, contains explicit approval indicators,
+   * or contains a command in backticks followed by '?'.
+   * Conversational question: only ends with '?' without tool call context or command.
+   */
+  isApprovalRequest(agentOutput: string): boolean {
+    // True approval: pending execute tool call
+    if (this.hasPendingToolCall && this.lastACPToolKind === 'execute') {
+      return true;
+    }
+
+    // True approval: contains explicit approval indicators
+    for (const indicator of APPROVAL_INDICATORS) {
+      if (agentOutput.includes(indicator)) {
+        return true;
+      }
+    }
+
+    // True approval: contains a command in backticks followed by '?'
+    // e.g., "Run `npm install`?" or "Execute `git push`?"
+    if (agentOutput.includes('`') && agentOutput.trim().endsWith('?')) {
+      const backtickStart = agentOutput.indexOf('`');
+      const backtickEnd = agentOutput.indexOf('`', backtickStart + 1);
+      if (backtickEnd !== -1) {
+        return true;
+      }
+    }
+
+    // Not an approval — just a conversational question
+    return false;
+  }
+
+  /**
+   * Check if this is a conversational question (not an approval request).
+   * Returns true when the agent asks a question without a pending destructive action.
+   */
+  isConversationalQuestion(message: string): boolean {
+    if (!message || !message.trim()) return false;
+
+    // If it's an approval request, it's not a conversational question
+    if (this.isApprovalRequest(message)) return false;
+
+    // Check if last non-empty line ends with '?'
+    const lines = message.trim().split('\n');
+    let lastNonEmptyLine: string | undefined;
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      if (line && line.trim().length > 0) {
+        lastNonEmptyLine = line;
+        break;
+      }
+    }
+
+    return Boolean(lastNonEmptyLine && lastNonEmptyLine.trim().endsWith('?'));
+  }
+
+  /**
    * Extract the command being approved from the message.
    * Uses structural analysis — no regex.
    *
@@ -271,16 +329,9 @@ export class AgentStateMachine {
    * @returns Object with isApproval and optional command
    */
   classify(agentOutput: string): { isApproval: boolean; command: string | null } {
-    const isApproval = this.isWaitingForInput(agentOutput);
+    const isApproval = this.isApprovalRequest(agentOutput);
     const command = isApproval ? this.extractCommand(agentOutput) : null;
     return { isApproval, command };
-  }
-
-  /**
-   * Drop-in replacement for PermissionClassifier.isApprovalRequest()
-   */
-  isApprovalRequest(agentOutput: string): boolean {
-    return this.isWaitingForInput(agentOutput);
   }
 }
 

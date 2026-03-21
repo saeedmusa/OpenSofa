@@ -9,6 +9,7 @@ import EventEmitter from 'events';
 import EventSource from 'eventsource';
 import { v4 as uuidv4 } from 'uuid';
 import { createLogger } from './utils/logger.js';
+import { persistMessage } from './web/routes/conversations.js';
 const log = createLogger('feedback');
 /**
  * Feedback Controller class
@@ -71,6 +72,21 @@ export class FeedbackController extends EventEmitter {
                 log.error('Failed to parse SessionUpdate', { error: String(err) });
             }
         });
+        // Handle agent_error events
+        this.eventSource.addEventListener('agent_error', (e) => {
+            try {
+                const data = JSON.parse(e.data);
+                log.error('Agent error received', { session: this.session.name, message: data.message, level: data.level });
+                this.emitEvent({
+                    type: 'error',
+                    priority: 'p0',
+                    content: data.message || 'Agent encountered an error',
+                });
+            }
+            catch (err) {
+                log.error('Failed to parse agent_error', { error: String(err) });
+            }
+        });
         // Handle connection open
         this.eventSource.onopen = () => {
             const isReconnect = this.connected || this.reconnectAttempts > 0;
@@ -116,6 +132,8 @@ export class FeedbackController extends EventEmitter {
             delta = data.message;
             this.lastSeenMessageId = data.id;
             this.lastMessageContent = '';
+            // Persist new agent message to SQLite
+            persistMessage(this.session.name, data.id, 'agent', data.message);
         }
         else {
             // Same message ID, content grew — extract only the new part
@@ -136,12 +154,21 @@ export class FeedbackController extends EventEmitter {
         // an approval pattern re-triggers a p0 event, flooding notifications.
         const approvalDetected = this.classifier.isApprovalRequest(data.message);
         const isNewApproval = approvalDetected && data.id !== this.lastApprovalMessageId;
+        const isConversationalQuestion = !approvalDetected && this.classifier.isConversationalQuestion(data.message);
         if (isNewApproval) {
             this.lastApprovalMessageId = data.id;
             this.emitEvent({
                 type: 'approval',
                 priority: 'p0',
                 content: data.message,
+                agentMessageId: data.id,
+            });
+        }
+        else if (isConversationalQuestion && isNewMessage) {
+            this.emitEvent({
+                type: 'information_requested',
+                priority: 'p1',
+                content: delta,
                 agentMessageId: data.id,
             });
         }

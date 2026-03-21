@@ -13,6 +13,11 @@ import { createAdminRoutes } from './admin.js';
 import { createBrowseRoutes } from './browse.js';
 import { createOpenCodeModelsRoutes } from './opencode-models.js';
 import { createModelDiscoveryRoutes } from './model-discovery.js';
+import { createTOTPRoutes } from './totp.js';
+import { createMCPRoutes } from './mcp.js';
+import { createConversationRoutes } from './conversations.js';
+import { createSessionChangesRoutes } from './session-changes.js';
+import { createTemplateRoutes } from './templates.js';
 // ──────────────────────────────────────
 // Factory - creates all routes
 // ──────────────────────────────────────
@@ -28,6 +33,8 @@ export const createApiRoutes = (deps) => {
         getSession: (name) => deps.sessionManager.getByName(name) ?? null,
     };
     app.route('/sessions', createFilesRoutes(filesDeps));
+    // Mount session changes routes (git diff per session)
+    app.route('/sessions', createSessionChangesRoutes({ getSession: (name) => deps.sessionManager.getByName(name) ?? null }));
     // Mount agents routes
     const agentsDeps = {
         agentRegistry: deps.agentRegistry,
@@ -51,6 +58,14 @@ export const createApiRoutes = (deps) => {
     app.route('/notifications', createNotificationsRoutes({ notifier: deps.notifier }));
     // Mount admin routes
     app.route('/admin', createAdminRoutes({ revokeToken: deps.revokeToken }));
+    // Mount TOTP routes (step-up auth for destructive commands)
+    app.route('/totp', createTOTPRoutes(deps.token));
+    // Mount MCP routes (read-only server discovery)
+    app.route('/mcp', createMCPRoutes());
+    // Mount conversation history routes
+    app.route('/conversations', createConversationRoutes());
+    // Mount session templates routes
+    app.route('/templates', createTemplateRoutes());
     return app;
 };
 //# sourceMappingURL=index.js.map

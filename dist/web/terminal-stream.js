@@ -66,7 +66,6 @@ export const createTerminalStream = (deps) => {
     const tailProcesses = new Map();
     const logPaths = new Map();
     const subscribers = new Map();
-    const broadcastBuffers = new Map();
     const broadcastToSubscribers = (port, data) => {
         if (deps?.onOutput) {
             deps.onOutput(port, data);

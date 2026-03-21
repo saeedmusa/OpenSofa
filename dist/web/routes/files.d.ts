@@ -9,10 +9,6 @@ import { Hono } from 'hono';
  */
 export declare const detectLanguage: (filePath: string) => string;
 /**
- * Check if path is within allowed directory (prevent traversal)
- */
-export declare const isPathWithinDir: (targetPath: string, allowedDir: string) => boolean;
-/**
  * Format file size for display
  */
 export declare const formatFileSize: (bytes: number) => string;

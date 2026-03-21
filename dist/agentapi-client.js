@@ -45,6 +45,19 @@ export class AgentAPIClient {
     async sendRaw(content) {
         return this.postMessage({ content, type: 'raw' });
     }
+    /**
+     * Fetch the full conversation history from AgentAPI.
+     * Returns all messages (user + agent) in chronological order.
+     */
+    async getMessages() {
+        const res = await fetch(`${this.baseUrl}/messages`, {
+            signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+        });
+        if (!res.ok) {
+            throw new AgentAPIError(`HTTP ${res.status}`, res.status);
+        }
+        return (await res.json());
+    }
     // ── Server-Sent Events (SSE) ────────────────────────────────
     /**
      * Connect to the AgentAPI event stream.

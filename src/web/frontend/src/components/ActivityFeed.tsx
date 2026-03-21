@@ -3,6 +3,7 @@ import { useWebSocket } from '../providers/WebSocketProvider';
 import { clsx } from 'clsx';
 import type { ActivityEvent } from '../types';
 import { DiffViewer } from './DiffViewer';
+import { CatchUpCard } from './CatchUpCard';
 
 interface ActivityFeedProps {
   sessionName: string;
@@ -25,6 +26,9 @@ export function ActivityFeed({ sessionName }: ActivityFeedProps) {
 
   return (
     <div className="space-y-6 p-5">
+      {/* Catch-up banner — shows after reconnect */}
+      <CatchUpCard sessionName={sessionName} />
+
       {grouped.map(({ label, events: groupEvents }) => (
         <div key={label} className="animate-float-in">
           {/* Time divider — scan-line style, no heavy borders */}
@@ -78,7 +82,8 @@ function ActivityCard({ event, style }: ActivityCardProps) {
       className={clsx(
         "surface-floating p-3 cursor-pointer transition-all duration-150 animate-scale-in group",
         isError && "border-neon-red/30",
-        isApproval && "border-warning/30"
+        isApproval && "border-warning/30",
+        event.mcpServer && "border-cyan-accent/20"
       )}
       onClick={() => setExpanded(!expanded)}
       style={style}
@@ -89,6 +94,7 @@ function ActivityCard({ event, style }: ActivityCardProps) {
           'w-8 h-8 flex items-center justify-center flex-shrink-0 transition-transform',
           isError ? 'bg-danger-soft border border-neon-red/20' : 
           isApproval ? 'bg-warning-soft border border-warning/20' : 
+          event.mcpServer ? 'bg-cyan-accent/10 border border-cyan-accent/20' :
           'bg-accent-soft border border-matrix-green/20',
           'group-hover:scale-110'
         )}>
@@ -96,6 +102,19 @@ function ActivityCard({ event, style }: ActivityCardProps) {
         </div>
         
         <div className="flex-1 min-w-0">
+          {/* MCP badge */}
+          {event.mcpServer && (
+            <div className="flex items-center gap-1 mb-1">
+              <span className="text-[10px] font-mono text-cyan-accent bg-cyan-accent/10 px-1.5 py-0.5 border border-cyan-accent/20">
+                MCP: {event.mcpServer}
+              </span>
+              {event.mcpTool && (
+                <span className="text-[10px] font-mono text-[rgba(255,255,255,0.4)]">
+                  {event.mcpTool}
+                </span>
+              )}
+            </div>
+          )}
           <p className="text-sm text-on-surface font-mono leading-relaxed break-words">{event.summary}</p>
           
           {expanded && event.details && (

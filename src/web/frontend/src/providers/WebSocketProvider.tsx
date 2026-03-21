@@ -59,6 +59,7 @@ interface WSContextValue {
   unsubscribeTerminal: () => void;
   send: (message: { type: string; payload?: unknown }) => void;
   dismissOfflineBanner: () => void;
+  reconnect: () => void;
 }
 
 const WSContext = createContext<WSContextValue | null>(null);
@@ -90,7 +91,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
   // Idempotency: Keep track of recently processed event UUIDs to prevent duplicates
   const processedEventIdsRef = useRef<Set<string>>(new Set());
-  const MAX_PROCESSED_IDS = 1000;
+  const MAX_PROCESSED_IDS = 5000;
 
   // Load last known sequence on mount for session recovery
   const maxSequenceRef = useRef(parseInt(localStorage.getItem(SEQUENCE_KEY) || '0', 10));
@@ -192,13 +193,16 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       if (!token) return;
 
       const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      const wsUrl = `${protocol}//${window.location.host}/ws?token=${token}`;
+      const wsUrl = `${protocol}//${window.location.host}/ws`;
 
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
 
       ws.onopen = () => {
         if (mountedRef.current) {
+          // Send auth token as first message (not in URL for security)
+          ws.send(JSON.stringify({ type: 'auth', token }));
+          
           reconnectDelayRef.current = 1000; // Reset exponential backoff
           reconnectAttemptsRef.current = 0; // Reset attempt counter
           setConnected(true);
@@ -217,7 +221,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
           const lastSeq = maxSequenceRef.current;
           if (lastSeq > 0) {
             console.log(`[WS] Session recovery: requesting events since ${lastSeq}`);
-            ws.send(JSON.stringify({ type: 'sync_request', since: lastSeq }));
+            ws.send(JSON.stringify({ type: 'sync_request', payload: { since: lastSeq } }));
           }
 
           // Flush queued messages on reconnect
@@ -364,6 +368,18 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     setShowOfflineBanner(false);
   }, []);
 
+  // Manual reconnect — used when server is unreachable
+  const reconnect = useCallback(() => {
+    reconnectAttemptsRef.current = 0;
+    reconnectDelayRef.current = 1000;
+    setReconnectError(false);
+    setConnectionStatus('reconnecting');
+    // Close existing socket and let the onclose handler trigger reconnect
+    if (wsRef.current) {
+      wsRef.current.close();
+    }
+  }, []);
+
   return (
     <WSContext.Provider value={{ 
       connected, 
@@ -376,7 +392,8 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       subscribeTerminal, 
       unsubscribeTerminal, 
       send,
-      dismissOfflineBanner
+      dismissOfflineBanner,
+      reconnect
     }}>
       {children}
     </WSContext.Provider>

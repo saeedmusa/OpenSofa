@@ -6,6 +6,7 @@
 import { Hono } from 'hono';
 import { success, error } from '../types.js';
 import { createLogger } from '../../utils/logger.js';
+import { discoverAPIKeys } from '../../discovery/key-discovery.js';
 const log = createLogger('web:routes:system');
 export const createSystemRoutes = (deps) => {
     const app = new Hono();
@@ -38,6 +39,11 @@ export const createSystemRoutes = (deps) => {
             log.error('Failed to restart tunnel', { error: String(err) });
             return c.json(error('Failed to restart tunnel', 'TUNNEL_ERROR'), 500);
         }
+    });
+    // GET /api/status/keys - Get API key configuration status (never exposes values)
+    app.get('/keys', (c) => {
+        const keys = discoverAPIKeys();
+        return c.json(success({ keys }));
     });
     return app;
 };

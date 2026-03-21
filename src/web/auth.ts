@@ -226,7 +226,7 @@ let defaultTokenManager: TokenManager | null = null;
  */
 export const loadOrGenerateToken = (config?: WebConfig): string => {
   // In E2E test mode, use a fixed test token (64 hex chars = 32 bytes)
-  if (process.env.E2E_TEST === 'true') {
+  if (process.env.E2E_TEST === 'true' && process.env.NODE_ENV !== 'production') {
     return 'e2e0000000000000000000000000000000000000000000000000000000000000';
   }
 

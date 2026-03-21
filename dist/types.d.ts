@@ -61,7 +61,7 @@ export interface SSEStatusChange {
     status: 'stable' | 'running';
 }
 export type EventPriority = 'p0' | 'p1' | 'p2';
-export type FeedbackEventType = 'text' | 'screenshot' | 'approval' | 'status' | 'error' | 'completion' | 'tool_call' | 'tool_result';
+export type FeedbackEventType = 'text' | 'screenshot' | 'approval' | 'status' | 'error' | 'completion' | 'tool_call' | 'tool_result' | 'information_requested';
 export interface FeedbackEvent {
     id: string;
     sessionName: string;

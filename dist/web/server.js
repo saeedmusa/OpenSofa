@@ -20,7 +20,8 @@ import { createTerminalStream } from './terminal-stream.js';
 import { bodyLimit } from 'hono/body-limit';
 import { createRateLimiter } from './middleware/rate-limit.js';
 import { createAuthMiddleware, validateWebSocketAuth } from './middleware/auth.js';
-import { createDefaultTokenManager } from './auth.js';
+import { isIpBanned, recordIpStrike } from './ip-ban.js';
+import { createDefaultTokenManager, validateToken } from './auth.js';
 import { ACPEventParser } from './event-parser/acp-parser.js';
 import { mapACPTextToAGUI, mapACPToolCallToAGUI, mapACPToolResultToAGUI } from './event-parser/acp-mapper.js';
 import { mapAGUIToActivityEvent } from './event-parser/mapper.js';
@@ -178,7 +179,7 @@ export const createWebServer = (deps) => {
             origin: (origin) => {
                 if (!origin)
                     return '';
-                const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+                const isLocalhost = origin === `http://localhost:${WEB_PORT}` || origin === `http://127.0.0.1:${WEB_PORT}`;
                 const tunnelUrl = tunnelManager?.getUrl();
                 const isTunnel = tunnelUrl ? origin === tunnelUrl || origin.startsWith(tunnelUrl) : false;
                 if (isLocalhost || isTunnel) {
@@ -250,6 +251,7 @@ export const createWebServer = (deps) => {
             getUptime,
             getSystemResources,
             revokeToken,
+            token,
         });
         app.route('/api', apiRoutes);
         // Serve static files from built frontend
@@ -263,9 +265,70 @@ export const createWebServer = (deps) => {
             if (c.req.path.startsWith('/api')) {
                 return c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404);
             }
-            // Try to serve index.html for SPA routing
+            // Development mode: proxy to Vite dev server if frontend not built
+            const isDev = process.env.NODE_ENV !== 'production';
+            const vitePort = process.env.VITE_PORT || '5173';
+            const indexPath = path.join(frontendDist, 'index.html');
+            const frontendBuilt = fs.existsSync(indexPath);
+            if (isDev && !frontendBuilt) {
+                try {
+                    const viteUrl = `http://localhost:${vitePort}${c.req.path}`;
+                    const response = await fetch(viteUrl, {
+                        headers: Object.fromEntries(Object.entries(c.req.header()).filter(([, v]) => v !== undefined)),
+                    });
+                    const body = await response.text();
+                    const contentType = response.headers.get('content-type') || 'text/html';
+                    return new Response(body, {
+                        status: response.status,
+                        headers: { 'content-type': contentType },
+                    });
+                }
+                catch {
+                    return c.html(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <title>OpenSofa Web</title>
+              <meta charset="utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1">
+              <style>
+                body { 
+                  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                  background: #030712;
+                  color: #e5e5e5;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  min-height: 100vh;
+                  margin: 0;
+                }
+                .container { text-align: center; padding: 2rem; }
+                h1 { margin-bottom: 1rem; }
+                p { color: #9ca3af; margin-bottom: 0.5rem; }
+                code { 
+                  background: #1f2937;
+                  padding: 0.25rem 0.5rem;
+                  border-radius: 0.25rem;
+                  font-size: 0.875rem;
+                }
+              </style>
+            </head>
+            <body>
+              <div class="container">
+                <h1>OpenSofa Web</h1>
+                <p>Vite dev server not running on port ${vitePort}.</p>
+                <p>Start it with: <code>npm run dev:frontend</code></p>
+                <p style="margin-top: 2rem;">
+                  <a href="https://github.com/anomalyco/opensofa" style="color: #60a5fa;">Documentation</a>
+                </p>
+              </div>
+            </body>
+            </html>
+          `, 503);
+                }
+            }
+            // Production mode: serve built frontend
             try {
-                const indexPath = path.join(frontendDist, 'index.html');
                 const indexContent = await fs.promises.readFile(indexPath, 'utf-8');
                 return c.html(indexContent, 200);
             }
@@ -320,8 +383,6 @@ export const createWebServer = (deps) => {
         // Create WebSocket server attached to HTTP server
         wss = new WebSocketServer({ server: httpServer, path: '/ws' });
         wss.on('connection', (ws, req) => {
-            // Validate auth
-            const url = req.url || '';
             // Extract IP from request
             const cfIP = req.headers['cf-connecting-ip'];
             const forwarded = req.headers['x-forwarded-for'];
@@ -335,26 +396,110 @@ export const createWebServer = (deps) => {
             else {
                 ip = req.socket?.remoteAddress || 'unknown-ip';
             }
-            if (!validateWebSocketAuth(url, ip, token)) {
-                log.warn('WebSocket connection rejected - invalid token');
-                ws.close(1008, 'Unauthorized');
+            // Check IP ban immediately
+            if (isIpBanned(ip)) {
+                log.warn('WebSocket connection rejected - IP banned');
+                ws.close(1008, 'IP banned');
                 return;
             }
+            const url = req.url || '';
             const clientId = randomUUID();
-            // Store socket reference for terminal streaming
-            storeClientSocket(clientId, ws);
-            // Add to broadcaster
-            broadcaster.addClient(ws, clientId);
-            log.debug('WebSocket client connected', { clientId });
-            // Note: incoming messages are handled by the broadcaster's addClient
-            // which sets up its own ws.on('message') handler that calls onClientMessage
-            ws.on('close', () => {
-                removeClientSocket(clientId);
-                broadcaster.removeClient(clientId);
-                log.debug('WebSocket client disconnected', { clientId });
-            });
-            ws.on('error', (err) => {
-                log.warn('WebSocket error', { clientId, error: String(err) });
+            let authenticated = false;
+            // Handle message-based auth (new secure method)
+            const authTimeout = setTimeout(() => {
+                if (!authenticated) {
+                    log.warn('WebSocket auth timeout', { clientId });
+                    ws.close(1008, 'Authentication timeout');
+                }
+            }, 5000); // 5 second timeout for auth
+            ws.once('message', (data) => {
+                try {
+                    const message = JSON.parse(data.toString());
+                    if (message.type === 'auth' && message.token) {
+                        if (validateToken(message.token, token)) {
+                            authenticated = true;
+                            clearTimeout(authTimeout);
+                            // Complete connection setup
+                            storeClientSocket(clientId, ws);
+                            broadcaster.addClient(ws, clientId);
+                            log.debug('WebSocket client connected (message auth)', { clientId });
+                            // Send auth success
+                            ws.send(JSON.stringify({ type: 'auth_success' }));
+                            // Set up close handler
+                            ws.on('close', () => {
+                                removeClientSocket(clientId);
+                                broadcaster.removeClient(clientId);
+                                log.debug('WebSocket client disconnected', { clientId });
+                            });
+                            ws.on('error', (err) => {
+                                log.warn('WebSocket error', { clientId, error: String(err) });
+                            });
+                        }
+                        else {
+                            recordIpStrike(ip);
+                            log.warn('WebSocket connection rejected - invalid token (message auth)');
+                            ws.close(1008, 'Unauthorized');
+                        }
+                    }
+                    else {
+                        // Fall back to URL token validation for backward compatibility
+                        if (validateWebSocketAuth(url, ip, token)) {
+                            authenticated = true;
+                            clearTimeout(authTimeout);
+                            storeClientSocket(clientId, ws);
+                            broadcaster.addClient(ws, clientId);
+                            log.debug('WebSocket client connected (URL auth)', { clientId });
+                            ws.on('close', () => {
+                                removeClientSocket(clientId);
+                                broadcaster.removeClient(clientId);
+                                log.debug('WebSocket client disconnected', { clientId });
+                            });
+                            ws.on('error', (err) => {
+                                log.warn('WebSocket error', { clientId, error: String(err) });
+                            });
+                            // Process the message as normal - forward to any handlers
+                            // Note: Client messages are handled by the broadcaster's message handler
+                            try {
+                                const msg = JSON.parse(data.toString());
+                                if (msg.type && msg.type !== 'auth') {
+                                    // Handle non-auth messages (sync_request, etc.)
+                                    // The broadcaster manages its own message handlers
+                                }
+                            }
+                            catch {
+                                // Binary or non-JSON message - ignore or handle as needed
+                            }
+                        }
+                        else {
+                            recordIpStrike(ip);
+                            log.warn('WebSocket connection rejected - invalid auth');
+                            ws.close(1008, 'Unauthorized');
+                        }
+                    }
+                }
+                catch {
+                    // Invalid JSON - treat as URL auth attempt
+                    if (validateWebSocketAuth(url, ip, token)) {
+                        authenticated = true;
+                        clearTimeout(authTimeout);
+                        storeClientSocket(clientId, ws);
+                        broadcaster.addClient(ws, clientId);
+                        log.debug('WebSocket client connected (URL auth - binary)', { clientId });
+                        ws.on('close', () => {
+                            removeClientSocket(clientId);
+                            broadcaster.removeClient(clientId);
+                            log.debug('WebSocket client disconnected', { clientId });
+                        });
+                        ws.on('error', (err) => {
+                            log.warn('WebSocket error', { clientId, error: String(err) });
+                        });
+                    }
+                    else {
+                        recordIpStrike(ip);
+                        log.warn('WebSocket connection rejected - invalid auth');
+                        ws.close(1008, 'Unauthorized');
+                    }
+                }
             });
         });
         // Wire SessionManager events to broadcaster and terminal stream

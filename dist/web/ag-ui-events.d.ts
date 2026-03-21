@@ -439,8 +439,8 @@ export declare const OpenCodeToolUseSchema: z.ZodObject<{
         tool: z.ZodString;
         state: z.ZodObject<{
             status: z.ZodEnum<{
-                failed: "failed";
                 completed: "completed";
+                failed: "failed";
                 in_progress: "in_progress";
                 pending_approval: "pending_approval";
             }>;
@@ -545,8 +545,8 @@ export declare const OpenCodeEventSchema: z.ZodDiscriminatedUnion<[z.ZodObject<{
         tool: z.ZodString;
         state: z.ZodObject<{
             status: z.ZodEnum<{
-                failed: "failed";
                 completed: "completed";
+                failed: "failed";
                 in_progress: "in_progress";
                 pending_approval: "pending_approval";
             }>;

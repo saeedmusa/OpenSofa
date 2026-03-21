@@ -40,14 +40,20 @@ export function mapACPTextToAGUI(chunk) {
  *
  * AG-UI Output:
  *   ToolCallStartEvent with Kind as toolName
+ *   If status is 'pending_approval', injects _pendingApproval marker
  */
-export function mapACPToolCallToAGUI(tool) {
+export function mapACPToolCallToAGUI(tool, status) {
+    const isPending = status === 'pending_approval';
+    const hasInput = tool.Title || isPending;
     return {
         type: 'TOOL_CALL_START',
         timestamp: Date.now(),
         toolCallId: generateToolCallId(),
         toolName: tool.Kind ?? 'unknown',
-        input: tool.Title ? { title: tool.Title } : undefined,
+        input: hasInput ? {
+            ...(tool.Title ? { title: tool.Title } : {}),
+            ...(isPending ? { _pendingApproval: true } : {}),
+        } : undefined,
     };
 }
 /**

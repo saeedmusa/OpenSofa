@@ -1,0 +1,338 @@
+Date : 2026-03-21 06:38:54
+Directory : /Users/saeed/development/OpenSofa
+Total : 252 files,  45360 codes, 3876 comments, 6817 blanks, all 56053 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| TypeScript         |        153 |     20,615 |      3,261 |      4,352 |     28,228 |
+| JSON               |          9 |     10,783 |          4 |         11 |     10,798 |
+| TypeScript JSX     |         53 |      6,898 |        345 |        839 |      8,082 |
+| Markdown           |         15 |      4,051 |          0 |      1,131 |      5,182 |
+| CSS                |          2 |      1,064 |        159 |        206 |      1,429 |
+| HTML               |          4 |        840 |         22 |        103 |        965 |
+| Shell Script       |          2 |        555 |         67 |        111 |        733 |
+| JavaScript         |          6 |        407 |         14 |         56 |        477 |
+| XML                |          6 |        117 |          4 |          7 |        128 |
+| JSON with Comments |          2 |         30 |          0 |          1 |         31 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++--------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                       | files      | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                          |        252 |     45,360 |      3,876 |      6,817 |     56,053 |
+| . (Files)                                                                                  |          8 |      4,317 |          0 |         83 |      4,400 |
+| .opencode                                                                                  |          7 |      1,055 |          0 |        292 |      1,347 |
+| .opencode/context                                                                          |          5 |        571 |          0 |        141 |        712 |
+| .opencode/context/core                                                                     |          2 |        229 |          0 |         62 |        291 |
+| .opencode/context/core/standards                                                           |          1 |         85 |          0 |         19 |        104 |
+| .opencode/context/core/workflows                                                           |          1 |        144 |          0 |         43 |        187 |
+| .opencode/context/project-intelligence                                                     |          3 |        342 |          0 |         79 |        421 |
+| .opencode/plans                                                                            |          2 |        484 |          0 |        151 |        635 |
+| design_specifications                                                                      |          4 |      2,478 |        122 |        480 |      3,080 |
+| docs                                                                                       |          5 |      1,687 |          0 |        523 |      2,210 |
+| scripts                                                                                    |          3 |        716 |         81 |        137 |        934 |
+| src                                                                                        |        170 |     26,589 |      3,026 |      3,354 |     32,969 |
+| src (Files)                                                                                |         16 |      3,703 |        856 |        686 |      5,245 |
+| src/discovery                                                                              |          4 |        640 |        156 |        144 |        940 |
+| src/model-adapters                                                                         |         10 |        835 |        273 |        186 |      1,294 |
+| src/types                                                                                  |          1 |          5 |          0 |          1 |          6 |
+| src/utils                                                                                  |          5 |        159 |         95 |         33 |        287 |
+| src/web                                                                                    |        134 |     21,247 |      1,646 |      2,304 |     25,197 |
+| src/web (Files)                                                                            |         11 |      2,161 |        481 |        442 |      3,084 |
+| src/web/agent-adapters                                                                     |          4 |        521 |        176 |        101 |        798 |
+| src/web/event-parser                                                                       |          5 |        697 |        204 |        111 |      1,012 |
+| src/web/frontend                                                                           |         96 |     16,322 |        503 |      1,278 |     18,103 |
+| src/web/frontend (Files)                                                                   |         11 |      7,070 |         20 |         34 |      7,124 |
+| src/web/frontend/public                                                                    |          5 |        298 |          0 |         41 |        339 |
+| src/web/frontend/public (Files)                                                            |          4 |        292 |          0 |         40 |        332 |
+| src/web/frontend/public/icons                                                              |          1 |          6 |          0 |          1 |          7 |
+| src/web/frontend/src                                                                       |         80 |      8,954 |        483 |      1,203 |     10,640 |
+| src/web/frontend/src (Files)                                                               |          3 |        565 |         66 |         90 |        721 |
+| src/web/frontend/src/assets                                                                |          2 |         39 |          0 |          1 |         40 |
+| src/web/frontend/src/components                                                            |         43 |      5,365 |        281 |        634 |      6,280 |
+| src/web/frontend/src/hooks                                                                 |          6 |        285 |         20 |         56 |        361 |
+| src/web/frontend/src/layouts                                                               |          1 |         17 |          0 |          4 |         21 |
+| src/web/frontend/src/providers                                                             |          1 |        310 |         24 |         54 |        388 |
+| src/web/frontend/src/stores                                                                |          3 |        181 |          0 |         43 |        224 |
+| src/web/frontend/src/test                                                                  |         11 |        931 |         13 |        166 |      1,110 |
+| src/web/frontend/src/types                                                                 |          1 |        146 |          7 |         18 |        171 |
+| src/web/frontend/src/utils                                                                 |          6 |        402 |         37 |         67 |        506 |
+| src/web/frontend/src/views                                                                 |          3 |        713 |         35 |         70 |        818 |
+| src/web/middleware                                                                         |          2 |        107 |         33 |         33 |        173 |
+| src/web/routes                                                                             |         16 |      1,439 |        249 |        339 |      2,027 |
+| test-results                                                                               |          1 |          4 |          0 |          0 |          4 |
+| tests                                                                                      |         54 |      8,514 |        647 |      1,948 |     11,109 |
+| tests (Files)                                                                              |         32 |      5,432 |        317 |      1,136 |      6,885 |
+| tests/e2e                                                                                  |          8 |        461 |        102 |        120 |        683 |
+| tests/e2e (Files)                                                                          |          6 |        375 |        102 |        117 |        594 |
+| tests/e2e/test-results                                                                     |          1 |          4 |          0 |          0 |          4 |
+| tests/e2e/tests                                                                            |          1 |         82 |          0 |          3 |         85 |
+| tests/e2e/tests/e2e-report                                                                 |          1 |         82 |          0 |          3 |         85 |
+| tests/event-parser                                                                         |          2 |        548 |         15 |        148 |        711 |
+| tests/model-adapters                                                                       |          4 |        672 |        144 |        197 |      1,013 |
+| tests/web                                                                                  |          8 |      1,401 |         69 |        347 |      1,817 |
+| tests/web (Files)                                                                          |          7 |      1,253 |         35 |        307 |      1,595 |
+| tests/web/routes                                                                           |          1 |        148 |         34 |         40 |        222 |
++--------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++--------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                   | language           | code       | comment    | blank      | total      |
++--------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| /Users/saeed/development/OpenSofa/.opencode/context/core/standards/code-quality.md         | Markdown           |         85 |          0 |         19 |        104 |
+| /Users/saeed/development/OpenSofa/.opencode/context/core/workflows/testing.md              | Markdown           |        144 |          0 |         43 |        187 |
+| /Users/saeed/development/OpenSofa/.opencode/context/project-intelligence/architecture.md   | Markdown           |        115 |          0 |         21 |        136 |
+| /Users/saeed/development/OpenSofa/.opencode/context/project-intelligence/current-state.md  | Markdown           |        128 |          0 |         32 |        160 |
+| /Users/saeed/development/OpenSofa/.opencode/context/project-intelligence/tech-stack.md     | Markdown           |         99 |          0 |         26 |        125 |
+| /Users/saeed/development/OpenSofa/.opencode/plans/OPENSOFAB_WEB_MVP_SPEC.md                | Markdown           |        189 |          0 |         66 |        255 |
+| /Users/saeed/development/OpenSofa/.opencode/plans/PRODUCT_SPEC_OPENCODE_MOBILE.md          | Markdown           |        295 |          0 |         85 |        380 |
+| /Users/saeed/development/OpenSofa/CODE_REVIEW.md                                           | Markdown           |        152 |          0 |         31 |        183 |
+| /Users/saeed/development/OpenSofa/README.md                                                | Markdown           |        137 |          0 |         46 |        183 |
+| /Users/saeed/development/OpenSofa/design_specifications/OPENSFOA_DESIGN_SPEC.md            | Markdown           |      1,020 |          0 |        239 |      1,259 |
+| /Users/saeed/development/OpenSofa/design_specifications/design_demo.html                   | HTML               |        689 |         20 |         95 |        804 |
+| /Users/saeed/development/OpenSofa/design_specifications/logo.svg                           | XML                |         33 |          4 |          4 |         41 |
+| /Users/saeed/development/OpenSofa/design_specifications/theme_premium.css                  | CSS                |        736 |         98 |        142 |        976 |
+| /Users/saeed/development/OpenSofa/docs/ARCHITECTURAL_GAP_ANALYSIS.md                       | Markdown           |        627 |          0 |        142 |        769 |
+| /Users/saeed/development/OpenSofa/docs/OPENSOFA_PRODUCT_SPEC.md                            | Markdown           |         48 |          0 |         27 |         75 |
+| /Users/saeed/development/OpenSofa/docs/US-16-structured-sse-ag-ui.md                       | Markdown           |         27 |          0 |         13 |         40 |
+| /Users/saeed/development/OpenSofa/docs/USER_STORIES_V2.md                                  | Markdown           |        855 |          0 |        260 |      1,115 |
+| /Users/saeed/development/OpenSofa/docs/review.md                                           | Markdown           |        130 |          0 |         81 |        211 |
+| /Users/saeed/development/OpenSofa/ecosystem.config.js                                      | JavaScript         |         20 |          0 |          1 |         21 |
+| /Users/saeed/development/OpenSofa/opensofalogo.svg                                         | XML                |         38 |          0 |          1 |         39 |
+| /Users/saeed/development/OpenSofa/package-lock.json                                        | JSON               |      3,879 |          0 |          1 |      3,880 |
+| /Users/saeed/development/OpenSofa/package.json                                             | JSON               |         48 |          0 |          1 |         49 |
+| /Users/saeed/development/OpenSofa/scripts/check-prerequisites.ts                           | TypeScript         |        161 |         14 |         26 |        201 |
+| /Users/saeed/development/OpenSofa/scripts/opensofa.sh                                      | Shell Script       |        389 |         39 |         69 |        497 |
+| /Users/saeed/development/OpenSofa/scripts/setup.sh                                         | Shell Script       |        166 |         28 |         42 |        236 |
+| /Users/saeed/development/OpenSofa/src/agent-registry.ts                                    | TypeScript         |        329 |         69 |         40 |        438 |
+| /Users/saeed/development/OpenSofa/src/agent-state-machine.ts                               | TypeScript         |        200 |        102 |         42 |        344 |
+| /Users/saeed/development/OpenSofa/src/agentapi-client.ts                                   | TypeScript         |        155 |         48 |         34 |        237 |
+| /Users/saeed/development/OpenSofa/src/command-parser.ts                                    | TypeScript         |        167 |         56 |         23 |        246 |
+| /Users/saeed/development/OpenSofa/src/config.ts                                            | TypeScript         |        179 |         45 |         45 |        269 |
+| /Users/saeed/development/OpenSofa/src/db.ts                                                | TypeScript         |         81 |          1 |         15 |         97 |
+| /Users/saeed/development/OpenSofa/src/discovery/key-discovery.ts                           | TypeScript         |         33 |         11 |         10 |         54 |
+| /Users/saeed/development/OpenSofa/src/discovery/mcp-discovery.ts                           | TypeScript         |        290 |         50 |         66 |        406 |
+| /Users/saeed/development/OpenSofa/src/discovery/mcp-tool-discovery.ts                      | TypeScript         |        147 |         34 |         32 |        213 |
+| /Users/saeed/development/OpenSofa/src/discovery/project-discovery.ts                       | TypeScript         |        170 |         61 |         36 |        267 |
+| /Users/saeed/development/OpenSofa/src/feedback-controller.ts                               | TypeScript         |        288 |         84 |         50 |        422 |
+| /Users/saeed/development/OpenSofa/src/main.ts                                              | TypeScript         |        203 |         46 |         41 |        290 |
+| /Users/saeed/development/OpenSofa/src/message-queue.ts                                     | TypeScript         |        165 |          6 |         34 |        205 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/aider-adapter.ts                      | TypeScript         |         84 |          6 |         18 |        108 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/base-adapter.ts                       | TypeScript         |         96 |         44 |         13 |        153 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/claude-adapter.ts                     | TypeScript         |        154 |         46 |         29 |        229 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/codex-adapter.ts                      | TypeScript         |         64 |          7 |         16 |         87 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/gemini-adapter.ts                     | TypeScript         |         65 |          9 |         17 |         91 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/goose-adapter.ts                      | TypeScript         |         66 |          6 |         18 |         90 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/index.ts                              | TypeScript         |          3 |          5 |          2 |         10 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/opencode-adapter.ts                   | TypeScript         |        182 |         75 |         39 |        296 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/registry.ts                           | TypeScript         |         93 |         58 |         24 |        175 |
+| /Users/saeed/development/OpenSofa/src/model-adapters/types.ts                              | TypeScript         |         28 |         17 |         10 |         55 |
+| /Users/saeed/development/OpenSofa/src/prerequisites-check.ts                               | TypeScript         |        103 |         15 |         19 |        137 |
+| /Users/saeed/development/OpenSofa/src/resource-monitor.ts                                  | TypeScript         |        281 |         89 |         51 |        421 |
+| /Users/saeed/development/OpenSofa/src/screenshot-service.ts                                | TypeScript         |         82 |         14 |         19 |        115 |
+| /Users/saeed/development/OpenSofa/src/session-manager.ts                                   | TypeScript         |      1,138 |        184 |        207 |      1,529 |
+| /Users/saeed/development/OpenSofa/src/state-persistence.ts                                 | TypeScript         |        110 |         41 |         22 |        173 |
+| /Users/saeed/development/OpenSofa/src/template-manager.ts                                  | TypeScript         |         68 |         22 |         13 |        103 |
+| /Users/saeed/development/OpenSofa/src/types.ts                                             | TypeScript         |        154 |         34 |         31 |        219 |
+| /Users/saeed/development/OpenSofa/src/types/qrcode-terminal.d.ts                           | TypeScript         |          5 |          0 |          1 |          6 |
+| /Users/saeed/development/OpenSofa/src/utils/expand-path.ts                                 | TypeScript         |         54 |         40 |         14 |        108 |
+| /Users/saeed/development/OpenSofa/src/utils/logger.ts                                      | TypeScript         |         52 |         17 |          8 |         77 |
+| /Users/saeed/development/OpenSofa/src/utils/path-utils.ts                                  | TypeScript         |          6 |          4 |          2 |         12 |
+| /Users/saeed/development/OpenSofa/src/utils/safe-shell.ts                                  | TypeScript         |         44 |         25 |          8 |         77 |
+| /Users/saeed/development/OpenSofa/src/utils/sleep.ts                                       | TypeScript         |          3 |          9 |          1 |         13 |
+| /Users/saeed/development/OpenSofa/src/web/activity-parser.ts                               | TypeScript         |         28 |         18 |          6 |         52 |
+| /Users/saeed/development/OpenSofa/src/web/ag-ui-events.ts                                  | TypeScript         |        262 |        114 |         61 |        437 |
+| /Users/saeed/development/OpenSofa/src/web/agent-adapters/aider-adapter.ts                  | TypeScript         |        197 |         38 |         33 |        268 |
+| /Users/saeed/development/OpenSofa/src/web/agent-adapters/claude-adapter.ts                 | TypeScript         |        227 |         45 |         35 |        307 |
+| /Users/saeed/development/OpenSofa/src/web/agent-adapters/mod.ts                            | TypeScript         |         35 |         49 |         15 |         99 |
+| /Users/saeed/development/OpenSofa/src/web/agent-adapters/opencode-adapter.ts               | TypeScript         |         62 |         44 |         18 |        124 |
+| /Users/saeed/development/OpenSofa/src/web/auth.ts                                          | TypeScript         |        151 |         57 |         38 |        246 |
+| /Users/saeed/development/OpenSofa/src/web/broadcaster.ts                                   | TypeScript         |        317 |         65 |         61 |        443 |
+| /Users/saeed/development/OpenSofa/src/web/destructive-tokens.ts                            | TypeScript         |         83 |         31 |         19 |        133 |
+| /Users/saeed/development/OpenSofa/src/web/event-parser/acp-mapper.ts                       | TypeScript         |         60 |         34 |         11 |        105 |
+| /Users/saeed/development/OpenSofa/src/web/event-parser/acp-parser.ts                       | TypeScript         |        122 |         68 |         21 |        211 |
+| /Users/saeed/development/OpenSofa/src/web/event-parser/jsonl-parser.ts                     | TypeScript         |        174 |         41 |         28 |        243 |
+| /Users/saeed/development/OpenSofa/src/web/event-parser/mapper.ts                           | TypeScript         |        336 |         55 |         49 |        440 |
+| /Users/saeed/development/OpenSofa/src/web/event-parser/mod.ts                              | TypeScript         |          5 |          6 |          2 |         13 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/eslint.config.js                        | JavaScript         |         22 |          0 |          2 |         24 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/index.html                              | HTML               |         23 |          2 |          4 |         29 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/package-lock.json                       | JSON               |      6,695 |          0 |          1 |      6,696 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/package.json                            | JSON               |         62 |          0 |          1 |         63 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/postcss.config.js                       | JavaScript         |          6 |          0 |          1 |          7 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/public/icons/icon.svg                   | XML                |          6 |          0 |          1 |          7 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/public/manifest.json                    | JSON               |         45 |          0 |          1 |         46 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/public/offline.html                     | HTML               |         46 |          0 |          1 |         47 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/public/sw.js                            | JavaScript         |        200 |          0 |         38 |        238 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/public/vite.svg                         | XML                |          1 |          0 |          0 |          1 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/App.tsx                             | TypeScript JSX     |        221 |          5 |         23 |        249 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/assets/opensofalogo.svg             | XML                |         38 |          0 |          1 |         39 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/assets/react.svg                    | XML                |          1 |          0 |          0 |          1 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/ActivityFeed.tsx         | TypeScript JSX     |        155 |          4 |         20 |        179 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/AddMCPServerModal.tsx    | TypeScript JSX     |        167 |          9 |         15 |        191 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/ApprovalCard.tsx         | TypeScript JSX     |         76 |          3 |         11 |         90 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/CameraUpload.tsx         | TypeScript JSX     |        126 |         16 |         19 |        161 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/CatchUpCard.tsx          | TypeScript JSX     |        130 |         13 |         22 |        165 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/ConnectionStatus.tsx     | TypeScript JSX     |        212 |          3 |          7 |        222 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/ConversationHistory.tsx  | TypeScript JSX     |        295 |         34 |         41 |        370 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/DiffViewer.tsx           | TypeScript JSX     |        132 |          2 |         21 |        155 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/ErrorBoundary.tsx        | TypeScript JSX     |         49 |          0 |         10 |         59 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/FileBrowser.tsx          | TypeScript JSX     |        242 |          3 |         22 |        267 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/FileContent.tsx          | TypeScript JSX     |        131 |          0 |         15 |        146 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/FileView.tsx             | TypeScript JSX     |         63 |          0 |          6 |         69 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/FilesChanged.tsx         | TypeScript JSX     |         99 |          3 |         15 |        117 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/FocusTrap.tsx            | TypeScript JSX     |         64 |          0 |         15 |         79 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/Header.tsx               | TypeScript JSX     |         45 |          4 |          5 |         54 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/IOSInstallBanner.tsx     | TypeScript JSX     |         61 |         10 |         14 |         85 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/LazyFileView.tsx         | TypeScript JSX     |         15 |          0 |          4 |         19 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/LazyTerminal.tsx         | TypeScript JSX     |         15 |          0 |          4 |         19 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/Logo.tsx                 | TypeScript JSX     |         26 |          0 |          5 |         31 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/MCPServerCard.tsx        | TypeScript JSX     |        192 |          7 |         15 |        214 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/MCPServerList.tsx        | TypeScript JSX     |         65 |          1 |          9 |         75 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/MergeConflictUI.tsx      | TypeScript JSX     |        179 |         16 |         19 |        214 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/ModelPicker.tsx          | TypeScript JSX     |        231 |         19 |         22 |        272 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/NewSessionModal.tsx      | TypeScript JSX     |        607 |         18 |         33 |        658 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/NotificationSettings.tsx | TypeScript JSX     |        171 |          2 |         14 |        187 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/OfflineBanner.tsx        | TypeScript JSX     |         47 |          8 |          9 |         64 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/PageLoader.tsx           | TypeScript JSX     |         13 |          0 |          2 |         15 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/PreviewButton.tsx        | TypeScript JSX     |         32 |          9 |          6 |         47 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/SWUpdatePrompt.tsx       | TypeScript JSX     |         63 |         10 |         13 |         86 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/SessionCard.tsx          | TypeScript JSX     |        111 |          5 |         11 |        127 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/SessionList.tsx          | TypeScript JSX     |         58 |          0 |          7 |         65 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/ShareButton.tsx          | TypeScript JSX     |         41 |          1 |          7 |         49 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/ShareCardGenerator.tsx   | TypeScript JSX     |        142 |         24 |         24 |        190 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/Sidebar.tsx              | TypeScript JSX     |         68 |          4 |          9 |         81 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/Skeleton.tsx             | TypeScript JSX     |         97 |          0 |          9 |        106 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/SkipLink.tsx             | TypeScript JSX     |         10 |          0 |          1 |         11 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/SwipeableSessionCard.tsx | TypeScript JSX     |        273 |          1 |         30 |        304 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/TOTPModal.tsx            | TypeScript JSX     |        147 |         14 |         22 |        183 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/TabBar.tsx               | TypeScript JSX     |        130 |          4 |         10 |        144 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/Terminal.tsx             | TypeScript JSX     |        279 |          9 |         38 |        326 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/Toast.tsx                | TypeScript JSX     |        108 |          0 |         22 |        130 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/UndoFAB.tsx              | TypeScript JSX     |        116 |         13 |         14 |        143 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/components/VoiceInput.tsx           | TypeScript JSX     |         82 |         12 |         17 |        111 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useKeyboardShortcuts.ts       | TypeScript         |         36 |          0 |          7 |         43 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useOnlineStatus.ts            | TypeScript         |         18 |          0 |          5 |         23 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/usePullToRefresh.ts           | TypeScript         |         61 |          0 |         10 |         71 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useResponsive.ts              | TypeScript         |         36 |          0 |          8 |         44 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useSwipeGesture.ts            | TypeScript         |         66 |         14 |         18 |         98 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/hooks/useTOTP.ts                    | TypeScript         |         68 |          6 |          8 |         82 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/index.css                           | CSS                |        328 |         61 |         64 |        453 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/layouts/DesktopLayout.tsx           | TypeScript JSX     |         17 |          0 |          4 |         21 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/main.tsx                            | TypeScript JSX     |         16 |          0 |          3 |         19 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/providers/WebSocketProvider.tsx     | TypeScript JSX     |        310 |         24 |         54 |        388 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/stores/activityStore.ts             | TypeScript         |         29 |          0 |          7 |         36 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/stores/securityStore.ts             | TypeScript         |         20 |          0 |          8 |         28 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/stores/sessionStore.ts              | TypeScript         |        132 |          0 |         28 |        160 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/SessionCard.test.tsx           | TypeScript JSX     |        103 |          0 |         18 |        121 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/TabBar.test.tsx                | TypeScript JSX     |         73 |          0 |         11 |         84 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/Toast.test.tsx                 | TypeScript JSX     |         80 |          0 |         22 |        102 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/activityStore.test.ts          | TypeScript         |         81 |          0 |         10 |         91 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/api.test.ts                    | TypeScript         |         20 |          0 |          5 |         25 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/sessionStore.test.ts           | TypeScript         |        128 |          0 |         17 |        145 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/setup.ts                       | TypeScript         |         66 |          1 |         15 |         82 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/terminal.test.ts               | TypeScript         |        105 |          5 |         24 |        134 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/types.test.ts                  | TypeScript         |        189 |          7 |         22 |        218 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/useOnlineStatus.test.ts        | TypeScript         |         23 |          0 |          5 |         28 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/test/useResponsive.test.ts          | TypeScript         |         63 |          0 |         17 |         80 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/types/index.ts                      | TypeScript         |        146 |          7 |         18 |        171 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/utils/api.ts                        | TypeScript         |        238 |          3 |         40 |        281 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/utils/diff.ts                       | TypeScript         |         61 |          0 |          7 |         68 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/utils/format.test.ts                | TypeScript         |         56 |          3 |         11 |         70 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/utils/format.ts                     | TypeScript         |         20 |          9 |          3 |         32 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/utils/haptics.ts                    | TypeScript         |          8 |          5 |          1 |         14 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/utils/terminal.ts                   | TypeScript         |         19 |         17 |          5 |         41 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/views/HomeView.tsx                  | TypeScript JSX     |        253 |          9 |         24 |        286 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/views/SessionView.tsx               | TypeScript JSX     |        435 |         20 |         41 |        496 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/src/views/SettingsView.tsx              | TypeScript JSX     |         25 |          6 |          5 |         36 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/tailwind.config.js                      | JavaScript         |        139 |         14 |         12 |        165 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/tsconfig.app.json                       | JSON               |         24 |          2 |          3 |         29 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/tsconfig.json                           | JSON with Comments |          7 |          0 |          1 |          8 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/tsconfig.node.json                      | JSON               |         22 |          2 |          3 |         27 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/vite.config.ts                          | TypeScript         |         55 |          0 |          4 |         59 |
+| /Users/saeed/development/OpenSofa/src/web/frontend/vitest.config.ts                        | TypeScript         |         15 |          0 |          2 |         17 |
+| /Users/saeed/development/OpenSofa/src/web/ip-ban.ts                                        | TypeScript         |         45 |          3 |         10 |         58 |
+| /Users/saeed/development/OpenSofa/src/web/middleware/auth.ts                               | TypeScript         |         49 |         16 |         15 |         80 |
+| /Users/saeed/development/OpenSofa/src/web/middleware/rate-limit.ts                         | TypeScript         |         58 |         17 |         18 |         93 |
+| /Users/saeed/development/OpenSofa/src/web/notifier.ts                                      | TypeScript         |         53 |          1 |         15 |         69 |
+| /Users/saeed/development/OpenSofa/src/web/routes/admin.ts                                  | TypeScript         |         17 |          1 |          5 |         23 |
+| /Users/saeed/development/OpenSofa/src/web/routes/agents.ts                                 | TypeScript         |         44 |         10 |         14 |         68 |
+| /Users/saeed/development/OpenSofa/src/web/routes/browse.ts                                 | TypeScript         |        115 |         13 |         26 |        154 |
+| /Users/saeed/development/OpenSofa/src/web/routes/conversations.ts                          | TypeScript         |        103 |         14 |         13 |        130 |
+| /Users/saeed/development/OpenSofa/src/web/routes/files.ts                                  | TypeScript         |        133 |         24 |         30 |        187 |
+| /Users/saeed/development/OpenSofa/src/web/routes/index.ts                                  | TypeScript         |         61 |         25 |         21 |        107 |
+| /Users/saeed/development/OpenSofa/src/web/routes/mcp.ts                                    | TypeScript         |         74 |          9 |         16 |         99 |
+| /Users/saeed/development/OpenSofa/src/web/routes/model-discovery.ts                        | TypeScript         |         66 |         25 |         26 |        117 |
+| /Users/saeed/development/OpenSofa/src/web/routes/notifications.ts                          | TypeScript         |         54 |          5 |         12 |         71 |
+| /Users/saeed/development/OpenSofa/src/web/routes/opencode-models.ts                        | TypeScript         |         73 |         16 |         18 |        107 |
+| /Users/saeed/development/OpenSofa/src/web/routes/session-changes.ts                        | TypeScript         |         71 |          9 |         16 |         96 |
+| /Users/saeed/development/OpenSofa/src/web/routes/sessions.ts                               | TypeScript         |        274 |         34 |         55 |        363 |
+| /Users/saeed/development/OpenSofa/src/web/routes/system.ts                                 | TypeScript         |         47 |         11 |         11 |         69 |
+| /Users/saeed/development/OpenSofa/src/web/routes/templates.ts                              | TypeScript         |         62 |          8 |         12 |         82 |
+| /Users/saeed/development/OpenSofa/src/web/routes/totp.ts                                   | TypeScript         |        140 |         25 |         41 |        206 |
+| /Users/saeed/development/OpenSofa/src/web/routes/upload.ts                                 | TypeScript         |        105 |         20 |         23 |        148 |
+| /Users/saeed/development/OpenSofa/src/web/server.ts                                        | TypeScript         |        716 |         75 |        110 |        901 |
+| /Users/saeed/development/OpenSofa/src/web/terminal-stream.ts                               | TypeScript         |        183 |         52 |         49 |        284 |
+| /Users/saeed/development/OpenSofa/src/web/tunnel.ts                                        | TypeScript         |        145 |         30 |         36 |        211 |
+| /Users/saeed/development/OpenSofa/src/web/types.ts                                         | TypeScript         |        178 |         35 |         37 |        250 |
+| /Users/saeed/development/OpenSofa/test-results/.last-run.json                              | JSON               |          4 |          0 |          0 |          4 |
+| /Users/saeed/development/OpenSofa/tests/agent-registry-json.test.ts                        | TypeScript         |         86 |          6 |         31 |        123 |
+| /Users/saeed/development/OpenSofa/tests/agent-registry.test.ts                             | TypeScript         |        163 |          8 |         35 |        206 |
+| /Users/saeed/development/OpenSofa/tests/agentapi-client.test.ts                            | TypeScript         |        132 |          4 |         28 |        164 |
+| /Users/saeed/development/OpenSofa/tests/all-adapters.test.ts                               | TypeScript         |        341 |          3 |         60 |        404 |
+| /Users/saeed/development/OpenSofa/tests/auth.test.ts                                       | TypeScript         |        127 |         19 |         30 |        176 |
+| /Users/saeed/development/OpenSofa/tests/command-parser.extended.test.ts                    | TypeScript         |        279 |          4 |         50 |        333 |
+| /Users/saeed/development/OpenSofa/tests/command-parser.test.ts                             | TypeScript         |        180 |          3 |         30 |        213 |
+| /Users/saeed/development/OpenSofa/tests/config.test.ts                                     | TypeScript         |        115 |          6 |         26 |        147 |
+| /Users/saeed/development/OpenSofa/tests/conversations.test.ts                              | TypeScript         |        116 |          6 |         27 |        149 |
+| /Users/saeed/development/OpenSofa/tests/destructive-patterns.test.ts                       | TypeScript         |        148 |          3 |         39 |        190 |
+| /Users/saeed/development/OpenSofa/tests/e2e/auth.spec.ts                                   | TypeScript         |         36 |         16 |         13 |         65 |
+| /Users/saeed/development/OpenSofa/tests/e2e/fixtures.ts                                    | TypeScript         |         26 |         18 |          7 |         51 |
+| /Users/saeed/development/OpenSofa/tests/e2e/mobile.spec.ts                                 | TypeScript         |         97 |         24 |         31 |        152 |
+| /Users/saeed/development/OpenSofa/tests/e2e/playwright.config.cjs                          | JavaScript         |         20 |          0 |          2 |         22 |
+| /Users/saeed/development/OpenSofa/tests/e2e/session-detail.spec.ts                         | TypeScript         |         92 |         23 |         34 |        149 |
+| /Users/saeed/development/OpenSofa/tests/e2e/sessions-list.spec.ts                          | TypeScript         |        104 |         21 |         30 |        155 |
+| /Users/saeed/development/OpenSofa/tests/e2e/test-results/.last-run.json                    | JSON               |          4 |          0 |          0 |          4 |
+| /Users/saeed/development/OpenSofa/tests/e2e/tests/e2e-report/index.html                    | HTML               |         82 |          0 |          3 |         85 |
+| /Users/saeed/development/OpenSofa/tests/event-parser.test.ts                               | TypeScript         |        482 |          4 |         85 |        571 |
+| /Users/saeed/development/OpenSofa/tests/event-parser/acp-mapper.test.ts                    | TypeScript         |        212 |          6 |         66 |        284 |
+| /Users/saeed/development/OpenSofa/tests/event-parser/acp-parser.test.ts                    | TypeScript         |        336 |          9 |         82 |        427 |
+| /Users/saeed/development/OpenSofa/tests/feedback-controller.test.ts                        | TypeScript         |        117 |          3 |         19 |        139 |
+| /Users/saeed/development/OpenSofa/tests/key-discovery.test.ts                              | TypeScript         |         56 |          4 |         17 |         77 |
+| /Users/saeed/development/OpenSofa/tests/message-queue.test.ts                              | TypeScript         |        157 |         16 |         44 |        217 |
+| /Users/saeed/development/OpenSofa/tests/model-adapters/claude-adapter.test.ts              | TypeScript         |        192 |         59 |         62 |        313 |
+| /Users/saeed/development/OpenSofa/tests/model-adapters/new-adapters.test.ts                | TypeScript         |        171 |          3 |         44 |        218 |
+| /Users/saeed/development/OpenSofa/tests/model-adapters/opencode-adapter.test.ts            | TypeScript         |         98 |         17 |         27 |        142 |
+| /Users/saeed/development/OpenSofa/tests/model-adapters/registry.test.ts                    | TypeScript         |        211 |         65 |         64 |        340 |
+| /Users/saeed/development/OpenSofa/tests/opencode-adapter.test.ts                           | TypeScript         |        322 |          3 |         60 |        385 |
+| /Users/saeed/development/OpenSofa/tests/permission-classifier.test.ts                      | TypeScript         |         67 |          3 |         18 |         88 |
+| /Users/saeed/development/OpenSofa/tests/phase5-deprecation.test.ts                         | TypeScript         |         90 |          6 |         19 |        115 |
+| /Users/saeed/development/OpenSofa/tests/prerequisites-check.test.ts                        | TypeScript         |        180 |          5 |         66 |        251 |
+| /Users/saeed/development/OpenSofa/tests/rate-limit.test.ts                                 | TypeScript         |         82 |         22 |         20 |        124 |
+| /Users/saeed/development/OpenSofa/tests/resource-monitor.test.ts                           | TypeScript         |        257 |         21 |         69 |        347 |
+| /Users/saeed/development/OpenSofa/tests/safe-shell.test.ts                                 | TypeScript         |        112 |         15 |         24 |        151 |
+| /Users/saeed/development/OpenSofa/tests/screenshot-service.extended.test.ts                | TypeScript         |        329 |         13 |         56 |        398 |
+| /Users/saeed/development/OpenSofa/tests/screenshot-service.test.ts                         | TypeScript         |         57 |          3 |         12 |         72 |
+| /Users/saeed/development/OpenSofa/tests/security.test.ts                                   | TypeScript         |        221 |         24 |         52 |        297 |
+| /Users/saeed/development/OpenSofa/tests/session-inflight-worktree.test.ts                  | TypeScript         |        136 |         26 |         28 |        190 |
+| /Users/saeed/development/OpenSofa/tests/session-manager-additional.test.ts                 | TypeScript         |        173 |         11 |         27 |        211 |
+| /Users/saeed/development/OpenSofa/tests/session-manager-json.test.ts                       | TypeScript         |        158 |          9 |         32 |        199 |
+| /Users/saeed/development/OpenSofa/tests/session-manager-ports.test.ts                      | TypeScript         |         87 |         21 |         19 |        127 |
+| /Users/saeed/development/OpenSofa/tests/session-manager.edge-cases.test.ts                 | TypeScript         |        276 |         23 |         49 |        348 |
+| /Users/saeed/development/OpenSofa/tests/state-persistence.test.ts                          | TypeScript         |        164 |          8 |         21 |        193 |
+| /Users/saeed/development/OpenSofa/tests/totp.test.ts                                       | TypeScript         |        147 |         12 |         31 |        190 |
+| /Users/saeed/development/OpenSofa/tests/utils.test.ts                                      | TypeScript         |         75 |          3 |         12 |         90 |
+| /Users/saeed/development/OpenSofa/tests/web/auth.test.ts                                   | TypeScript         |        161 |          4 |         45 |        210 |
+| /Users/saeed/development/OpenSofa/tests/web/broadcaster.test.ts                            | TypeScript         |        266 |          5 |         72 |        343 |
+| /Users/saeed/development/OpenSofa/tests/web/files.test.ts                                  | TypeScript         |        124 |          5 |         32 |        161 |
+| /Users/saeed/development/OpenSofa/tests/web/routes/model-discovery.test.ts                 | TypeScript         |        148 |         34 |         40 |        222 |
+| /Users/saeed/development/OpenSofa/tests/web/server.test.ts                                 | TypeScript         |        125 |          4 |         26 |        155 |
+| /Users/saeed/development/OpenSofa/tests/web/session-manager-events.test.ts                 | TypeScript         |        111 |          9 |         22 |        142 |
+| /Users/saeed/development/OpenSofa/tests/web/terminal-stream.test.ts                        | TypeScript         |        222 |          4 |         50 |        276 |
+| /Users/saeed/development/OpenSofa/tests/web/tunnel.test.ts                                 | TypeScript         |        244 |          4 |         60 |        308 |
+| /Users/saeed/development/OpenSofa/tsconfig.json                                            | JSON with Comments |         23 |          0 |          0 |         23 |
+| /Users/saeed/development/OpenSofa/vitest.config.ts                                         | TypeScript         |         20 |          0 |          2 |         22 |
+| Total                                                                                      |                    |     45,360 |      3,876 |      6,817 |     56,053 |
++--------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+

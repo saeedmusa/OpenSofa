@@ -54,7 +54,7 @@ describe('DEFAULT_WEB_CONFIG', () => {
     expect(DEFAULT_WEB_CONFIG.port).toBe(3285);
     expect(DEFAULT_WEB_CONFIG.tunnel.provider).toBe('cloudflare');
     expect(DEFAULT_WEB_CONFIG.auth.tokenPath).toContain('.opensofa/web-token');
-    expect(DEFAULT_WEB_CONFIG.auth.tokenExpiryHours).toBe(24);
+    expect(DEFAULT_WEB_CONFIG.auth.tokenExpiryHours).toBe(168);
   });
 });
 

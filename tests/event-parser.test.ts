@@ -312,6 +312,115 @@ describe('mapAGUIToActivityEvent', () => {
     });
   });
 
+  describe('toolKind field (ACP Kind-based categorization)', () => {
+    it('should set toolKind for ACP Kind "execute" (Bash)', () => {
+      const event: ToolCallStartEvent = {
+        type: 'TOOL_CALL_START',
+        timestamp: 1234567890,
+        runId: 'ses_123',
+        threadId: 'ses_123',
+        toolCallId: 'call_k1',
+        toolName: 'Bash',
+        input: { command: 'npm test' }
+      };
+
+      const result = mapAGUIToActivityEvent(event, 'test-session');
+      expect(result.toolKind).toBe('execute');
+    });
+
+    it('should set toolKind for ACP Kind "edit"', () => {
+      const event: ToolCallStartEvent = {
+        type: 'TOOL_CALL_START',
+        timestamp: 1234567890,
+        runId: 'ses_123',
+        threadId: 'ses_123',
+        toolCallId: 'call_k2',
+        toolName: 'Edit',
+        input: { file_path: 'src/main.ts' }
+      };
+
+      const result = mapAGUIToActivityEvent(event, 'test-session');
+      expect(result.toolKind).toBe('edit');
+    });
+
+    it('should set toolKind for ACP Kind "read"', () => {
+      const event: ToolCallStartEvent = {
+        type: 'TOOL_CALL_START',
+        timestamp: 1234567890,
+        runId: 'ses_123',
+        threadId: 'ses_123',
+        toolCallId: 'call_k3',
+        toolName: 'Read',
+        input: { file_path: 'src/main.ts' }
+      };
+
+      const result = mapAGUIToActivityEvent(event, 'test-session');
+      expect(result.toolKind).toBe('read');
+    });
+
+    it('should set toolKind for ACP Kind "delete"', () => {
+      const event: ToolCallStartEvent = {
+        type: 'TOOL_CALL_START',
+        timestamp: 1234567890,
+        runId: 'ses_123',
+        threadId: 'ses_123',
+        toolCallId: 'call_k4',
+        toolName: 'Delete',
+        input: { file_path: 'src/old.ts' }
+      };
+
+      const result = mapAGUIToActivityEvent(event, 'test-session');
+      expect(result.toolKind).toBe('delete');
+    });
+
+    it('should set toolKind for ACP Kind "search"', () => {
+      const event: ToolCallStartEvent = {
+        type: 'TOOL_CALL_START',
+        timestamp: 1234567890,
+        runId: 'ses_123',
+        threadId: 'ses_123',
+        toolCallId: 'call_k5',
+        toolName: 'Grep',
+        input: { pattern: 'TODO' }
+      };
+
+      const result = mapAGUIToActivityEvent(event, 'test-session');
+      expect(result.toolKind).toBe('search');
+    });
+
+    it('should set toolKind to "other" for unknown tools', () => {
+      const event: ToolCallStartEvent = {
+        type: 'TOOL_CALL_START',
+        timestamp: 1234567890,
+        runId: 'ses_123',
+        threadId: 'ses_123',
+        toolCallId: 'call_k6',
+        toolName: 'CustomTool',
+        input: {}
+      };
+
+      const result = mapAGUIToActivityEvent(event, 'test-session');
+      expect(result.toolKind).toBe('other');
+    });
+
+    it('should set toolKind for Write as "edit" (file creation uses edit kind)', () => {
+      const event: ToolCallStartEvent = {
+        type: 'TOOL_CALL_START',
+        timestamp: 1234567890,
+        runId: 'ses_123',
+        threadId: 'ses_123',
+        toolCallId: 'call_k7',
+        toolName: 'Write',
+        input: { file_path: 'new.ts', content: '...' }
+      };
+
+      const result = mapAGUIToActivityEvent(event, 'test-session');
+      expect(result.toolKind).toBe('edit');
+      // But type should still be file_created (special handling)
+      expect(result.type).toBe('file_created');
+    });
+  });
+
   describe('text mapping', () => {
     it('should map text content to agent_message', () => {
       const event: TextMessageContentEvent = {

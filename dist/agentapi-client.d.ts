@@ -5,7 +5,7 @@
  * One client per session — constructed with the session's port.
  * Centralises error handling, retry logic, and user-friendly messages.
  */
-import type { AgentAPIMessageResponse, AgentAPIStatusResponse, AgentAPIUploadResponse } from './types.js';
+import type { AgentAPIMessage, AgentAPIMessageResponse, AgentAPIStatusResponse, AgentAPIUploadResponse } from './types.js';
 import EventSource from 'eventsource';
 export declare class AgentAPIClient {
     private readonly port;
@@ -26,6 +26,13 @@ export declare class AgentAPIClient {
      * Works regardless of agent status — not recorded in conversation history.
      */
     sendRaw(content: string): Promise<AgentAPIMessageResponse>;
+    /**
+     * Fetch the full conversation history from AgentAPI.
+     * Returns all messages (user + agent) in chronological order.
+     */
+    getMessages(): Promise<{
+        messages: AgentAPIMessage[];
+    }>;
     /**
      * Connect to the AgentAPI event stream.
      * Returns an EventSource instance that the caller can listen to.

@@ -101,7 +101,7 @@ export type EventPriority = 'p0' | 'p1' | 'p2';
 // p1 = normal (agent text output)
 // p2 = low (intermediate updates during long operations)
 
-export type FeedbackEventType = 'text' | 'screenshot' | 'approval' | 'status' | 'error' | 'completion' | 'tool_call' | 'tool_result';
+export type FeedbackEventType = 'text' | 'screenshot' | 'approval' | 'status' | 'error' | 'completion' | 'tool_call' | 'tool_result' | 'information_requested';
 
 export interface FeedbackEvent {
   id: string;                      // uuid

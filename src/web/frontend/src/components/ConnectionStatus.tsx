@@ -15,7 +15,9 @@ export function ConnectionStatus({ onViewEvents }: ConnectionStatusProps) {
     pendingCount, 
     missedEvents, 
     showOfflineBanner,
-    dismissOfflineBanner 
+    dismissOfflineBanner,
+    reconnectError,
+    reconnect
   } = useWebSocket();
   
   const [showReconnected, setShowReconnected] = useState(false);
@@ -135,23 +137,41 @@ export function ConnectionStatus({ onViewEvents }: ConnectionStatusProps) {
       {connectionStatus !== 'connected' && (
         <div className={clsx(
           'fixed top-0 left-0 right-0 z-40 animate-slide-down',
-          connectionStatus === 'disconnected' ? 'bg-danger' : 'bg-warning'
+          reconnectError ? 'bg-danger' : connectionStatus === 'disconnected' ? 'bg-danger' : 'bg-warning'
         )}>
-          <div className="flex items-center justify-center gap-2 py-2 text-sm font-medium text-white">
-            {connectionStatus === 'disconnected' ? (
+          <div className="flex flex-col items-center justify-center gap-1 py-3 text-sm font-medium text-white">
+            {reconnectError ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <WifiOff size={14} />
+                  <span>Server Unreachable</span>
+                </div>
+                <p className="text-xs opacity-80 text-center px-4">
+                  Your server may be offline or sleeping. Check your machine.
+                </p>
+                <button
+                  onClick={reconnect}
+                  className="mt-1 px-4 py-1.5 bg-white/20 hover:bg-white/30 rounded text-xs font-bold transition-colors"
+                >
+                  Retry Connection
+                </button>
+              </>
+            ) : connectionStatus === 'disconnected' ? (
               <>
                 <WifiOff size={14} />
                 <span>Disconnected</span>
               </>
             ) : (
               <>
-                <RefreshCw size={14} className="animate-spin" />
-                <span>Reconnecting...</span>
-                {reconnectCountdown > 0 && (
-                  <span className="opacity-75">
-                    ({Math.floor(reconnectCountdown / 60)}:{String(reconnectCountdown % 60).padStart(2, '0')})
-                  </span>
-                )}
+                <div className="flex items-center gap-2">
+                  <RefreshCw size={14} className="animate-spin" />
+                  <span>Reconnecting...</span>
+                  {reconnectCountdown > 0 && (
+                    <span className="opacity-75">
+                      ({Math.floor(reconnectCountdown / 60)}:{String(reconnectCountdown % 60).padStart(2, '0')})
+                    </span>
+                  )}
+                </div>
               </>
             )}
           </div>

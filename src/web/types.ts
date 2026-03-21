@@ -31,7 +31,7 @@ export const DEFAULT_WEB_CONFIG: WebConfig = {
   },
   auth: {
     tokenPath: '~/.opensofa/web-token',
-    tokenExpiryHours: 24,
+    tokenExpiryHours: 168,  // 7 days — mobile users can't re-scan QR easily
   },
 };
 
@@ -88,6 +88,7 @@ export interface SessionDetailResponse extends SessionSummary {
   workDir: string;
   repoDir: string;
   port: number;
+  autoApprove?: boolean;
   pendingApproval: {
     detectedAt: number;
     command: string | null;
@@ -240,6 +241,7 @@ export const sessionToDetail = (session: Session): SessionDetailResponse => ({
   workDir: session.workDir,
   repoDir: session.repoDir,
   port: session.port,
+  autoApprove: !!((session as unknown as Record<string, unknown>).autoApprove),
   pendingApproval: session.pendingApproval
     ? {
         detectedAt: session.pendingApproval.detectedAt,

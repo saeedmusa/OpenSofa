@@ -40,6 +40,19 @@ function initSchema(database: BetterSqlite3Database): void {
 
       CREATE INDEX IF NOT EXISTS idx_activity_events_session ON activity_events(session_name);
       CREATE INDEX IF NOT EXISTS idx_activity_events_sequence ON activity_events(sequence);
+
+      CREATE TABLE IF NOT EXISTS conversations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        session_name TEXT NOT NULL,
+        agent_message_id INTEGER,
+        role TEXT NOT NULL CHECK(role IN ('user', 'agent')),
+        content TEXT NOT NULL,
+        timestamp INTEGER NOT NULL,
+        created_at INTEGER NOT NULL DEFAULT (unixepoch())
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_conversations_session ON conversations(session_name);
+      CREATE INDEX IF NOT EXISTS idx_conversations_timestamp ON conversations(timestamp);
     `);
 
     try {

@@ -8,7 +8,7 @@
  */
 import { EventEmitter } from 'events';
 import type { OpenSofaConfig, Session, AgentType, SessionCommand, PersistedSession } from './types.js';
-import { PermissionClassifier } from './permission-classifier.js';
+import { AgentStateMachine } from './agent-state-machine.js';
 import { AgentRegistry } from './agent-registry.js';
 import { ResourceMonitor } from './resource-monitor.js';
 import { ScreenshotService } from './screenshot-service.js';
@@ -26,7 +26,7 @@ export declare class SessionManager extends EventEmitter {
     private notifier;
     private onStateChanged;
     private webUrlProvider;
-    constructor(config: OpenSofaConfig, classifier: PermissionClassifier, agentRegistry: AgentRegistry);
+    constructor(config: OpenSofaConfig, classifier: AgentStateMachine, agentRegistry: AgentRegistry);
     private groupBadge;
     private isToggleEnabled;
     private parseAgentSwitchValue;
@@ -180,6 +180,11 @@ export declare class SessionManager extends EventEmitter {
      * Attach per-session runtime pipeline (SSE FeedbackController).
      */
     private attachRuntime;
+    /**
+     * Attempt to recover from agent crash with exponential backoff.
+     * Max 3 attempts with delays: 2s, 4s, 8s.
+     */
+    private attemptCrashRecovery;
     private clearRuntime;
     private sendAutoApproval;
     /**

@@ -7,7 +7,7 @@
  */
 import EventEmitter from 'events';
 import type { OpenSofaConfig, Session } from './types.js';
-import { PermissionClassifier } from './permission-classifier.js';
+import { AgentStateMachine } from './agent-state-machine.js';
 /**
  * Feedback Controller class
  * One instance per session - owns SSE connection to AgentAPI
@@ -26,7 +26,7 @@ export declare class FeedbackController extends EventEmitter {
     private reconnectAttempts;
     private maxReconnectAttempts;
     private connected;
-    constructor(session: Session, config: OpenSofaConfig, classifier: PermissionClassifier);
+    constructor(session: Session, config: OpenSofaConfig, classifier: AgentStateMachine);
     /**
      * Connect to AgentAPI SSE endpoint
      */

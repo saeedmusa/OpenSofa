@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Terminal as TerminalIcon, Loader2, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Terminal as TerminalIcon, Loader2, AlertCircle, ChevronDown, Square } from 'lucide-react';
 import { useWebSocket } from '../providers/WebSocketProvider';
 import { useSessionStore } from '../stores/sessionStore';
 import { api } from '../utils/api';
@@ -9,11 +9,17 @@ import { LazyTerminal } from '../components/LazyTerminal';
 import { ActivityFeed } from '../components/ActivityFeed';
 import { ApprovalCard } from '../components/ApprovalCard';
 import { LazyFileView } from '../components/LazyFileView';
+import { ConversationHistory } from '../components/ConversationHistory';
+import { FilesChanged } from '../components/FilesChanged';
+import { ModelPicker } from '../components/ModelPicker';
 import { SessionTabBar } from '../components/TabBar';
 import { VoiceInput } from '../components/VoiceInput';
+import { CameraUpload } from '../components/CameraUpload';
 import { Logo } from '../components/Logo';
 import { useResponsive } from '../hooks/useResponsive';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { useSwipeGesture } from '../hooks/useSwipeGesture';
+import { useToast } from '../components/Toast';
 import { clsx } from 'clsx';
 
 export function SessionView() {
@@ -23,7 +29,20 @@ export function SessionView() {
   const { selectedSession, setSelectedSession } = useSessionStore();
   const { isDesktop } = useResponsive();
   const [showTerminal, setShowTerminal] = useState(false);
+  const [showModelPicker, setShowModelPicker] = useState(false);
   const [message, setMessage] = useState('');
+  const toast = useToast();
+
+  // Swipe right to go back (mobile only)
+  const swipeRef = useSwipeGesture<HTMLDivElement>({
+    onSwipeRight: () => {
+      if (!isDesktop) {
+        safeVibrate(10);
+        navigate('/');
+      }
+    },
+    disabled: isDesktop,
+  });
 
   useKeyboardShortcuts();
 
@@ -43,10 +62,7 @@ export function SessionView() {
     }
 
     loadSession();
-
-    // Poll every 3 seconds for updates (spec US-3.1)
-    const pollInterval = setInterval(loadSession, 3000);
-    return () => clearInterval(pollInterval);
+    // WS events handle real-time updates — no polling needed
   }, [decodedName, setSelectedSession, navigate]);
 
   // Real-time updates via WebSocket
@@ -86,6 +102,58 @@ export function SessionView() {
 
   const [sending, setSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [autoApprove, setAutoApprove] = useState(false);
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+
+  // Initialize autoApprove from server state
+  useEffect(() => {
+    if (selectedSession && 'autoApprove' in selectedSession) {
+      setAutoApprove(!!(selectedSession as unknown as Record<string, unknown>).autoApprove);
+    }
+  }, [selectedSession]);
+
+  // iOS keyboard handling — adjust input bar position when virtual keyboard opens
+  useEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+
+    const handleResize = () => {
+      // The difference between window.innerHeight and viewport height is the keyboard
+      const offset = window.innerHeight - vv.height - vv.offsetTop;
+      setKeyboardOffset(Math.max(0, offset));
+    };
+
+    vv.addEventListener('resize', handleResize);
+    vv.addEventListener('scroll', handleResize);
+    return () => {
+      vv.removeEventListener('resize', handleResize);
+      vv.removeEventListener('scroll', handleResize);
+    };
+  }, []);
+
+  const handleStop = async () => {
+    if (!decodedName) return;
+    try {
+      await api.sessions.stop(decodedName);
+      toast.success('Agent stopped');
+      safeVibrate(50);
+    } catch (err) {
+      toast.error('Failed to stop agent');
+    }
+  };
+
+  const handleAutoApproveToggle = async () => {
+    if (!decodedName) return;
+    const newValue = !autoApprove;
+    try {
+      await api.sessions.updateSettings(decodedName, { autoApprove: newValue });
+      setAutoApprove(newValue);
+      toast.success(newValue ? 'Auto-approve ON' : 'Auto-approve OFF');
+      safeVibrate(30);
+    } catch {
+      toast.error('Failed to toggle auto-approve');
+    }
+  };
 
   const handleSend = async () => {
     if (!decodedName || !message.trim() || sending) return;
@@ -152,23 +220,57 @@ export function SessionView() {
                 </span>
                 <h1 className="text-lg font-mono font-bold text-on-surface truncate">{session.name}</h1>
               </div>
-              {session.branch && (
-                <div className="flex items-center gap-2 mt-1 text-xs font-mono text-muted">
-                  <span>BRANCH:</span>
-                  <span className="text-matrix-green">{session.branch}</span>
-                </div>
-              )}
+              <div className="flex items-center gap-2 mt-1">
+                {session.branch && (
+                  <span className="text-xs font-mono text-muted">
+                    BRANCH: <span className="text-matrix-green">{session.branch}</span>
+                  </span>
+                )}
+                {session.model && (
+                  <button
+                    onClick={() => setShowModelPicker(true)}
+                    className="text-xs font-mono text-muted hover:text-on-surface flex items-center gap-1 transition-colors"
+                    aria-label="Change model"
+                  >
+                    MODEL: <span className="text-cyan-accent">{session.model}</span>
+                    <ChevronDown size={12} />
+                  </button>
+                )}
+              </div>
             </div>
 
-            <div className="flex items-center gap-2 text-[10px] font-mono">
-              <span className="text-matrix-green">SYS:</span>
-              <span className="text-muted">ONLINE</span>
+            <div className="flex items-center gap-3">
+              {session.agentStatus === 'running' && (
+                <button
+                  onClick={handleStop}
+                  className="flex items-center gap-1 text-[10px] font-mono text-neon-red bg-neon-red/10 border border-neon-red/30 px-2 py-1 hover:bg-neon-red/20 transition-colors"
+                  aria-label="Stop agent"
+                >
+                  <Square size={10} /> STOP
+                </button>
+              )}
+              <button
+                onClick={handleAutoApproveToggle}
+                className={clsx(
+                  'text-[10px] font-mono px-2 py-1 border transition-colors',
+                  autoApprove
+                    ? 'text-matrix-green bg-matrix-green/10 border-matrix-green/30'
+                    : 'text-muted bg-surface-container border-outline-variant/30 hover:border-matrix-green/30'
+                )}
+                aria-label={autoApprove ? 'Disable auto-approve' : 'Enable auto-approve'}
+              >
+                AUTO: {autoApprove ? 'ON' : 'OFF'}
+              </button>
+              <div className="flex items-center gap-2 text-[10px] font-mono">
+                <span className="text-matrix-green">SYS:</span>
+                <span className="text-muted">ONLINE</span>
+              </div>
             </div>
           </div>
         </header>
 
-        {/* Three-column layout — Activity | Terminal | Files */}
-        <div className="flex-1 grid grid-cols-3 gap-4 p-6 overflow-hidden">
+        {/* Four-column layout — Activity | Chat | Terminal | Files */}
+        <div className="flex-1 grid grid-cols-4 gap-4 p-6 overflow-hidden">
           {/* Activity Column */}
           <div className="flex flex-col overflow-hidden">
             <div className="flex items-center gap-2 mb-4 px-2">
@@ -182,6 +284,17 @@ export function SessionView() {
                 </div>
               )}
               <ActivityFeed sessionName={session.name} />
+            </div>
+          </div>
+
+          {/* Chat Column */}
+          <div className="flex flex-col overflow-hidden">
+            <div className="flex items-center gap-2 mb-4 px-2">
+              <span className="material-symbols-outlined text-cyan-accent text-lg">chat</span>
+              <h2 className="text-sm font-mono font-bold text-on-surface tracking-wider">CHAT</h2>
+            </div>
+            <div className="flex-1 overflow-hidden bg-surface-container-low border border-outline-variant/30">
+              <ConversationHistory sessionName={session.name} />
             </div>
           </div>
 
@@ -223,6 +336,10 @@ export function SessionView() {
                 aria-label="Message input"
               />
             </div>
+            <CameraUpload
+              sessionName={session.name}
+              onUploaded={(_url) => toast.success(`Image uploaded`)}
+            />
             <VoiceInput
               onTranscript={(text) => setMessage((prev) => prev + (prev ? ' ' : '') + text)}
               disabled={sending}
@@ -247,13 +364,29 @@ export function SessionView() {
             </div>
           )}
         </div>
+
+        {/* Model Picker Modal */}
+        {showModelPicker && (
+          <ModelPicker
+            sessionName={session.name}
+            agentType={session.agentType}
+            currentModel={session.model}
+            onClose={() => setShowModelPicker(false)}
+            onModelChanged={(newModel) => {
+              toast.success(`Model switched to ${newModel}`);
+              setShowModelPicker(false);
+              // Refresh session data
+              api.sessions.get(decodedName).then(setSelectedSession).catch(() => {});
+            }}
+          />
+        )}
       </div>
     );
   }
 
   // Mobile layout
   return (
-    <div className="flex flex-col h-screen bg-void">
+    <div ref={swipeRef} className="flex flex-col h-screen bg-void">
       {/* Terminal-style header */}
       <header className="header-terminal px-4 py-2">
         <div className="flex items-center gap-3">
@@ -276,6 +409,15 @@ export function SessionView() {
             </div>
           </div>
 
+          {session.agentStatus === 'running' && (
+            <button
+              onClick={handleStop}
+              className="p-2 text-neon-red hover:bg-neon-red/10 transition-colors"
+              aria-label="Stop agent"
+            >
+              <Square size={20} />
+            </button>
+          )}
           <button
             onClick={() => setShowTerminal(!showTerminal)}
             className={clsx(
@@ -305,6 +447,12 @@ export function SessionView() {
           </div>
         )}
 
+        {activeTab === 'chat' && !showTerminal && (
+          <div className="h-full">
+            <ConversationHistory sessionName={session.name} />
+          </div>
+        )}
+
         {(activeTab === 'terminal' || showTerminal) && (
           <div className="h-full bg-void">
             <LazyTerminal sessionId={session.name} />
@@ -316,12 +464,18 @@ export function SessionView() {
             <LazyFileView sessionName={session.name} />
           </div>
         )}
+
+        {activeTab === 'changes' && (
+          <div className="h-full">
+            <FilesChanged sessionName={session.name} />
+          </div>
+        )}
       </div>
 
       <SessionTabBar />
 
       {/* Fixed input bar at bottom — Terminal prompt */}
-      <div className="fixed bottom-16 left-0 right-0 p-4 bg-void border-t border-matrix-green/30 z-10">
+      <div className="fixed left-0 right-0 p-4 bg-void border-t border-matrix-green/30 z-10" style={{ bottom: keyboardOffset > 0 ? `${keyboardOffset}px` : '64px' }}>
         <div className="flex gap-3 max-w-3xl mx-auto items-end">
           <div className="flex-1 relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-matrix-green font-mono font-bold text-lg">&gt;</span>
@@ -335,6 +489,10 @@ export function SessionView() {
               aria-label="Message input"
             />
           </div>
+          <CameraUpload
+            sessionName={session.name}
+            onUploaded={(_url) => toast.success(`Image uploaded`)}
+          />
           <VoiceInput
             onTranscript={(text) => setMessage((prev) => prev + (prev ? ' ' : '') + text)}
             disabled={sending}

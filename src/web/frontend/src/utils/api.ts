@@ -1,4 +1,4 @@
-import type { Session, SessionDetail, Agent, SystemStatus, FileListResponse, FileContentResponse, ModelDiscoveryResult } from '../types';
+import type { Session, SessionDetail, Agent, SystemStatus, FileListResponse, FileContentResponse, ModelDiscoveryResult, AgentAPIMessage } from '../types';
 import { useSessionStore, canAcceptMessages, canQueueMessages } from '../stores/sessionStore';
 
 const API_BASE = '/api';
@@ -176,7 +176,7 @@ export const api = {
       }),
     uploadImage: (name: string, file: File) => {
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('file', file);
       // NOTE: We don't use fetchAPI here easily if we want to let the browser set the multipart Content-Type automatically.
       // Or we can use fetchAPI and omit Content-Type. Let's do a custom fetch.
       const token = getToken();
@@ -193,8 +193,17 @@ export const api = {
         return data.data ?? data;
       }) as Promise<{ url: string }>;
     },
+    updateSettings: (name: string, settings: Record<string, unknown>) =>
+      fetchAPI<{ ok: boolean }>(`/sessions/${encodeURIComponent(name)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(settings),
+      }),
     stop: (name: string) => 
       fetchAPI<{ ok: boolean }>(`/sessions/${encodeURIComponent(name)}`, { method: 'DELETE' }),
+    messages: (name: string) =>
+      fetchAPI<{ messages: AgentAPIMessage[] }>(`/sessions/${encodeURIComponent(name)}/messages`),
+    restart: (name: string) =>
+      fetchAPI<{ ok: boolean }>(`/sessions/${encodeURIComponent(name)}/restart`, { method: 'POST' }),
     listFiles: (name: string, dirPath?: string) => 
       fetchAPI<FileListResponse>(
         `/sessions/${encodeURIComponent(name)}/files${dirPath ? `?path=${encodeURIComponent(dirPath)}` : ''}`
@@ -202,6 +211,10 @@ export const api = {
     getFile: (name: string, filePath: string) => 
       fetchAPI<FileContentResponse>(
         `/sessions/${encodeURIComponent(name)}/files/${encodePathSegments(filePath)}`
+      ),
+    getChanges: (name: string) =>
+      fetchAPI<{ changes: Array<{ filePath: string; changeType: string; status: string; added: number; removed: number }> }>(
+        `/sessions/${encodeURIComponent(name)}/changes`
       ),
   },
 
@@ -237,5 +250,31 @@ export const api = {
       const query = agents?.length ? `?agents=${agents.join(',')}` : '';
       return fetchAPI<ModelDiscoveryResult>(`/models/discover${query}`);
     },
+  },
+
+  conversations: {
+    list: () => fetchAPI<{ conversations: Array<{ sessionName: string; messageCount: number; lastActivity: number }> }>('/conversations'),
+    get: (sessionName: string) => fetchAPI<{ sessionName: string; messages: AgentAPIMessage[] }>(`/conversations/${encodeURIComponent(sessionName)}`),
+  },
+
+  mcp: {
+    servers: () => fetchAPI<{ servers: Array<{ name: string; agent: string; transport: string; command?: string; args?: string[]; url?: string; envKeys: string[]; status: string; configPath: string }> }>('/mcp/servers'),
+    discoverTools: (agent: string, name: string) =>
+      fetchAPI<{ serverName: string; tools: Array<{ name: string; description?: string }>; error?: string }>(
+        `/mcp/servers/${encodeURIComponent(agent)}/${encodeURIComponent(name)}/tools`,
+        { method: 'POST' }
+      ),
+    add: (server: { agent: string; name: string; command?: string; args?: string[]; url?: string; env?: Record<string, string> }) =>
+      fetchAPI<{ ok: boolean }>('/mcp/servers', { method: 'POST', body: JSON.stringify(server) }),
+    remove: (agent: string, name: string) =>
+      fetchAPI<{ ok: boolean }>(`/mcp/servers/${encodeURIComponent(agent)}/${encodeURIComponent(name)}`, { method: 'DELETE' }),
+  },
+
+  templates: {
+    list: () => fetchAPI<{ templates: Array<{ id: string; name: string; agent: string; model?: string; description?: string; mcpServers?: string[] }> }>('/templates'),
+    create: (template: { id: string; name: string; agent: string; model?: string; description?: string; mcpServers?: string[] }) =>
+      fetchAPI<{ ok: boolean; id: string }>('/templates', { method: 'POST', body: JSON.stringify(template) }),
+    delete: (id: string) =>
+      fetchAPI<{ ok: boolean }>(`/templates/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   },
 };

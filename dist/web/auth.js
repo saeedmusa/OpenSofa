@@ -60,22 +60,11 @@ export const parseAuthHeader = (header) => {
     const trimmed = header.trim();
     if (trimmed === '')
         return null;
-    // Use simple string operations instead of regex to prevent ReDoS
-    // Check if contains "Bearer " prefix (case-insensitive) at the start
-    const bearerPrefix = 'bearer ';
+    // Use startsWith for clean Bearer prefix detection (case-insensitive)
     const lowerTrimmed = trimmed.toLowerCase();
-    // Must contain "Bearer " at position 0 for valid Bearer token
-    // After "Bearer " there must be at least one character for the token
-    if (lowerTrimmed.includes(bearerPrefix)) {
-        // Split on the prefix to get the token part
-        const parts = lowerTrimmed.split(bearerPrefix);
-        // parts[0] should be empty if it starts with "Bearer "
-        // parts[1] onwards would be the token
-        if (parts.length >= 2) {
-            // Extract original token (not lowercased)
-            const token = header.slice(header.toLowerCase().indexOf(bearerPrefix) + bearerPrefix.length).trim();
-            return token || null;
-        }
+    if (lowerTrimmed.startsWith('bearer ')) {
+        const token = trimmed.slice(7).trim();
+        return token || null;
     }
     // No Bearer prefix - return as-is (raw token)
     return trimmed || null;
@@ -181,7 +170,7 @@ let defaultTokenManager = null;
  */
 export const loadOrGenerateToken = (config) => {
     // In E2E test mode, use a fixed test token (64 hex chars = 32 bytes)
-    if (process.env.E2E_TEST === 'true') {
+    if (process.env.E2E_TEST === 'true' && process.env.NODE_ENV !== 'production') {
         return 'e2e0000000000000000000000000000000000000000000000000000000000000';
     }
     if (!defaultTokenManager && config) {

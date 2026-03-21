@@ -18,6 +18,7 @@ export interface RoutesDeps {
         freeMem: string;
     };
     revokeToken: () => void;
+    token: string;
 }
 export declare const createApiRoutes: (deps: RoutesDeps) => Hono;
 //# sourceMappingURL=index.d.ts.map

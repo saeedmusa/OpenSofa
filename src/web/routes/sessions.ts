@@ -181,6 +181,25 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
     }
   });
 
+  // Per-agent rejection commands (agentType -> command string)
+  const REJECT_COMMANDS: Record<string, string> = {
+    claude: 'no\n',
+    opencode: 'reject\n',
+    aider: 'n\n',
+    codex: 'no\n',
+    gemini: 'no\n',
+    goose: 'no\n',
+    amp: 'no\n',
+    cursor: 'no\n',
+    auggie: 'no\n',
+    amazonq: 'no\n',
+    copilot: 'no\n',
+  };
+
+  function getRejectCommand(agentType: string): string {
+    return REJECT_COMMANDS[agentType.toLowerCase()] || 'no\n';
+  }
+
   // POST /api/sessions/:name/reject - Reject pending action
   app.post('/:name/reject', async (c) => {
     const name = c.req.param('name');
@@ -195,14 +214,49 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
     }
 
     try {
-      // Send raw rejection keystroke
+      // Send per-agent rejection keystroke
       const client = new AgentAPIClient(session.port);
-      await client.sendRaw('no\n');
-      log.info('Rejection sent via web', { session: name });
+      const rejectCmd = getRejectCommand(session.agentType);
+      await client.sendRaw(rejectCmd);
+      log.info('Rejection sent via web', { session: name, command: rejectCmd.trim() });
       return c.json(success({ ok: true, message: 'Rejected' }));
     } catch (err) {
       log.error('Failed to send rejection', { session: name, error: String(err) });
       return c.json(error('Failed to send rejection', 'REJECT_ERROR'), 500);
+    }
+  });
+
+  // PATCH /api/sessions/:name - Update session settings
+  app.patch('/:name', async (c) => {
+    const name = c.req.param('name');
+    const session = sessionManager.getByName(name);
+
+    if (!session) {
+      return c.json(error('Session not found', 'NOT_FOUND'), 404);
+    }
+
+    try {
+      const body = await c.req.json() as Record<string, unknown>;
+      const updatable = ['autoApprove'] as const;
+      const updates: Record<string, unknown> = {};
+
+      for (const key of updatable) {
+        if (key in body) {
+          updates[key] = body[key];
+        }
+      }
+
+      if (Object.keys(updates).length === 0) {
+        return c.json(error('No valid fields to update', 'INVALID_REQUEST'), 400);
+      }
+
+      // Apply updates to session
+      Object.assign(session, updates);
+      log.info('Session settings updated', { session: name, updates });
+      return c.json(success({ ok: true, updates }));
+    } catch (err) {
+      log.error('Failed to update session', { session: name, error: String(err) });
+      return c.json(error('Failed to update session', 'UPDATE_ERROR'), 500);
     }
   });
 
@@ -267,6 +321,40 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
     } catch (err) {
       log.error('Failed to restart session', { session: name, error: String(err) });
       return c.json(error('Failed to restart session', 'RESTART_ERROR'), 500);
+    }
+  });
+
+  // POST /api/sessions/:name/model - Switch model mid-session
+  app.post('/:name/model', async (c) => {
+    const name = c.req.param('name');
+    const session = sessionManager.getByName(name);
+
+    if (!session) {
+      return c.json(error('Session not found', 'NOT_FOUND'), 404);
+    }
+
+    let body: { model?: string };
+    try {
+      body = await c.req.json();
+    } catch {
+      return c.json(error('Invalid JSON body', 'INVALID_BODY'), 400);
+    }
+
+    if (!body.model || typeof body.model !== 'string') {
+      return c.json(error('model is required and must be a string', 'INVALID_BODY'), 400);
+    }
+
+    try {
+      await sessionManager.switchSessionAgent(session, body.model);
+      const updated = sessionManager.getByName(name);
+      if (!updated) {
+        return c.json(error('Session disappeared after model switch', 'INTERNAL'), 500);
+      }
+      log.info('Model switched via web', { session: name, model: body.model });
+      return c.json(success({ ok: true, model: body.model, session: sessionToDetail(updated) }));
+    } catch (err) {
+      log.error('Failed to switch model', { session: name, error: String(err) });
+      return c.json(error('Failed to switch model', 'SWITCH_ERROR'), 500);
     }
   });
 

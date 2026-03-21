@@ -6,11 +6,18 @@ import { safeVibrate } from '../utils/haptics';
 import { SessionList } from '../components/SessionList';
 import { Header } from '../components/Header';
 import { NewSessionModal } from '../components/NewSessionModal';
+import { MCPServerList } from '../components/MCPServerList';
 import { useResponsive } from '../hooks/useResponsive';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 import { useToast } from '../components/Toast';
-import { RefreshCw, Plus } from 'lucide-react';
+import { RefreshCw, Plus, MessageSquare } from 'lucide-react';
 import { clsx } from 'clsx';
+
+interface RecentConversation {
+  sessionName: string;
+  messageCount: number;
+  lastActivity: number;
+}
 
 export function HomeView() {
   const { connected } = useWebSocket();
@@ -18,6 +25,7 @@ export function HomeView() {
   const { isDesktop } = useResponsive();
   const toast = useToast();
   const [showNewSession, setShowNewSession] = useState(false);
+  const [recentConversations, setRecentConversations] = useState<RecentConversation[]>([]);
 
   const loadSessions = useCallback(async () => {
     setLoading(true);
@@ -32,11 +40,21 @@ export function HomeView() {
     }
   }, [setSessions, setLoading, setError]);
 
+  const loadRecentConversations = useCallback(async () => {
+    try {
+      const data = await api.conversations.list();
+      setRecentConversations(data.conversations.slice(0, 5));
+    } catch {
+      // Silently fail — conversations are optional
+    }
+  }, []);
+
   useEffect(() => {
     if (api.getToken()) {
       loadSessions();
+      loadRecentConversations();
     }
-  }, [loadSessions]);
+  }, [loadSessions, loadRecentConversations]);
 
   // Real-time updates via WebSocket (spec US-2.1)
   const { subscribe } = useWebSocket();
@@ -208,6 +226,45 @@ export function HomeView() {
           onApprove={handleApprove}
           onReject={handleReject}
         />
+
+        {/* Recent Conversations */}
+        {recentConversations.length > 0 && (
+          <div className="mt-8">
+            <div className="mb-4">
+              <h2 className="text-sm font-medium text-[rgba(255,255,255,0.5)] mb-1 uppercase tracking-widest font-mono">Recent Conversations</h2>
+              <p className="text-xs text-[rgba(255,255,255,0.5)] font-mono">
+                Past session history
+              </p>
+            </div>
+            <div className="space-y-2">
+              {recentConversations.map((conv) => (
+                <div
+                  key={conv.sessionName}
+                  className="flex items-center gap-3 p-3 bg-[#0e0e0e] border border-[#3b4b37]/30 hover:border-[#3b4b37]/60 transition-colors"
+                >
+                  <MessageSquare size={16} className="text-[#00FF41] shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-mono text-[#e2e2e2] truncate">{conv.sessionName}</p>
+                    <p className="text-xs font-mono text-[rgba(255,255,255,0.4)]">
+                      {conv.messageCount} messages
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* MCP Servers */}
+        <div className="mt-8">
+          <div className="mb-4">
+            <h2 className="text-sm font-medium text-[rgba(255,255,255,0.5)] mb-1 uppercase tracking-widest font-mono">MCP Servers</h2>
+            <p className="text-xs text-[rgba(255,255,255,0.5)] font-mono">
+              Configured tool servers
+            </p>
+          </div>
+          <MCPServerList />
+        </div>
       </main>
 
       {/* Floating Action Button — Matrix Green glow */}

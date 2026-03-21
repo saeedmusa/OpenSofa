@@ -1,5 +1,5 @@
 import { NavLink, useParams } from 'react-router-dom';
-import { Activity, Terminal, Folder } from 'lucide-react';
+import { Activity, Terminal, Folder, MessageSquare, FileText } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface TabBarProps {
@@ -11,8 +11,10 @@ export function TabBar({ sessionName }: TabBarProps) {
 
   const tabs = [
     { id: 'feed', icon: Activity, label: 'Feed' },
+    { id: 'chat', icon: MessageSquare, label: 'Chat' },
     { id: 'terminal', icon: Terminal, label: 'Terminal' },
     { id: 'files', icon: Folder, label: 'Files' },
+    { id: 'changes', icon: FileText, label: 'Changes' },
   ];
 
   return (
@@ -50,6 +52,8 @@ export function SessionTabBar() {
 
   const tabs = [
     { id: undefined, icon: Activity, label: 'Feed' },
+    { id: 'chat', icon: MessageSquare, label: 'Chat' },
+    { id: 'changes', icon: FileText, label: 'Changes' },
     { id: 'files', icon: Folder, label: 'Files' },
   ];
 

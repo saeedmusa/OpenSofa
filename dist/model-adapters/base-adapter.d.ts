@@ -34,10 +34,10 @@ export declare abstract class BaseAdapter implements ModelAdapter {
      */
     protected executeCommand(command: string, args: string[], timeout?: number): string;
     /**
-     * Execute a shell command using execSync.
+     * Execute a shell command safely using execFileSync.
      * Uses enriched PATH to find binaries.
      */
-    protected executeShell(command: string, timeout?: number): string;
+    protected executeShell(command: string, args: string[], timeout?: number): string;
     /**
      * Create a DiscoveredModel object with common fields.
      */

@@ -1,10 +1,14 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../utils/api';
+import { useWebSocket } from '../providers/WebSocketProvider';
 import { clsx } from 'clsx';
 import { File, Folder, ChevronRight, ChevronDown, ArrowLeft, RefreshCw } from 'lucide-react';
-import type { FileEntry } from '../types';
+import type { FileEntry, ActivityEvent } from '../types';
 import { formatSize } from '../utils/format';
+
+/** Activity types that indicate file system changes */
+const FILE_CHANGE_TYPES = new Set(['file_created', 'file_edited', 'file_deleted']);
 
 interface FileBrowserProps {
   sessionName: string;
@@ -15,6 +19,40 @@ interface FileBrowserProps {
 export function FileBrowser({ sessionName, onFileSelect, selectedFile }: FileBrowserProps) {
   const [currentPath, setCurrentPath] = useState('');
   const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set(['']));
+  const { subscribe } = useWebSocket();
+  const queryClient = useQueryClient();
+  const invalidateTimerRef = useRef<number | null>(null);
+
+  // Debounced cache invalidation — avoids hammering on rapid file edits
+  const debouncedInvalidate = useCallback(() => {
+    if (invalidateTimerRef.current) {
+      clearTimeout(invalidateTimerRef.current);
+    }
+    invalidateTimerRef.current = window.setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ['files', sessionName] });
+      invalidateTimerRef.current = null;
+    }, 800);
+  }, [queryClient, sessionName]);
+
+  // Subscribe to file-change activity events
+  useEffect(() => {
+    const unsub = subscribe('activity', (event) => {
+      const payload = event.payload as { sessionName?: string; events?: ActivityEvent[] } | undefined;
+      if (payload?.sessionName !== sessionName) return;
+
+      const hasFileChange = payload.events?.some(e => FILE_CHANGE_TYPES.has(e.type));
+      if (hasFileChange) {
+        debouncedInvalidate();
+      }
+    });
+
+    return () => {
+      unsub();
+      if (invalidateTimerRef.current) {
+        clearTimeout(invalidateTimerRef.current);
+      }
+    };
+  }, [subscribe, sessionName, debouncedInvalidate]);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['files', sessionName, currentPath],

@@ -69,26 +69,34 @@ export class ACPEventParser extends EventEmitter {
             log.debug('Emitting text_chunk', { length: text.length });
             this.emit('text_chunk', text);
         }
-        // Emit ToolCall
+        // Emit ToolCall with all available fields
         if (update.ToolCall?.Kind && update.ToolCall?.Title) {
-            log.debug('Emitting tool_call', {
-                kind: update.ToolCall.Kind,
-                title: update.ToolCall.Title
-            });
+            const kind = update.ToolCall.Kind;
+            const title = update.ToolCall.Title;
+            const event = {
+                kind,
+                title,
+                // Capture future fields when available
+                toolCallId: update.ToolCall.toolCallId,
+                content: update.ToolCall.Content,
+                locations: update.ToolCall.Locations,
+                rawInput: update.ToolCall.RawInput,
+            };
+            log.debug('Emitting tool_call', { kind: event.kind, title: event.title });
             // Store tool name for correlation with subsequent tool_call_update
-            this.lastToolName = update.ToolCall.Title;
-            this.emit('tool_call', {
-                kind: update.ToolCall.Kind,
-                title: update.ToolCall.Title,
-            });
+            this.lastToolName = title;
+            this.emit('tool_call', event);
         }
         // Emit ToolCallUpdate status (with last seen tool name for correlation)
         if (update.ToolCallUpdate?.Status) {
-            log.debug('Emitting tool_call_update', { status: update.ToolCallUpdate.Status, toolName: this.lastToolName });
-            this.emit('tool_call_update', {
+            const updateEvent = {
                 status: update.ToolCallUpdate.Status,
                 toolName: this.lastToolName,
-            });
+                toolCallId: update.ToolCallUpdate.toolCallId,
+                content: update.ToolCallUpdate.Content,
+            };
+            log.debug('Emitting tool_call_update', { status: updateEvent.status, toolName: updateEvent.toolName });
+            this.emit('tool_call_update', updateEvent);
         }
     }
     /**

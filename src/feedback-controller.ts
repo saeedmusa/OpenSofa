@@ -20,6 +20,7 @@ import type {
   SSEStatusChange 
 } from './types.js';
 import { AgentStateMachine } from './agent-state-machine.js';
+import { persistMessage } from './web/routes/conversations.js';
 
 const log = createLogger('feedback');
 
@@ -159,6 +160,9 @@ export class FeedbackController extends EventEmitter {
       delta = data.message;
       this.lastSeenMessageId = data.id;
       this.lastMessageContent = '';
+
+      // Persist new agent message to SQLite
+      persistMessage(this.session.name, data.id, 'agent', data.message);
     } else {
       // Same message ID, content grew — extract only the new part
       if (data.message.startsWith(this.lastMessageContent)) {
@@ -178,6 +182,7 @@ export class FeedbackController extends EventEmitter {
     // an approval pattern re-triggers a p0 event, flooding notifications.
     const approvalDetected = this.classifier.isApprovalRequest(data.message);
     const isNewApproval = approvalDetected && data.id !== this.lastApprovalMessageId;
+    const isConversationalQuestion = !approvalDetected && this.classifier.isConversationalQuestion(data.message);
 
     if (isNewApproval) {
       this.lastApprovalMessageId = data.id;
@@ -185,6 +190,13 @@ export class FeedbackController extends EventEmitter {
         type: 'approval',
         priority: 'p0',
         content: data.message,
+        agentMessageId: data.id,
+      });
+    } else if (isConversationalQuestion && isNewMessage) {
+      this.emitEvent({
+        type: 'information_requested',
+        priority: 'p1',
+        content: delta,
         agentMessageId: data.id,
       });
     } else if (isNewMessage) {

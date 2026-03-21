@@ -29,11 +29,12 @@ export declare function mapACPTextToAGUI(chunk: {
  *
  * AG-UI Output:
  *   ToolCallStartEvent with Kind as toolName
+ *   If status is 'pending_approval', injects _pendingApproval marker
  */
 export declare function mapACPToolCallToAGUI(tool: {
     Kind?: string;
     Title?: string;
-}): ToolCallStartEvent;
+}, status?: string): ToolCallStartEvent;
 /**
  * Maps ACP ToolCallUpdate status to AG-UI ToolCallResultEvent
  *

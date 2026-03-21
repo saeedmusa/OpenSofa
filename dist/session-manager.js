@@ -399,7 +399,23 @@ export class SessionManager extends EventEmitter {
             }
         }
         try {
-            safeGitExec(expandedDir, ['worktree', 'add', workDir, '-b', branch], 30000);
+            // Check if branch already exists
+            let branchExists = false;
+            try {
+                safeGitExec(expandedDir, ['rev-parse', '--verify', branch], 5000);
+                branchExists = true;
+            }
+            catch {
+                branchExists = false;
+            }
+            if (branchExists) {
+                // Use existing branch (without -b flag)
+                safeGitExec(expandedDir, ['worktree', 'add', workDir, branch], 30000);
+            }
+            else {
+                // Create new branch
+                safeGitExec(expandedDir, ['worktree', 'add', workDir, '-b', branch], 30000);
+            }
         }
         catch (err) {
             throw new Error(`Failed to create worktree: ${String(err)}`);
@@ -580,13 +596,39 @@ export class SessionManager extends EventEmitter {
                 stdio: ['pipe', 'pipe', 'ignore'],
                 timeout: 1000,
             }).trim();
+            if (!comm)
+                return false; // Process doesn't exist
             // Allowlist: only kill if it's agentapi, tmux, or known agent binaries
             const allowed = ['agentapi', 'tmux', 'node', 'claude', 'opencode', 'aider', 'goose', 'codex', 'gemini', 'amp', 'copilot', 'cursor', 'auggie', 'amazonq'];
             const isOwned = allowed.some(name => comm.toLowerCase().includes(name));
-            if (!isOwned) {
-                log.warn('PID ownership verification failed - not killing', { pid, comm });
+            if (isOwned) {
+                return true;
             }
-            return isOwned;
+            // Fallback: if the process exists but isn't in the allowlist,
+            // check if it's a child of our tmux session (best-effort)
+            try {
+                const ppid = execFileSync('ps', ['-p', String(pid), '-o', 'ppid='], {
+                    encoding: 'utf-8',
+                    stdio: ['pipe', 'pipe', 'ignore'],
+                    timeout: 1000,
+                }).trim();
+                if (ppid) {
+                    const parentComm = execFileSync('ps', ['-p', ppid, '-o', 'comm='], {
+                        encoding: 'utf-8',
+                        stdio: ['pipe', 'pipe', 'ignore'],
+                        timeout: 1000,
+                    }).trim();
+                    if (parentComm.toLowerCase().includes('tmux') || parentComm.toLowerCase().includes('agentapi')) {
+                        log.debug('PID is child of tmux/agentapi — allowing kill', { pid, comm, parentComm });
+                        return true;
+                    }
+                }
+            }
+            catch {
+                // Parent check failed — fall through
+            }
+            log.warn('PID ownership verification failed — not killing', { pid, comm });
+            return false;
         }
         catch {
             // Process doesn't exist or ps failed
@@ -1118,10 +1160,48 @@ export class SessionManager extends EventEmitter {
             }
         });
         fc.on('error', (err) => {
-            log.warn('SSE connection error', { session: session.name, error: err.message });
+            log.warn('SSE connection error — attempting crash recovery', { session: session.name, error: err.message });
+            this.attemptCrashRecovery(session).catch(recoveryErr => {
+                log.error('Crash recovery failed', { session: session.name, error: String(recoveryErr) });
+            });
         });
         fc.connect(port);
         session.feedbackController = fc;
+    }
+    /**
+     * Attempt to recover from agent crash with exponential backoff.
+     * Max 3 attempts with delays: 2s, 4s, 8s.
+     */
+    async attemptCrashRecovery(session) {
+        const maxAttempts = 3;
+        const baseDelayMs = 2000;
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+            const delayMs = baseDelayMs * Math.pow(2, attempt - 1);
+            log.info(`Crash recovery attempt ${attempt}/${maxAttempts} for ${session.name} (delay: ${delayMs}ms)`);
+            // Wait before retry
+            await new Promise(resolve => setTimeout(resolve, delayMs));
+            try {
+                // Kill any zombie processes
+                if (session.pid > 0) {
+                    this.killProcess(session.pid);
+                }
+                // Attempt restart
+                await this.restartSession(session.name);
+                log.info(`Crash recovery succeeded for ${session.name} on attempt ${attempt}`);
+                this.emit('session:crash_recovered', { sessionName: session.name, attempt });
+                return;
+            }
+            catch (err) {
+                log.warn(`Crash recovery attempt ${attempt} failed for ${session.name}`, { error: String(err) });
+                if (attempt === maxAttempts) {
+                    // All attempts exhausted
+                    session.status = 'error';
+                    this.requestStateSave('crash-recovery-exhausted');
+                    this.emit('session:crash_failed', { sessionName: session.name, attempts: maxAttempts });
+                    log.error(`Crash recovery exhausted for ${session.name} after ${maxAttempts} attempts`);
+                }
+            }
+        }
     }
     clearRuntime(session) {
         this.clearPendingApproval(session);

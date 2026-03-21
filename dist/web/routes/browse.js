@@ -9,14 +9,11 @@ import fs from 'fs';
 import path from 'path';
 import os from 'os';
 import { createLogger } from '../../utils/logger.js';
+import { isPathWithinDir } from '../../utils/path-utils.js';
+import { discoverProjects } from '../../discovery/project-discovery.js';
 import { success, error } from '../types.js';
 const log = createLogger('web:routes:browse');
 const MAX_ENTRIES = 100;
-const isPathWithinDir = (targetPath, allowedDir) => {
-    const resolvedTarget = path.resolve(targetPath);
-    const resolvedAllowed = path.resolve(allowedDir);
-    return resolvedTarget.startsWith(resolvedAllowed + path.sep) || resolvedTarget === resolvedAllowed;
-};
 const isGitRepo = async (dirPath) => {
     try {
         await fs.promises.access(path.join(dirPath, '.git'));
@@ -120,6 +117,17 @@ export const createBrowseRoutes = (deps) => {
             }
             log.error('Failed to create directory', { path: targetPath, error: String(err) });
             return c.json(error('Failed to create directory', 'CREATE_ERROR'), 500);
+        }
+    });
+    // GET /api/browse/projects - Auto-discover git repositories
+    app.get('/projects', async (c) => {
+        try {
+            const projects = await discoverProjects();
+            return c.json(success({ projects }));
+        }
+        catch (err) {
+            log.error('Project discovery failed', { error: String(err) });
+            return c.json(success({ projects: [] }));
         }
     });
     return app;

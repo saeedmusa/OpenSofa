@@ -12,7 +12,7 @@ export const DEFAULT_WEB_CONFIG = {
     },
     auth: {
         tokenPath: '~/.opensofa/web-token',
-        tokenExpiryHours: 24,
+        tokenExpiryHours: 168, // 7 days — mobile users can't re-scan QR easily
     },
 };
 // Helper functions for creating responses (pure functions)
@@ -52,6 +52,7 @@ export const sessionToDetail = (session) => ({
     workDir: session.workDir,
     repoDir: session.repoDir,
     port: session.port,
+    autoApprove: !!(session.autoApprove),
     pendingApproval: session.pendingApproval
         ? {
             detectedAt: session.pendingApproval.detectedAt,

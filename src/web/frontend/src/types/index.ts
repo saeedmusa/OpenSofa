@@ -92,14 +92,24 @@ export interface FileDiffResponse {
   deletions: number;
 }
 
+/** ACP tool kind values — used for Kind-based activity categorization */
+export type ACPToolKind = 'read' | 'edit' | 'delete' | 'execute' | 'search' | 'think' | 'fetch' | 'other';
+
 export interface ActivityEvent {
   id: string;
   type: 'agent_message' | 'file_created' | 'file_edited' | 'file_deleted'
-     | 'test_result' | 'build_result' | 'approval_needed' | 'error' | 'command_run';
+     | 'test_result' | 'build_result' | 'approval_needed' | 'error' | 'command_run'
+     | 'information_requested';
   timestamp: number;
   sessionName: string;
   summary: string;
   icon: string;
+  /** ACP tool kind — used for filtering and categorization when available */
+  toolKind?: ACPToolKind;
+  /** MCP server name if this event came from an MCP tool call */
+  mcpServer?: string;
+  /** MCP tool name if this event came from an MCP tool call */
+  mcpTool?: string;
   details?: {
     diff?: string;
     command?: string;
@@ -149,4 +159,12 @@ export interface ModelDiscoveryResult {
   success: boolean;
   providers: ModelProvider[];
   errors?: string[];
+}
+
+/** AgentAPI message — matches backend AgentAPIMessage type */
+export interface AgentAPIMessage {
+  id: number;
+  content: string;
+  role: 'agent' | 'user';
+  time: string; // ISO 8601
 }

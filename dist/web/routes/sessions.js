@@ -21,7 +21,13 @@ export const createSessionsRoutes = (deps) => {
     });
     // POST /api/sessions - Create a new session
     app.post('/', async (c) => {
-        const body = await c.req.json().catch(() => ({}));
+        let body;
+        try {
+            body = await c.req.json();
+        }
+        catch {
+            return c.json(error('Invalid JSON body', 'BAD_REQUEST'), 400);
+        }
         const { name, dir, agent, model } = body;
         if (!name || typeof name !== 'string') {
             return c.json(error('name is required and must be a string', 'INVALID_BODY'), 400);
@@ -140,6 +146,23 @@ export const createSessionsRoutes = (deps) => {
             return c.json(error('Failed to send approval', 'APPROVE_ERROR'), 500);
         }
     });
+    // Per-agent rejection commands (agentType -> command string)
+    const REJECT_COMMANDS = {
+        claude: 'no\n',
+        opencode: 'reject\n',
+        aider: 'n\n',
+        codex: 'no\n',
+        gemini: 'no\n',
+        goose: 'no\n',
+        amp: 'no\n',
+        cursor: 'no\n',
+        auggie: 'no\n',
+        amazonq: 'no\n',
+        copilot: 'no\n',
+    };
+    function getRejectCommand(agentType) {
+        return REJECT_COMMANDS[agentType.toLowerCase()] || 'no\n';
+    }
     // POST /api/sessions/:name/reject - Reject pending action
     app.post('/:name/reject', async (c) => {
         const name = c.req.param('name');
@@ -151,15 +174,45 @@ export const createSessionsRoutes = (deps) => {
             return c.json(error('No pending approval request', 'NO_PENDING'), 400);
         }
         try {
-            // Send raw rejection keystroke
+            // Send per-agent rejection keystroke
             const client = new AgentAPIClient(session.port);
-            await client.sendRaw('no\n');
-            log.info('Rejection sent via web', { session: name });
+            const rejectCmd = getRejectCommand(session.agentType);
+            await client.sendRaw(rejectCmd);
+            log.info('Rejection sent via web', { session: name, command: rejectCmd.trim() });
             return c.json(success({ ok: true, message: 'Rejected' }));
         }
         catch (err) {
             log.error('Failed to send rejection', { session: name, error: String(err) });
             return c.json(error('Failed to send rejection', 'REJECT_ERROR'), 500);
+        }
+    });
+    // PATCH /api/sessions/:name - Update session settings
+    app.patch('/:name', async (c) => {
+        const name = c.req.param('name');
+        const session = sessionManager.getByName(name);
+        if (!session) {
+            return c.json(error('Session not found', 'NOT_FOUND'), 404);
+        }
+        try {
+            const body = await c.req.json();
+            const updatable = ['autoApprove'];
+            const updates = {};
+            for (const key of updatable) {
+                if (key in body) {
+                    updates[key] = body[key];
+                }
+            }
+            if (Object.keys(updates).length === 0) {
+                return c.json(error('No valid fields to update', 'INVALID_REQUEST'), 400);
+            }
+            // Apply updates to session
+            Object.assign(session, updates);
+            log.info('Session settings updated', { session: name, updates });
+            return c.json(success({ ok: true, updates }));
+        }
+        catch (err) {
+            log.error('Failed to update session', { session: name, error: String(err) });
+            return c.json(error('Failed to update session', 'UPDATE_ERROR'), 500);
         }
     });
     // DELETE /api/sessions/:name - Stop session
@@ -188,15 +241,66 @@ export const createSessionsRoutes = (deps) => {
         }
         try {
             const client = new AgentAPIClient(session.port);
-            // Note: AgentAPI doesn't have a /messages endpoint in the version we're using
-            // We'd need to track messages ourselves or use a different approach
-            // For now, return the last full content from the delivery manager
-            const lastContent = '';
-            return c.json(success({ messages: [], lastContent }));
+            const { messages } = await client.getMessages();
+            return c.json(success({ messages }));
         }
         catch (err) {
-            log.error('Failed to get messages', { session: name, error: String(err) });
-            return c.json(error('Failed to get messages', 'FETCH_ERROR'), 500);
+            log.warn('Failed to get messages from AgentAPI', { session: name, error: String(err) });
+            return c.json(success({ messages: [] }));
+        }
+    });
+    // POST /api/sessions/:name/restart - Restart a stopped or errored session
+    app.post('/:name/restart', async (c) => {
+        const name = c.req.param('name');
+        const session = sessionManager.getByName(name);
+        if (!session) {
+            return c.json(error('Session not found', 'NOT_FOUND'), 404);
+        }
+        if (session.status === 'active' || session.status === 'creating') {
+            return c.json(error('Session is already running', 'INVALID_STATE'), 400);
+        }
+        try {
+            await sessionManager.restartSession(name);
+            const updated = sessionManager.getByName(name);
+            if (!updated) {
+                return c.json(error('Session disappeared after restart', 'INTERNAL'), 500);
+            }
+            return c.json(success(sessionToDetail(updated)));
+        }
+        catch (err) {
+            log.error('Failed to restart session', { session: name, error: String(err) });
+            return c.json(error('Failed to restart session', 'RESTART_ERROR'), 500);
+        }
+    });
+    // POST /api/sessions/:name/model - Switch model mid-session
+    app.post('/:name/model', async (c) => {
+        const name = c.req.param('name');
+        const session = sessionManager.getByName(name);
+        if (!session) {
+            return c.json(error('Session not found', 'NOT_FOUND'), 404);
+        }
+        let body;
+        try {
+            body = await c.req.json();
+        }
+        catch {
+            return c.json(error('Invalid JSON body', 'INVALID_BODY'), 400);
+        }
+        if (!body.model || typeof body.model !== 'string') {
+            return c.json(error('model is required and must be a string', 'INVALID_BODY'), 400);
+        }
+        try {
+            await sessionManager.switchSessionAgent(session, body.model);
+            const updated = sessionManager.getByName(name);
+            if (!updated) {
+                return c.json(error('Session disappeared after model switch', 'INTERNAL'), 500);
+            }
+            log.info('Model switched via web', { session: name, model: body.model });
+            return c.json(success({ ok: true, model: body.model, session: sessionToDetail(updated) }));
+        }
+        catch (err) {
+            log.error('Failed to switch model', { session: name, error: String(err) });
+            return c.json(error('Failed to switch model', 'SWITCH_ERROR'), 500);
         }
     });
     return app;
