@@ -19,7 +19,7 @@ import type {
   SSEMessageUpdate,
   SSEStatusChange 
 } from './types.js';
-import { PermissionClassifier } from './permission-classifier.js';
+import { AgentStateMachine } from './agent-state-machine.js';
 
 const log = createLogger('feedback');
 
@@ -30,7 +30,7 @@ const log = createLogger('feedback');
 export class FeedbackController extends EventEmitter {
   private session: Session;
   private config: OpenSofaConfig;
-  private classifier: PermissionClassifier;
+  private classifier: AgentStateMachine;
   private eventSource: EventSource | null = null;
   private sequenceNumber: number = 0;
   private lastSeenMessageId: number = -1;
@@ -45,7 +45,7 @@ export class FeedbackController extends EventEmitter {
   constructor(
     session: Session, 
     config: OpenSofaConfig, 
-    classifier: PermissionClassifier
+    classifier: AgentStateMachine
   ) {
     super();
     this.session = session;
@@ -89,6 +89,21 @@ export class FeedbackController extends EventEmitter {
         this.handleSessionUpdate(data);
       } catch (err) {
         log.error('Failed to parse SessionUpdate', { error: String(err) });
+      }
+    });
+
+    // Handle agent_error events
+    this.eventSource.addEventListener('agent_error', (e: MessageEvent) => {
+      try {
+        const data = JSON.parse(e.data) as { message: string; level?: string };
+        log.error('Agent error received', { session: this.session.name, message: data.message, level: data.level });
+        this.emitEvent({
+          type: 'error',
+          priority: 'p0',
+          content: data.message || 'Agent encountered an error',
+        });
+      } catch (err) {
+        log.error('Failed to parse agent_error', { error: String(err) });
       }
     });
 

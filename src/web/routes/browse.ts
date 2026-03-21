@@ -11,6 +11,7 @@ import path from 'path';
 import os from 'os';
 import { createLogger } from '../../utils/logger.js';
 import { isPathWithinDir } from '../../utils/path-utils.js';
+import { discoverProjects } from '../../discovery/project-discovery.js';
 import { success, error } from '../types.js';
 
 const log = createLogger('web:routes:browse');
@@ -134,6 +135,17 @@ export const createBrowseRoutes = (deps: BrowseRoutesDeps): Hono => {
       }
       log.error('Failed to create directory', { path: targetPath, error: String(err) });
       return c.json(error('Failed to create directory', 'CREATE_ERROR'), 500);
+    }
+  });
+
+  // GET /api/browse/projects - Auto-discover git repositories
+  app.get('/projects', async (c) => {
+    try {
+      const projects = await discoverProjects();
+      return c.json(success({ projects }));
+    } catch (err) {
+      log.error('Project discovery failed', { error: String(err) });
+      return c.json(success({ projects: [] }));
     }
   });
 

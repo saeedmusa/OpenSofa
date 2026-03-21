@@ -236,14 +236,37 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
 
     try {
       const client = new AgentAPIClient(session.port);
-      // Note: AgentAPI doesn't have a /messages endpoint in the version we're using
-      // We'd need to track messages ourselves or use a different approach
-      // For now, return the last full content from the delivery manager
-      const lastContent = '';
-      return c.json(success({ messages: [], lastContent }));
+      const { messages } = await client.getMessages();
+      return c.json(success({ messages }));
     } catch (err) {
-      log.error('Failed to get messages', { session: name, error: String(err) });
-      return c.json(error('Failed to get messages', 'FETCH_ERROR'), 500);
+      log.warn('Failed to get messages from AgentAPI', { session: name, error: String(err) });
+      return c.json(success({ messages: [] }));
+    }
+  });
+
+  // POST /api/sessions/:name/restart - Restart a stopped or errored session
+  app.post('/:name/restart', async (c) => {
+    const name = c.req.param('name');
+    const session = sessionManager.getByName(name);
+
+    if (!session) {
+      return c.json(error('Session not found', 'NOT_FOUND'), 404);
+    }
+
+    if (session.status === 'active' || session.status === 'creating') {
+      return c.json(error('Session is already running', 'INVALID_STATE'), 400);
+    }
+
+    try {
+      await sessionManager.restartSession(name);
+      const updated = sessionManager.getByName(name);
+      if (!updated) {
+        return c.json(error('Session disappeared after restart', 'INTERNAL'), 500);
+      }
+      return c.json(success(sessionToDetail(updated)));
+    } catch (err) {
+      log.error('Failed to restart session', { session: name, error: String(err) });
+      return c.json(error('Failed to restart session', 'RESTART_ERROR'), 500);
     }
   });
 

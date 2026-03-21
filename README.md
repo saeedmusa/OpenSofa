@@ -1,75 +1,60 @@
 # OpenSofa
 
-**Remote Coding Agent Controller — PWA**
+**Remote Coding Agent Controller — PWA (Work in Progress)**
 
 Control your coding agents from anywhere. A progressive web app that connects to Claude Code, Aider, Goose, Gemini, Codex, OpenCode, and more — all from your phone.
 
-## Overview
+> ⚠️ **WIP Status**: OpenSofa is functional but actively evolving. Core features work (sessions, approvals, notifications, file browsing). Some advanced features from the product spec are partially implemented or pending.
 
-OpenSofa is an open-source PWA that acts as a remote control for coding agents running on your laptop via AgentAPI. It uses a **sandwich architecture**: your phone is a thin display + input terminal, while all computation happens on the laptop.
+## What It Does
 
-- **Create coding sessions** from any browser or phone
-- **Send tasks** and see real-time agent output via SSE streaming
-- **Approve/reject actions** from your phone with push notifications
-- **Browse files** the agent has changed with syntax highlighting
-- **Run multiple agents in parallel** — each in its own git worktree
+OpenSofa is a **Node.js + Hono-based PWA** that runs on your laptop alongside your coding agents. It creates a secure tunnel allowing you to monitor agent output, approve commands, and manage sessions from a mobile-optimized web interface.
 
-## Architecture
+### Current Capabilities
+
+- ✅ **Create and manage coding sessions** — spawn agents (Claude, Aider, OpenCode, Codex, etc.) in isolated git worktrees
+- ✅ **Real-time agent output streaming** — SSE events stream directly to the PWA via WebSocket
+- ✅ **Approve/reject agent actions** — get notified when agents need permission, approve from anywhere
+- ✅ **Push notifications via ntfy.sh** — HTTP-based push (no iOS native push yet due to PWA limitations)
+- ✅ **File browser with syntax highlighting** — browse repo structure and view file contents
+- ✅ **Secure tunnel via cloudflared** — zero-config HTTPS access from anywhere
+- ✅ **256-bit token authentication** — Bearer token with timing-safe comparison
+- ✅ **TOTP step-up auth** — required for destructive operations (stop sessions, destructive commands)
+- ✅ **IP rate limiting & banning** — auto-ban after 5 failed auth attempts (persisted to SQLite)
+- ✅ **SQLite persistence** — WAL mode for sessions, bans, events, and rate limits
+- ✅ **Auto-cleanup** — idle session detection and resource monitoring
+- ✅ **Agent state machine** — tracks running/stable/awaiting_approval states
+- ✅ **Message queue** — queues messages when agent is busy, flushes when stable
+
+### Architecture
 
 ```
 ┌─────────────────┐     ┌─────────────────────┐     ┌─────────────────┐
 │   PWA (Phone    │────►│  OpenSofa Backend    │────►│   AgentAPI      │
-│   or Browser)   │◄────│  (Node.js + Express) │◄────│   (localhost)   │
+│   or Browser)   │◄────│  (Node.js + Hono)   │◄────│   (localhost)   │
 └─────────────────┘     └─────────────────────┘     └─────────────────┘
          │                        │                          │
     WebSocket +            REST API +                  tmux session
-    Web Push              SSE Events                  with agent
+    ntfy.sh push          SSE Events                  with agent
 ```
 
 **Key Design Principles:**
 - 📱 **Mobile-first** — optimized for small screens, touch targets ≥ 44px
 - 🏗️ **Structured events** — SSE events carry typed data, not parsed text
-- 🔔 **Web Push** — native push notifications via VAPID (no third-party services)
+- 🔔 **Push notifications** — via ntfy.sh (iOS/Android app required)
 - 💾 **SQLite** — WAL mode for concurrent read/write without corruption
+- 🔒 **Security-first** — 256-bit tokens, TOTP for destructive ops, IP banning
 
 ## Prerequisites
 
-The one-line installer handles these automatically:
 - **Node.js 18+**
 - **Git** — for worktree isolation
 - **tmux** — for terminal session management
 - **cloudflared** — for secure tunnel access
-- **AgentAPI** — HTTP wrapper for coding agents
-- **At least one coding agent** — Claude Code, Aider, Goose, etc.
+- **AgentAPI** — HTTP wrapper for coding agents (`go install github.com/coder/agentapi/cmd/agentapi@latest`)
+- **At least one coding agent** — Claude Code, Aider, OpenCode, etc.
 
-## Quick Start (One-Line Install)
-
-```bash
-curl -fsSL cdn.jsdelivr.net/gh/saeedmusa/OpenSofa@latest/scripts/opensofa.sh | bash
-```
-
-**What this does:**
-- ✓ Detects OS (macOS/Linux) and architecture (x64/ARM64)
-- ✓ Installs missing prerequisites automatically
-- ✓ Clones and builds OpenSofa
-- ✓ Installs the `opensofa` command
-- ✓ Starts the server and shows a QR code
-
-**After installation:**
-```bash
-opensofa          # Start and show QR code
-opensofa stop     # Stop the server
-opensofa status   # Check if running
-opensofa logs     # View live logs
-opensofa update   # Update to latest version
-opensofa help     # See all commands
-```
-
----
-
-## Manual Install
-
-If you prefer to install manually or the installer fails:
+## Quick Start
 
 ```bash
 # Clone
@@ -80,32 +65,20 @@ cd opensofa
 npm install
 npm run build
 
-# Install frontend dependencies  
-cd src/web/frontend && npm install && cd ../../..
-
 # Start the server
 npm run dev
 ```
 
-Open `http://localhost:3000` on your phone or browser.
+Open the displayed tunnel URL on your phone or browser.
 
-**For iOS push notifications:** Tap the Share button → "Add to Home Screen" to install the PWA.
+**For push notifications:**
+1. Install the ntfy.sh app (iOS/Android)
+2. Subscribe to a unique topic
+3. Configure OpenSofa: set `ntfyTopic` in `~/.opensofa/config.yaml`
 
----
+## Configuration
 
-## Prerequisites
-
-The installer handles these automatically, but if you want to verify:
-
-1. **Node.js 18+**
-2. **AgentAPI** — `go install github.com/coder/agentapi/cmd/agentapi@latest`
-3. **At least one coding agent** — Claude Code, Aider, Goose, etc.
-4. **git** — required for worktree isolation
-5. **tmux** — required for terminal session management
-
----
-
-Config is stored in `~/.opensofa/config.yaml` (created on first run):
+Config stored in `~/.opensofa/config.yaml` (created on first run):
 
 ```yaml
 # Default coding agent
@@ -115,108 +88,65 @@ defaultAgent: claude
 maxSessions: 5
 
 # Web server port
-webPort: 3000
+webPort: 3285
+
+# ntfy.sh topic for push notifications
+ntfyTopic: your-unique-topic-name
 
 # Auto-approve agent actions (not recommended)
 autoApprove: false
+
+# Enable cloudflared tunnel
+tunnelEnabled: true
 ```
 
-### Environment Variables (.env)
+## Work in Progress / Known Limitations
 
-```bash
-OPENSOFA_CONFIG_DIR=~/.opensofa   # Custom config location
-LOG_LEVEL=info                     # debug, info, warn, error
-NODE_ENV=development               # development or production
-```
+These features are planned or partially implemented:
 
-## Features
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Native Web Push (VAPID) | 🚧 WIP | Currently uses ntfy.sh; iOS native push requires PWA installed to Home Screen |
+| Voice Input | 🚧 WIP | Browser Speech Recognition API partially implemented |
+| MCP Management UI | 🚧 WIP | Backend support exists, UI in progress |
+| Preview Apps (localhost forwarding) | 🚧 WIP | Port detection implemented, tunnel auto-creation pending |
+| Merge Conflict UI | 🚧 WIP | Parser exists, dedicated UI in progress |
+| Model Discovery | ✅ Working | Dynamic model fetching for supported agents |
+| Screenshot Streaming | 🚧 WIP | Backend capture exists, inline UI pending |
+| Background Sync | ✅ Working | Message queue handles offline scenarios |
+| Auto-Snapshots | ✅ Working | Git worktrees provide implicit isolation |
 
-### Session Management
-- Create sessions with agent/directory/model picker
-- Multiple concurrent sessions with git worktree isolation
-- Session stop, restart, and status monitoring
+### Platform Limitations
 
-### Real-Time Streaming
-- Live activity feed with grouped events
-- File change notifications
-- Agent output streaming via SSE
-
-### Approvals
-- Push notification when agent needs approval
-- Approve/reject from phone notification or PWA
-- Deep link approvals — tap the notification to go directly to the approval
-
-### File Browser
-- Browse the repository file tree
-- View file contents with syntax highlighting
-- See git diffs for changed files
-
-### Push Notifications
-- Web Push via VAPID (no third-party services)
-- Notifications for approvals, errors, and session completion
-- Background sync for offline actions
-
-### Voice Input
-- Dictate messages to the agent using voice
-- Works on both mobile and desktop
-
-### PWA
-- Install to home screen for native app feel
-- Offline page when disconnected
-- Service worker with caching strategy
+- **iOS PWA**: Apple kills WebSockets ~30 seconds after screen lock. ntfy.sh notifications bridge this gap.
+- **Voice Input**: iOS requires active internet connection and stops processing if screen locks.
+- **File System**: Browser security restricts direct file access; all file operations proxy through backend.
 
 ## Supported Agents
 
-| Agent | Type | Notes |
-|-------|------|-------|
-| Claude Code | `claude` | Anthropic's official CLI |
-| Aider | `aider` | AI pair programming |
-| Goose | `goose` | Block's AI developer |
-| Gemini | `gemini` | Google's AI |
-| Codex | `codex` | OpenAI's coding agent |
-| Amp | `amp` | AI coding assistant |
-| OpenCode | `opencode` | Open source coding agent |
-| Copilot | `copilot` | GitHub Copilot CLI |
-| Cursor | `cursor` | Cursor's CLI |
-| Auggie | `auggie` | Augment Code agent |
-| Amazon Q | `amazonq` | Amazon Q Developer CLI |
-| Custom | `custom` | Custom agent command through AgentAPI |
+| Agent | Type | Status |
+|-------|------|--------|
+| Claude Code | `claude` | ✅ Fully supported |
+| Aider | `aider` | ✅ Fully supported |
+| OpenCode | `opencode` | ✅ Fully supported |
+| Codex | `codex` | ✅ Supported |
+| Gemini | `gemini` | ✅ Supported |
+| Goose | `goose` | ✅ Supported |
+| Amp | `amp` | ✅ Supported |
+| Cursor | `cursor` | ✅ Supported |
+| Auggie | `auggie` | ✅ Supported |
+| Amazon Q | `amazonq` | ✅ Supported |
+| Copilot | `copilot` | 🚧 Pending full integration |
 
-## Project Structure
+## Safety Features
 
-```
-opensofa/
-├── src/
-│   ├── main.ts                    # Entry point, Express server setup
-│   ├── types.ts                   # Shared TypeScript interfaces
-│   ├── config.ts                  # Config loader
-│   ├── session-manager.ts         # Session lifecycle management
-│   ├── feedback-controller.ts     # SSE event handling from AgentAPI
-│   ├── broadcaster.ts             # WebSocket event broadcasting
-│   ├── push.ts                    # Web Push notification manager
-│   ├── message-queue.ts           # Message queue for busy agent
-│   ├── state-persistence.ts       # Session state persistence
-│   ├── agentapi-client.ts         # AgentAPI HTTP client
-│   ├── permission-classifier.ts   # Approval detection
-│   ├── db.ts                      # SQLite database (WAL mode)
-│   └── web/
-│       ├── server.ts              # Express routes + WebSocket
-│       └── frontend/              # React PWA (Vite + TypeScript)
-│           ├── src/
-│           │   ├── components/    # UI components
-│           │   ├── views/         # Page views
-│           │   ├── hooks/         # Custom React hooks
-│           │   └── providers/     # Context providers
-│           └── public/
-│               ├── manifest.json  # PWA manifest
-│               ├── sw.js          # Service worker
-│               └── icons/         # PWA icons
-├── scripts/
-│   ├── setup.sh                   # Auto-setup script
-│   └── check-prerequisites.ts     # Dependency checker
-├── docs/                          # Architecture & design docs
-└── package.json
-```
+- **Git worktrees** — each session isolated in its own directory/branch
+- **TOTP for destructive ops** — stop sessions, destructive commands require 2FA
+- **Approval detection** — agent permission requests surface as notifications
+- **Auto-rollback** — revert uncommitted changes via API
+- **Emergency stop** — kill agent immediately from PWA
+- **Resource monitoring** — auto-cleanup idle sessions when resources critical
+- **IP banning** — 24-hour ban after 5 failed auth attempts
 
 ## Development
 
@@ -234,32 +164,13 @@ cd src/web/frontend && npm run build
 npm test
 ```
 
-## PM2 (Production)
-
-```bash
-# Build before running in production
-npm run build
-cd src/web/frontend && npm run build && cd ../../..
-
-# Start under PM2
-pm2 start ecosystem.config.js
-pm2 save
-pm2 startup
-```
-
 ## Troubleshooting
 
 - **AgentAPI not responding** — Try restarting the session from the PWA
-- **Push notifications not working on iOS** — Must install PWA to Home Screen first (iOS 16.4+)
+- **Push notifications not working** — Ensure ntfy.sh topic is configured and app is installed
 - **Directory is not a git repo** — Run `git init` in that directory, then retry
 - **Session stuck** — Stop and recreate the session from the home screen
-
-## Safety Features
-
-- **Git worktrees** — each session isolated in its own directory
-- **Approval detection** — agent permission requests surface as push notifications
-- **Rollback** — revert uncommitted changes
-- **Emergency stop** — kill the agent immediately from the PWA
+- **TOTP required but not set up** — Scan the QR code in Settings → Security with your authenticator app
 
 ## License
 
@@ -268,4 +179,5 @@ MIT
 ## Acknowledgments
 
 - [AgentAPI](https://github.com/coder/agentapi) — HTTP wrapper for coding agents
+- [ntfy.sh](https://ntfy.sh) — Push notification bridge
 - All the amazing coding agents this project bridges to

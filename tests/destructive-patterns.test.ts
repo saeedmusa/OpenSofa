@@ -1,11 +1,11 @@
 /**
- * Tests for Destructive Command Detection
+ * Tests for Destructive Command Detection (Token-Based)
  */
 
 import { describe, it, expect } from 'vitest';
-import { isDestructiveCommand, getDestructiveLabel, DESTRUCTIVE_PATTERNS } from '../src/web/destructive-patterns.js';
+import { isDestructiveCommand, getDestructiveLabel, isDestructiveToolCall } from '../src/web/destructive-tokens.js';
 
-describe('Destructive Command Detection', () => {
+describe('Destructive Command Detection (Token-Based)', () => {
     describe('isDestructiveCommand', () => {
         it('should detect rm -rf', () => {
             expect(isDestructiveCommand('rm -rf /tmp/test')).toBe(true);
@@ -161,15 +161,29 @@ describe('Destructive Command Detection', () => {
         });
     });
 
-    describe('DESTRUCTIVE_PATTERNS', () => {
-        it('should have at least 10 patterns defined', () => {
-            expect(DESTRUCTIVE_PATTERNS.length).toBeGreaterThanOrEqual(10);
+    describe('isDestructiveToolCall (ACP structured path)', () => {
+        it('should flag delete kind as dangerous', () => {
+            const result = isDestructiveToolCall('delete', 'Removing temp files');
+            expect(result.dangerous).toBe(true);
+            expect(result.label).toBe('File Deletion');
         });
 
-        it('should contain only valid RegExp objects', () => {
-            DESTRUCTIVE_PATTERNS.forEach(pattern => {
-                expect(pattern).toBeInstanceOf(RegExp);
-            });
+        it('should check execute kind with token matching', () => {
+            const result = isDestructiveToolCall('execute', 'rm -rf node_modules');
+            expect(result.dangerous).toBe(true);
+            expect(result.label).toBe('File Deletion');
+        });
+
+        it('should not flag safe execute commands', () => {
+            const result = isDestructiveToolCall('execute', 'npm install');
+            expect(result.dangerous).toBe(false);
+            expect(result.label).toBeNull();
+        });
+
+        it('should not flag non-execute/non-delete kinds', () => {
+            expect(isDestructiveToolCall('read', 'config.json').dangerous).toBe(false);
+            expect(isDestructiveToolCall('edit', 'main.ts').dangerous).toBe(false);
+            expect(isDestructiveToolCall('search', 'TODO').dangerous).toBe(false);
         });
     });
 });

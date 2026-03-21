@@ -29,7 +29,7 @@ import type {
 } from './types.js';
 import { AgentAPIClient, AgentAPIError } from './agentapi-client.js';
 import { FeedbackController } from './feedback-controller.js';
-import { PermissionClassifier } from './permission-classifier.js';
+import { AgentStateMachine } from './agent-state-machine.js';
 import { AgentRegistry } from './agent-registry.js';
 import { ResourceMonitor } from './resource-monitor.js';
 import { ScreenshotService } from './screenshot-service.js';
@@ -52,7 +52,7 @@ export class SessionManager extends EventEmitter {
   private creatingSessions: Set<string> = new Set();  // guards against duplicate in-flight creates
   
   private config: OpenSofaConfig;
-  private classifier: PermissionClassifier;
+  private classifier: AgentStateMachine;
   private agentRegistry: AgentRegistry;
   private resourceMonitor: ResourceMonitor | null = null;
   private screenshotService: ScreenshotService | null = null;
@@ -62,7 +62,7 @@ export class SessionManager extends EventEmitter {
 
   constructor(
     config: OpenSofaConfig,
-    classifier: PermissionClassifier,
+    classifier: AgentStateMachine,
     agentRegistry: AgentRegistry,
   ) {
     super();

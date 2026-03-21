@@ -4,7 +4,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { FeedbackController } from '../src/feedback-controller.js';
-import { PermissionClassifier } from '../src/permission-classifier.js';
+import { AgentStateMachine } from '../src/agent-state-machine.js';
 import type { OpenSofaConfig, Session, FeedbackEvent } from '../src/types.js';
 
 function createConfig(): OpenSofaConfig {
@@ -47,7 +47,7 @@ function createSession(): Session {
 
 describe('FeedbackController', () => {
   it('skips exact replay updates for same message id', () => {
-    const controller = new FeedbackController(createSession(), createConfig(), new PermissionClassifier());
+    const controller = new FeedbackController(createSession(), createConfig(), new AgentStateMachine());
     const eventSpy = vi.fn<(event: FeedbackEvent) => void>();
     controller.on('event', eventSpy);
 
@@ -71,7 +71,7 @@ describe('FeedbackController', () => {
   });
 
   it('ignores stale message ids after reconnect replay', () => {
-    const controller = new FeedbackController(createSession(), createConfig(), new PermissionClassifier());
+    const controller = new FeedbackController(createSession(), createConfig(), new AgentStateMachine());
     const eventSpy = vi.fn<(event: FeedbackEvent) => void>();
     controller.on('event', eventSpy);
 
@@ -94,7 +94,7 @@ describe('FeedbackController', () => {
   });
 
   it('emits only delta for growing updates on same message id', () => {
-    const controller = new FeedbackController(createSession(), createConfig(), new PermissionClassifier());
+    const controller = new FeedbackController(createSession(), createConfig(), new AgentStateMachine());
     const eventSpy = vi.fn<(event: FeedbackEvent) => void>();
     controller.on('event', eventSpy);
 
@@ -119,7 +119,7 @@ describe('FeedbackController', () => {
   });
 
   it('emits approval event as p0 when approval pattern is detected', () => {
-    const controller = new FeedbackController(createSession(), createConfig(), new PermissionClassifier());
+    const controller = new FeedbackController(createSession(), createConfig(), new AgentStateMachine());
     const eventSpy = vi.fn<(event: FeedbackEvent) => void>();
     controller.on('event', eventSpy);
 

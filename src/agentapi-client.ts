@@ -8,6 +8,7 @@
 
 import { createLogger } from './utils/logger.js';
 import type {
+  AgentAPIMessage,
   AgentAPIMessageRequest,
   AgentAPIMessageResponse,
   AgentAPIStatusResponse,
@@ -58,6 +59,20 @@ export class AgentAPIClient {
    */
   async sendRaw(content: string): Promise<AgentAPIMessageResponse> {
     return this.postMessage({ content, type: 'raw' });
+  }
+
+  /**
+   * Fetch the full conversation history from AgentAPI.
+   * Returns all messages (user + agent) in chronological order.
+   */
+  async getMessages(): Promise<{ messages: AgentAPIMessage[] }> {
+    const res = await fetch(`${this.baseUrl}/messages`, {
+      signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+    });
+    if (!res.ok) {
+      throw new AgentAPIError(`HTTP ${res.status}`, res.status);
+    }
+    return (await res.json()) as { messages: AgentAPIMessage[] };
   }
 
   // ── Server-Sent Events (SSE) ────────────────────────────────

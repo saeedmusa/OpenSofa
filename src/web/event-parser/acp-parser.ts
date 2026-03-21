@@ -15,13 +15,56 @@ const log = createLogger('event-parser:acp');
 
 /**
  * ACP SessionUpdate notification structure from agentapi
+ * 
+ * Current AgentAPI v0.12.1 provides: Kind, Title, Status
+ * Future fields (when AgentAPI adds full ACP support): toolCallId, Content, Locations, RawInput
  */
 export interface ACPSessionUpdate {
   AgentMessageChunk?: {
     Content?: { Text?: { Text?: string } };
   };
-  ToolCall?: { Kind?: string; Title?: string };
-  ToolCallUpdate?: { Status?: string };
+  ToolCall?: {
+    Kind?: string;
+    Title?: string;
+    // Future fields — optional, captured when AgentAPI adds support
+    toolCallId?: string;
+    Content?: unknown[];
+    Locations?: Array<{ path: string; line?: number }>;
+    RawInput?: Record<string, unknown>;
+    // Catch-all for unknown fields
+    [key: string]: unknown;
+  };
+  ToolCallUpdate?: {
+    Status?: string;
+    // Future fields
+    toolCallId?: string;
+    Content?: unknown[];
+    [key: string]: unknown;
+  };
+}
+
+/**
+ * Parsed tool call event with all available fields
+ */
+export interface ACPToolCallEvent {
+  kind: string;
+  title: string;
+  // Future fields (undefined when not available from AgentAPI)
+  toolCallId?: string;
+  content?: unknown[];
+  locations?: Array<{ path: string; line?: number }>;
+  rawInput?: Record<string, unknown>;
+}
+
+/**
+ * Parsed tool call update event
+ */
+export interface ACPToolCallUpdateEvent {
+  status: string;
+  toolName?: string;
+  // Future fields
+  toolCallId?: string;
+  content?: unknown[];
 }
 
 /**
@@ -108,27 +151,37 @@ export class ACPEventParser extends EventEmitter {
       this.emit('text_chunk', text);
     }
 
-    // Emit ToolCall
+    // Emit ToolCall with all available fields
     if (update.ToolCall?.Kind && update.ToolCall?.Title) {
-      log.debug('Emitting tool_call', { 
-        kind: update.ToolCall.Kind, 
-        title: update.ToolCall.Title 
-      });
+      const kind = update.ToolCall.Kind;
+      const title = update.ToolCall.Title;
+      const event: ACPToolCallEvent = {
+        kind,
+        title,
+        // Capture future fields when available
+        toolCallId: update.ToolCall.toolCallId,
+        content: update.ToolCall.Content,
+        locations: update.ToolCall.Locations,
+        rawInput: update.ToolCall.RawInput,
+      };
+
+      log.debug('Emitting tool_call', { kind: event.kind, title: event.title });
       // Store tool name for correlation with subsequent tool_call_update
-      this.lastToolName = update.ToolCall.Title;
-      this.emit('tool_call', {
-        kind: update.ToolCall.Kind,
-        title: update.ToolCall.Title,
-      });
+      this.lastToolName = title;
+      this.emit('tool_call', event);
     }
 
     // Emit ToolCallUpdate status (with last seen tool name for correlation)
     if (update.ToolCallUpdate?.Status) {
-      log.debug('Emitting tool_call_update', { status: update.ToolCallUpdate.Status, toolName: this.lastToolName });
-      this.emit('tool_call_update', {
+      const updateEvent: ACPToolCallUpdateEvent = {
         status: update.ToolCallUpdate.Status,
         toolName: this.lastToolName,
-      });
+        toolCallId: update.ToolCallUpdate.toolCallId,
+        content: update.ToolCallUpdate.Content,
+      };
+
+      log.debug('Emitting tool_call_update', { status: updateEvent.status, toolName: updateEvent.toolName });
+      this.emit('tool_call_update', updateEvent);
     }
   }
 

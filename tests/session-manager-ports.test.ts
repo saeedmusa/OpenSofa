@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { SessionManager } from '../src/session-manager.js';
-import { PermissionClassifier } from '../src/permission-classifier.js';
+import { AgentStateMachine } from '../src/agent-state-machine.js';
 import { AgentRegistry } from '../src/agent-registry.js';
 
 // Mock dependencies
@@ -28,7 +28,7 @@ vi.mock('../src/utils/logger.js', () => ({
 
 describe('SessionManager port allocation', () => {
   let sessionManager: SessionManager;
-  let classifier: PermissionClassifier;
+  let classifier: AgentStateMachine;
   let agentRegistry: AgentRegistry;
 
   const createTestConfig = (overrides = {}) => ({
@@ -49,7 +49,7 @@ describe('SessionManager port allocation', () => {
   });
 
   beforeEach(() => {
-    classifier = new PermissionClassifier();
+    classifier = new AgentStateMachine();
     agentRegistry = new AgentRegistry();
     
     sessionManager = new SessionManager(
