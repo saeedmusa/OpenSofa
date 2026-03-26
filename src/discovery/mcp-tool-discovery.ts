@@ -47,7 +47,7 @@ export async function discoverTools(server: MCPServer): Promise<MCPToolDiscovery
     let tools: MCPTool[];
 
     if (server.transport === 'stdio' && server.command) {
-      tools = await discoverViaStdio(server.command, server.args ?? [], server.envKeys);
+      tools = await discoverViaStdio(server.command, server.args ?? [], server.envKeys, server.envValues);
     } else if (server.transport === 'http' && server.url) {
       tools = await discoverViaHttp(server.url);
     } else {
@@ -74,18 +74,27 @@ async function discoverViaStdio(
   command: string,
   args: string[],
   envKeys: string[],
+  envValues?: Record<string, string>,
 ): Promise<MCPTool[]> {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       child.kill('SIGTERM');
-      reject(new Error('Discovery timeout (10s)'));
-    }, 10_000);
+      reject(new Error('Discovery timeout (30s)'));
+    }, 30_000);
 
     // Build env with only the required keys from parent process
     const env: Record<string, string> = { ...process.env } as Record<string, string>;
-    // Ensure PATH is enriched for finding commands
-    if (!env.PATH) {
-      env.PATH = '/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin';
+    // Enrich PATH for finding commands like npx, node
+    const pathEnv = env.PATH || '/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin';
+    const paths = pathEnv.split(':').filter(Boolean);
+    const additionalPaths = ['/usr/local/bin', '/opt/homebrew/bin', '/Users/**/Library/npm/bin'];
+    env.PATH = [...new Set([...additionalPaths, ...paths])].join(':');
+
+    // Pass env vars from config if provided
+    if (envValues) {
+      for (const [key, value] of Object.entries(envValues)) {
+        env[key] = value;
+      }
     }
 
     const child = spawn(command, args, {

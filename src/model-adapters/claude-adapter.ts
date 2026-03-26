@@ -44,10 +44,32 @@ export class ClaudeAdapter extends BaseAdapter {
   }
 
   /**
-   * Check if Claude Code is available.
+   * Check if Claude Code is available asynchronously.
    * Returns true if claude binary exists OR if settings.json exists.
    */
-  isAvailable(): boolean {
+  async isAvailableAsync(): Promise<boolean> {
+    // Check for claude binary using base class async method
+    const binaryAvailable = await super.isAvailableAsync();
+    if (binaryAvailable) {
+      log.debug('Claude binary found');
+      return true;
+    }
+
+    // Check for settings.json
+    if (existsSync(this.configPath)) {
+      log.debug('Claude settings.json found');
+      return true;
+    }
+
+    log.debug('Claude not available');
+    return false;
+  }
+
+  /**
+   * Check if Claude Code is available (sync version - deprecated).
+   * @deprecated Use isAvailableAsync() instead
+   */
+  override isAvailable(): boolean {
     // Check for claude binary
     try {
       execFileSync('which', ['claude'], {

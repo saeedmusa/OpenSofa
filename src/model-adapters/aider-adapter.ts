@@ -39,6 +39,23 @@ export class AiderAdapter extends BaseAdapter {
     return 'aider';
   }
 
+  /**
+   * Check if Aider is available asynchronously.
+   * Returns true if aider binary exists OR if config file exists.
+   */
+  async isAvailableAsync(): Promise<boolean> {
+    const binaryAvailable = await super.isAvailableAsync();
+    if (binaryAvailable) {
+      return true;
+    }
+
+    return existsSync(this.configPath);
+  }
+
+  /**
+   * Check if Aider is available (sync version - deprecated).
+   * @deprecated Use isAvailableAsync() instead
+   */
   override isAvailable(): boolean {
     try {
       execFileSync('which', ['aider'], {

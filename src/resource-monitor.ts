@@ -7,7 +7,7 @@
 
 import { EventEmitter } from 'events';
 import os from 'os';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { createLogger } from './utils/logger.js';
 import type { OpenSofaConfig, Session, ResourceStats } from './types.js';
 
@@ -372,7 +372,7 @@ export class ResourceMonitor extends EventEmitter {
    */
   private readMacOSAvailableMemMB(): number {
     try {
-      const output = execSync('vm_stat', { encoding: 'utf-8', timeout: 2000 });
+      const output = execFileSync('vm_stat', [], { encoding: 'utf-8', timeout: 2000 });
       const pageSize = this.parseVmStatPageSize(output);
       const free = this.parseVmStatValue(output, 'Pages free');
       const inactive = this.parseVmStatValue(output, 'Pages inactive');

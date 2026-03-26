@@ -7,6 +7,7 @@
 import { Hono } from 'hono';
 import type { SessionManager } from '../../session-manager.js';
 import { AgentAPIClient } from '../../agentapi-client.js';
+import type { AgentType } from '../../types.js';
 import {
   success,
   error,
@@ -32,9 +33,9 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
   const app = new Hono();
   const { sessionManager } = deps;
 
-  // GET /api/sessions - List all sessions
+  // GET /api/sessions - List all sessions (includes creating, active, error, etc.)
   app.get('/', (c) => {
-    const sessions = sessionManager.getActiveSessions();
+    const sessions = sessionManager.getSessionsList();
     const response: SessionListResponse = {
       sessions: sessions.map(sessionToSummary),
     };
@@ -61,6 +62,12 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
       return c.json(error('agent is required and must be a string', 'INVALID_BODY'), 400);
     }
 
+    // Validate agent type
+    const VALID_AGENTS: AgentType[] = ['claude', 'aider', 'goose', 'gemini', 'codex', 'amp', 'opencode', 'copilot', 'cursor', 'auggie', 'amazonq', 'custom'];
+    if (!VALID_AGENTS.includes(agent as AgentType)) {
+      return c.json(error(`Unknown agent type: ${agent}`, 'INVALID_AGENT'), 400);
+    }
+
     // Validate session name
     if (!/^[a-zA-Z0-9-]{1,30}$/.test(name)) {
       return c.json(error('Session name must be 1-30 characters (letters, numbers, hyphens only)', 'INVALID_NAME'), 400);
@@ -73,14 +80,21 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
 
     try {
       // Create session asynchronously - this may take 30-60 seconds
-      // We start the process and return immediately
-      sessionManager.createSession(name, dir, agent as any, model || '');
+      // We start the process and return immediately (fire-and-forget with error handling)
+      // Synchronous errors (validation, worktree, port) are caught by this try/catch
+      // Async errors (spawn, health check) are caught by .catch() and update session status
+      sessionManager.createSession(name, dir, agent as AgentType, model || '').catch((err) => {
+        const errMsg = err instanceof Error ? err.message : 'Session creation failed';
+        log.error('Background session creation failed', { name, error: errMsg });
+        // Session status is already updated to 'error' inside createSession()
+        // The frontend will see the error on next poll
+      });
       
       return c.json(success({
         ok: true,
         message: `Session '${name}' creation started. This may take 30-60 seconds.`,
         session: { name, dir, agent, model: model || '' }
-      }));
+      }), 202);
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : 'Failed to create session';
       log.error('Failed to create session', { name, error: errMsg });
@@ -345,7 +359,10 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
     }
 
     try {
-      await sessionManager.switchSessionAgent(session, body.model);
+      // switchSessionAgent expects "agent model" format, but this endpoint only switches model
+      // Construct the value with the current agent type + new model
+      const switchValue = `${session.agentType} ${body.model}`;
+      await sessionManager.switchSessionAgent(session, switchValue);
       const updated = sessionManager.getByName(name);
       if (!updated) {
         return c.json(error('Session disappeared after model switch', 'INTERNAL'), 500);

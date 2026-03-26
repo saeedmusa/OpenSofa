@@ -5,7 +5,7 @@
  * Called from /check command.
  */
 
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
@@ -19,7 +19,7 @@ interface CheckResult {
 
 function checkCommand(name: string, command: string, versionFlag: string): CheckResult {
   try {
-    const output = execSync(`${command} ${versionFlag}`, { 
+    const output = execFileSync(command, [versionFlag], { 
       encoding: 'utf-8', 
       stdio: ['pipe', 'pipe', 'pipe'],
       timeout: 5000 

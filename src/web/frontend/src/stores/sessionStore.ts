@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import type { Session, SessionDetail } from '../types';
 
 export type SessionStatus = 'creating' | 'active' | 'stopping' | 'stopped' | 'error';
-export type AgentStatus = 'stable' | 'running';
+export type AgentStatus = 'stable' | 'running' | 'awaiting_human_input';
 
 export interface QueuedMessage {
   id: string;
@@ -11,10 +11,22 @@ export interface QueuedMessage {
   status: 'pending' | 'sending' | 'sent' | 'failed';
 }
 
+export interface OperationProgress {
+  operationId: string;
+  type: 'create' | 'stop' | 'restart' | 'message';
+  phase: string;
+  progress: number;
+  startTime: number;
+  error: string | null;
+  isTimedOut: boolean;
+  retryCount: number;
+}
+
 interface SessionState {
   sessions: Session[];
   selectedSession: SessionDetail | null;
   messageQueues: Record<string, QueuedMessage[]>;
+  operations: Record<string, OperationProgress>;
   isLoading: boolean;
   error: string | null;
 
@@ -32,6 +44,12 @@ interface SessionState {
   clearQueue: (sessionName: string) => void;
   getQueuedMessages: (sessionName: string) => QueuedMessage[];
   hasQueuedMessages: (sessionName: string) => boolean;
+
+  startOperation: (operationId: string, type: OperationProgress['type'], phase: string) => void;
+  updateOperation: (operationId: string, updates: Partial<OperationProgress>) => void;
+  completeOperation: (operationId: string) => void;
+  failOperation: (operationId: string, error: string, isTimedOut?: boolean) => void;
+  getOperation: (operationId: string) => OperationProgress | null;
 }
 
 const VALID_TRANSITIONS: Record<SessionStatus, SessionStatus[]> = {
@@ -50,6 +68,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   sessions: [],
   selectedSession: null,
   messageQueues: {},
+  operations: {},
   isLoading: false,
   error: null,
 
@@ -148,6 +167,56 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   getQueuedMessages: (sessionName) => get().messageQueues[sessionName] || [],
   
   hasQueuedMessages: (sessionName) => (get().messageQueues[sessionName]?.length ?? 0) > 0,
+
+  startOperation: (operationId, type, phase) =>
+    set((state) => ({
+      operations: {
+        ...state.operations,
+        [operationId]: {
+          operationId,
+          type,
+          phase,
+          progress: 0,
+          startTime: Date.now(),
+          error: null,
+          isTimedOut: false,
+          retryCount: 0,
+        },
+      },
+    })),
+
+  updateOperation: (operationId, updates) =>
+    set((state) => {
+      const operation = state.operations[operationId];
+      if (!operation) return state;
+      return {
+        operations: {
+          ...state.operations,
+          [operationId]: { ...operation, ...updates },
+        },
+      };
+    }),
+
+  completeOperation: (operationId) =>
+    set((state) => {
+      const nextOperations = { ...state.operations };
+      delete nextOperations[operationId];
+      return { operations: nextOperations };
+    }),
+
+  failOperation: (operationId, error, isTimedOut = false) =>
+    set((state) => {
+      const operation = state.operations[operationId];
+      if (!operation) return state;
+      return {
+        operations: {
+          ...state.operations,
+          [operationId]: { ...operation, error, isTimedOut, progress: 100 },
+        },
+      };
+    }),
+
+  getOperation: (operationId) => get().operations[operationId] ?? null,
 }));
 
 export function canAcceptMessages(session: Session | null): boolean {

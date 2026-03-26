@@ -40,6 +40,18 @@ export class GooseAdapter extends BaseAdapter {
     return 'goose';
   }
 
+  /**
+   * Check if Goose is available asynchronously.
+   * Returns true if config file exists.
+   */
+  async isAvailableAsync(): Promise<boolean> {
+    return existsSync(this.configPath);
+  }
+
+  /**
+   * Check if Goose is available (sync version - deprecated).
+   * @deprecated Use isAvailableAsync() instead
+   */
   override isAvailable(): boolean {
     return existsSync(this.configPath);
   }

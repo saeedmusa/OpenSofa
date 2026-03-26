@@ -1,10 +1,10 @@
 export interface Session {
   name: string;
   status: 'creating' | 'active' | 'stopping' | 'stopped' | 'error';
-  agentType: string;
+  agentType: AgentType;
   model: string;
   branch: string;
-  agentStatus: 'stable' | 'running';
+  agentStatus: 'stable' | 'running' | 'awaiting_human_input';
   hasPendingApproval: boolean;
   createdAt: number;
   lastActivityAt: number;
@@ -14,6 +14,7 @@ export interface SessionDetail extends Session {
   workDir: string;
   repoDir: string;
   port: number;
+  autoApprove: boolean;
   pendingApproval: {
     detectedAt: number;
     command: string | null;
@@ -21,7 +22,7 @@ export interface SessionDetail extends Session {
 }
 
 export interface Agent {
-  type: string;
+  type: AgentType;
   displayName: string;
   installed: boolean;
   description: string;
@@ -40,8 +41,25 @@ export interface SystemStatus {
   };
 }
 
+export type WebSocketEventType =
+  | 'session_created'
+  | 'session_stopped'
+  | 'session_updated'
+  | 'agent_status'
+  | 'agent_output'
+  | 'approval_needed'
+  | 'approval_cleared'
+  | 'terminal_output'
+  | 'activity'
+  | 'system_status'
+  | 'kill_session'
+  | 'feedback'
+  | 'catch_up_summary'
+  | 'session_state_snapshot'
+  | 'sync_response';
+
 export interface WebSocketEvent {
-  type: string;
+  type: WebSocketEventType;
   sessionName?: string;
   payload: unknown;
   timestamp: number;

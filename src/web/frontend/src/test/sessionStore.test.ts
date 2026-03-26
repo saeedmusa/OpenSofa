@@ -21,6 +21,7 @@ describe('sessionStore', () => {
     workDir: '/tmp/test',
     repoDir: '/tmp/test/repo',
     port: 8080,
+    autoApprove: false,
     pendingApproval: null,
   };
 

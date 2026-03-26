@@ -23,6 +23,7 @@ function createMockAdapter(agent: AgentType, name: string, available = true): Mo
     agent,
     name,
     isAvailable: vi.fn().mockReturnValue(available),
+    isAvailableAsync: vi.fn().mockResolvedValue(available),
     discoverModels: vi.fn().mockResolvedValue([
       {
         name: `${name} Provider`,
@@ -187,6 +188,7 @@ describe('AdapterRegistry', () => {
         agent: 'opencode' as AgentType,
         name: 'OpenCode',
         isAvailable: vi.fn().mockReturnValue(true),
+        isAvailableAsync: vi.fn().mockResolvedValue(true),
         discoverModels: vi.fn().mockRejectedValue(new Error('Discovery failed')),
         getDefaultModel: vi.fn().mockReturnValue(undefined),
       };
@@ -209,6 +211,7 @@ describe('AdapterRegistry', () => {
         agent: 'opencode' as AgentType,
         name: 'OpenCode',
         isAvailable: vi.fn().mockReturnValue(true),
+        isAvailableAsync: vi.fn().mockResolvedValue(true),
         discoverModels: vi.fn().mockRejectedValue(new Error('OpenCode failed')),
         getDefaultModel: vi.fn().mockReturnValue(undefined),
       };
@@ -275,6 +278,7 @@ describe('AdapterRegistry', () => {
         agent: 'claude' as AgentType,
         name: 'Claude Code',
         isAvailable: vi.fn().mockReturnValue(true),
+        isAvailableAsync: vi.fn().mockResolvedValue(true),
         discoverModels: vi.fn().mockRejectedValue(new Error('Discovery failed')),
         getDefaultModel: vi.fn().mockReturnValue(undefined),
       };

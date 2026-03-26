@@ -36,6 +36,18 @@ export class GeminiAdapter extends BaseAdapter {
     return 'gemini';
   }
 
+  /**
+   * Check if Gemini is available asynchronously.
+   * Returns true if config file exists or GEMINI_MODEL env var is set.
+   */
+  async isAvailableAsync(): Promise<boolean> {
+    return existsSync(this.configPath) || Boolean(process.env.GEMINI_MODEL);
+  }
+
+  /**
+   * Check if Gemini is available (sync version - deprecated).
+   * @deprecated Use isAvailableAsync() instead
+   */
   override isAvailable(): boolean {
     return existsSync(this.configPath) || Boolean(process.env.GEMINI_MODEL);
   }

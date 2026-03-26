@@ -5,7 +5,6 @@
  * Uses `opencode models` and `opencode auth list` commands.
  */
 
-import { execFileSync } from 'child_process';
 import { createLogger } from '../utils/logger.js';
 import { getEnrichedEnv } from '../utils/expand-path.js';
 import { BaseAdapter } from './base-adapter.js';
@@ -13,6 +12,12 @@ import type { AgentType } from '../types.js';
 import type { ModelProvider, DiscoveredModel } from './types.js';
 
 const log = createLogger('opencode-adapter');
+
+// Timeout constants
+const TIMEOUTS = {
+  authList: 10_000,       // 10s for `opencode auth list`
+  models: 30_000,         // 30s for `opencode models`
+} as const;
 
 /**
  * Mapping from raw provider names (from opencode auth list)
@@ -79,8 +84,10 @@ export class OpenCodeAdapter extends BaseAdapter {
    * Groups models by provider
    */
   async discoverModels(): Promise<ModelProvider[]> {
-    const configuredPrefixes = this.getConfiguredProviderPrefixes();
-    const allModels = this.getAllModels();
+    const [configuredPrefixes, allModels] = await Promise.all([
+      this.getConfiguredProviderPrefixes(),
+      this.getAllModels(),
+    ]);
 
     log.debug('OpenCode discovery', {
       configuredProviders: configuredPrefixes.size,
@@ -150,14 +157,11 @@ export class OpenCodeAdapter extends BaseAdapter {
 
   /**
    * Parse the output of `opencode auth list` to get configured provider prefixes
+   * Uses async execution with timeout
    */
-  private getConfiguredProviderPrefixes(): Set<string> {
+  private async getConfiguredProviderPrefixes(): Promise<Set<string>> {
     try {
-      const output = execFileSync('opencode', ['auth', 'list'], {
-        encoding: 'utf-8',
-        timeout: 10000,
-        env: getEnrichedEnv(),
-      });
+      const output = await this.executeCommandAsync('opencode', ['auth', 'list'], TIMEOUTS.authList);
 
       const prefixes = new Set<string>();
       const lines = output.split('\n');
@@ -187,16 +191,13 @@ export class OpenCodeAdapter extends BaseAdapter {
 
   /**
    * Get all available models from opencode
+   * Uses async execution with timeout
    */
-  private getAllModels(): string[] {
+  private async getAllModels(): Promise<string[]> {
     try {
-      const output = execFileSync('opencode', ['models'], {
-        encoding: 'utf-8',
-        timeout: 30000,
-        env: getEnrichedEnv(),
-      });
+      const output = await this.executeCommandAsync('opencode', ['models'], TIMEOUTS.models);
 
-      return output.split('\n').filter((line) => line.trim());
+      return output.split('\n').filter((line: string) => line.trim());
     } catch (err) {
       log.warn('Failed to get models', { error: String(err) });
       return [];

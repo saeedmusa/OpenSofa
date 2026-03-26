@@ -22,7 +22,8 @@ vi.mock('os', () => ({
 
 // Mock child_process (used by vm_stat on macOS — not needed in tests)
 vi.mock('child_process', () => ({
-  execSync: () => '',
+  execSync: vi.fn().mockReturnValue(''),
+  execFileSync: vi.fn().mockReturnValue(''),
 }));
 
 // Mock fetch for health checks

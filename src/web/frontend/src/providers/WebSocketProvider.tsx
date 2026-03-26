@@ -183,6 +183,13 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
         case 'system_status':
           console.log('[WS] System status:', event.payload);
           break;
+        case 'kill_session': {
+          const payload = event.payload as { reason: string };
+          console.warn('[WS] Session killed:', payload.reason);
+          // Force disconnect and prompt re-auth
+          wsRef.current?.close();
+          break;
+        }
       }
     };
 

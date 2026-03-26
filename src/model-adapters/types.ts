@@ -39,8 +39,14 @@ export interface ModelAdapter {
   
   /**
    * Check if this adapter is available (agent installed, etc.)
+   * @deprecated Use isAvailableAsync() instead
    */
   isAvailable(): boolean;
+  
+  /**
+   * Check if this adapter is available asynchronously (non-blocking)
+   */
+  isAvailableAsync(): Promise<boolean>;
   
   /**
    * Discover all available models from this agent's providers

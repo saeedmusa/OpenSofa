@@ -35,6 +35,8 @@ import { ResourceMonitor } from './resource-monitor.js';
 import { ScreenshotService } from './screenshot-service.js';
 import { globalMessageQueue } from './message-queue.js';
 import type { Notifier } from './web/notifier.js';
+import { ProcessManager, getProcessManager } from './process-manager.js';
+import { TmuxCompatibility, createTmuxCompat } from './tmux-compat.js';
 
 const log = createLogger('session');
 
@@ -59,6 +61,9 @@ export class SessionManager extends EventEmitter {
   private notifier: Notifier | null = null;
   private onStateChanged: (() => Promise<void>) | null = null;
   private webUrlProvider: (() => Promise<string | null>) | null = null;
+  private processManager: ProcessManager;
+  private tmuxCompat: TmuxCompatibility;
+  private creationTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
   constructor(
     config: OpenSofaConfig,
@@ -69,6 +74,10 @@ export class SessionManager extends EventEmitter {
     this.config = config;
     this.classifier = classifier;
     this.agentRegistry = agentRegistry;
+    
+    // Initialize process management
+    this.processManager = getProcessManager();
+    this.tmuxCompat = createTmuxCompat({ processManager: this.processManager });
     
     // Set up message queue sender
     globalMessageQueue.setSender(async (msg) => {
@@ -319,6 +328,21 @@ export class SessionManager extends EventEmitter {
     };
     this.sessions.set(name, placeholderSession);
 
+    // Safety net: auto-fail sessions stuck in 'creating' for too long (3 minutes)
+    const CREATION_TIMEOUT_MS = 3 * 60 * 1000;
+    const creationTimer = setTimeout(() => {
+      const s = this.sessions.get(name);
+      if (s && s.status === 'creating') {
+        log.error(`Session '${name}' stuck in creating state — marking as error after ${CREATION_TIMEOUT_MS / 1000}s`);
+        s.status = 'error';
+        s.agentStatus = 'stable';
+        this.emit('session:updated', s);
+        this.creatingSessions.delete(name);
+      }
+      this.creationTimeouts.delete(name);
+    }, CREATION_TIMEOUT_MS);
+    this.creationTimeouts.set(name, creationTimer);
+
     // 2. Validate inputs
     const validation = this.validateSessionInput(name, dir);
     if (!validation.ok) {
@@ -337,13 +361,28 @@ export class SessionManager extends EventEmitter {
     } catch (err) {
       const error = err as Error;
       log.error('Failed to create worktree', { error: error.message });
+      // Update session to error status instead of deleting — so frontend can see the error
+      const session = this.sessions.get(name);
+      if (session) {
+        session.status = 'error';
+        session.agentStatus = 'stable';
+        this.emit('session:updated', session);
+      }
       this.creatingSessions.delete(name);
-      this.sessions.delete(name);
       throw new Error(`Failed to create worktree: ${error.message}`);
     }
 
     // 4. Allocate port
-    const port = this.allocatePort();
+    let port: number;
+    try {
+      port = this.allocatePort();
+    } catch (err) {
+      const error = err as Error;
+      log.error('Failed to allocate port', { error: error.message });
+      this.creatingSessions.delete(name);
+      this.sessions.delete(name);
+      throw new Error(`Failed to allocate port: ${error.message}`);
+    }
     const startupTimeoutMs = this.getStartupTimeoutMs(agent);
 
     // 5. Spawn AgentAPI
@@ -353,11 +392,17 @@ export class SessionManager extends EventEmitter {
     } catch (err) {
       const error = err as Error;
       log.error('Failed to spawn AgentAPI', { error: error.message });
+      // Update session to error status instead of deleting — so frontend can see the error
+      const session = this.sessions.get(name);
+      if (session) {
+        session.status = 'error';
+        session.agentStatus = 'stable';
+        this.emit('session:updated', session);
+      }
       this.creatingSessions.delete(name);
-      this.sessions.delete(name);
       this.releasePort(port);
       this.removeWorktree(dir, workDir);
-      throw new Error(`Failed to start AgentAPI: ${error.message}`);
+      return;
     }
 
     // 6. Health check
@@ -365,12 +410,18 @@ export class SessionManager extends EventEmitter {
       await this.healthCheck(port, startupTimeoutMs);
     } catch (err) {
       log.error('AgentAPI health check failed', { error: String(err) });
+      // Update session to error status instead of deleting — so frontend can see the error
+      const session = this.sessions.get(name);
+      if (session) {
+        session.status = 'error';
+        session.agentStatus = 'stable';
+        this.emit('session:updated', session);
+      }
       this.creatingSessions.delete(name);
-      this.sessions.delete(name);
       this.killProcess(pid);
       this.releasePort(port);
       this.removeWorktree(dir, workDir);
-      throw new Error(`Session '${name}' failed to start — ${agent} didn't respond within ${Math.round(startupTimeoutMs / 1000)}s.`);
+      return;
     }
 
     // 7. Create session object
@@ -393,13 +444,32 @@ export class SessionManager extends EventEmitter {
       pendingApproval: undefined,
     };
 
-    // 8. Initialize FeedbackController (SSE connection)
-    this.attachRuntime(session, port);
-
-    // 9. Store session
-    this.sessions.set(name, session);
-    this.creatingSessions.delete(name);
-    this.requestStateSave('createSession');
+    // 8. Initialize FeedbackController (SSE connection) + store session
+    // Wrap in try/catch to ensure creatingSessions cleanup and resource release on failure
+    try {
+      this.attachRuntime(session, port);
+      this.sessions.set(name, session);
+      this.creatingSessions.delete(name);
+      // Clear creation timeout — session has successfully reached 'active'
+      const timer = this.creationTimeouts.get(name);
+      if (timer) {
+        clearTimeout(timer);
+        this.creationTimeouts.delete(name);
+      }
+      this.requestStateSave('createSession');
+    } catch (err) {
+      const error = err as Error;
+      log.error('Failed to attach runtime or store session', { name, error: error.message });
+      // Clean up creatingSessions guard
+      this.creatingSessions.delete(name);
+      // Clean up allocated resources
+      this.killProcess(pid);
+      this.releasePort(port);
+      this.removeWorktree(dir, workDir);
+      // Remove session from map if it was partially added
+      this.sessions.delete(name);
+      throw error;
+    }
 
     log.info(`Session created: ${name}`, { port, workDir });
     this.emit('session:created', session);
@@ -433,6 +503,15 @@ export class SessionManager extends EventEmitter {
     const parentDir = path.dirname(expandedDir);
     const workDir = path.join(parentDir, `${repoBasename}-${sessionName}`);
     const branch = `feat/${sessionName}`;
+
+    log.info('Creating git worktree', {
+      repoDir,
+      expandedDir,
+      repoBasename,
+      parentDir,
+      workDir,
+      branch,
+    });
 
     try {
       safeGitExec(expandedDir, ['worktree', 'prune'], 10000);
@@ -469,15 +548,19 @@ export class SessionManager extends EventEmitter {
 
       if (branchExists) {
         // Use existing branch (without -b flag)
-        safeGitExec(expandedDir, ['worktree', 'add', workDir, branch], 30000);
+        log.info('Using existing branch for worktree', { branch, workDir });
+        safeGitExec(expandedDir, ['worktree', 'add', workDir, branch], 60000);
       } else {
         // Create new branch
-        safeGitExec(expandedDir, ['worktree', 'add', workDir, '-b', branch], 30000);
+        log.info('Creating new branch for worktree', { branch, workDir });
+        safeGitExec(expandedDir, ['worktree', 'add', workDir, '-b', branch], 60000);
       }
     } catch (err) {
+      log.error('Failed to create worktree', { error: String(err) });
       throw new Error(`Failed to create worktree: ${String(err)}`);
     }
 
+    log.info('Worktree created successfully', { workDir, branch });
     return { workDir, branch };
   }
 
@@ -516,101 +599,168 @@ export class SessionManager extends EventEmitter {
   }
 
   /**
-   * Spawn AgentAPI process inside tmux for terminal capture
+   * Spawn AgentAPI process using node-pty via ProcessManager
    */
   private async spawnAgentAPI(port: number, agent: AgentType, model: string, workDir: string): Promise<number> {
+    // --- Pre-flight checks ---
     if (!this.agentRegistry.isAgentApiInstalled()) {
-      throw new Error('agentapi CLI is not installed. Install it with: go install github.com/coder/agentapi@latest');
+      throw new Error(
+        'agentapi CLI is not installed. ' +
+        'Install it with: go install github.com/coder/agentapi@latest'
+      );
     }
     if (!this.agentRegistry.isInstalled(agent)) {
-      throw new Error(`${agent} CLI is not installed or not on PATH. Install it first, then try again.`);
+      throw new Error(
+        `${agent} CLI is not installed or not on PATH. ` +
+        'Install it first, then try again.'
+      );
     }
-    
     if (!fs.existsSync(workDir)) {
       throw new Error(`Working directory does not exist: ${workDir}`);
     }
 
     const tmuxSessionName = `agentapi-${port}`;
-    const { args, env: agentEnv } = this.agentRegistry.buildSpawnArgs(agent, port, model || undefined);
+    const { args, env: agentEnv } = this.agentRegistry.buildSpawnArgs(
+      agent, port, model || undefined,
+    );
 
     const agentCmd = `agentapi ${args.join(' ')}`;
-    
-    log.info(`Spawning in tmux session ${tmuxSessionName}: ${agentCmd}`);
+    log.info(`Spawning AgentAPI in session ${tmuxSessionName}: ${agentCmd}`);
     if (Object.keys(agentEnv).length > 0) {
       log.debug('Agent env vars:', agentEnv);
     }
 
-    return new Promise((resolve, reject) => {
-      try {
-        try {
-          safeTmuxExec(['kill-session', '-t', tmuxSessionName], 1000);
-        } catch {
-          // Session doesn't exist, that's fine
-        }
+    // --- Clean up potential orphan ---
+    this.cleanupOrphanedSession(tmuxSessionName);
 
-        const tmuxArgs = [
-          'new-session',
-          '-d',
-          '-s', tmuxSessionName,
-          '-x', '120',
-          '-y', '36',
-          '-c', workDir,
-        ];
+    // --- Spawn using TmuxCompatibility (which uses ProcessManager internally) ---
+    try {
+      log.info('Creating tmux-compat session', {
+        sessionName: tmuxSessionName,
+        command: 'agentapi',
+        args,
+        cwd: workDir,
+      });
 
-        tmuxArgs.push('-e', `PATH=${getEnrichedPath()}`);
-        tmuxArgs.push('-e', 'TERM=screen-256color');
-        for (const [key, value] of Object.entries(agentEnv)) {
-          tmuxArgs.push('-e', `${key}=${value}`);
-        }
-
-        tmuxArgs.push('agentapi', ...args);
-
-        log.debug('tmux args', { args: tmuxArgs.join(' ') });
-
-        const tmux = spawn('tmux', tmuxArgs, {
+      const session = this.tmuxCompat.createSession(
+        tmuxSessionName,
+        'agentapi',
+        args,
+        {
           cwd: workDir,
-          env: getEnrichedEnv(agentEnv),
-          stdio: 'pipe',
-        });
+          env: {
+            ...getEnrichedEnv(agentEnv),
+            PATH: getEnrichedPath(),
+            TERM: 'xterm-256color',
+          },
+          cols: 120,
+          rows: 36,
+        },
+      );
 
-        let stderrOutput = '';
-        tmux.stderr?.on('data', (data) => {
-          stderrOutput += data.toString();
-        });
+      log.info('Tmux-compat session created', {
+        sessionName: tmuxSessionName,
+        pid: session.pid,
+        port,
+      });
 
-        tmux.on('error', (err) => {
-          reject(new Error(`Failed to spawn tmux: ${err.message}`));
-        });
+      // Set port for the session
+      session.port = port;
 
-        setTimeout(() => {
-          try {
-            const result = safeTmuxExec(['list-sessions', '-F', '#{session_name}'], 5000);
-            
-            if (result.includes(tmuxSessionName)) {
-              try {
-                const pidOutput = safeTmuxExec(['list-panes', '-t', tmuxSessionName, '-F', '#{pane_pid}'], 5000);
-                const pid = parseInt(pidOutput.trim(), 10);
-                if (pid > 0) {
-                  log.info(`AgentAPI started in tmux`, { port, tmuxSession: tmuxSessionName, pid });
-                  resolve(pid);
-                } else {
-                  reject(new Error('Failed to get AgentAPI PID from tmux'));
-                }
-              } catch {
-                log.info(`AgentAPI started in tmux (no PID)`, { port, tmuxSession: tmuxSessionName });
-                resolve(0);
-              }
-            } else {
-              reject(new Error(`tmux session ${tmuxSessionName} was not created. stderr: ${stderrOutput}`));
-            }
-          } catch (err) {
-            reject(new Error(`Failed to verify tmux session: ${err}`));
-          }
-        }, 500);
-      } catch (err) {
-        reject(new Error(`Failed to spawn in tmux: ${err}`));
+      // Track process for liveness checks
+      // Note: We create a minimal ChildProcess-like object for compatibility
+      const processInfo = {
+        pid: session.pid,
+        kill: (signal?: NodeJS.Signals) => this.processManager.kill(session.pid, signal),
+      };
+      this.startupProcesses.set(port, processInfo as unknown as import('child_process').ChildProcess);
+
+      // Check if process is alive
+      const isAlive = this.processManager.isAlive(session.pid);
+      log.info('Process liveness check', {
+        pid: session.pid,
+        isAlive,
+      });
+
+      // --- Verify session exists (retry loop) ---
+      const sessionExists = await this.verifySessionExists(tmuxSessionName);
+      if (!sessionExists) {
+        throw new Error(
+          `Session ${tmuxSessionName} was not created after retries. ` +
+          `Process may have failed to start.`
+        );
       }
+
+      log.info('AgentAPI spawned via TmuxCompatibility', {
+        port,
+        session: tmuxSessionName,
+        pid: session.pid,
+      });
+
+      return session.pid;
+    } catch (err) {
+      const error = err as Error;
+      log.error('Failed to spawn AgentAPI', { error: error.message, stack: error.stack });
+      throw new Error(`Failed to spawn AgentAPI: ${error.message}`);
+    }
+  }
+
+  /**
+   * Verify session exists with retry loop
+   * Replaces the hardcoded setTimeout(500) with exponential backoff
+   */
+  private async verifySessionExists(
+    sessionName: string,
+    maxAttempts: number = 5,
+    initialDelayMs: number = 200,
+  ): Promise<boolean> {
+    let delay = initialDelayMs;
+
+    log.info('Verifying session exists', {
+      sessionName,
+      maxAttempts,
+      initialDelayMs,
     });
+
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      // Check if session exists in tmuxCompat
+      const exists = this.tmuxCompat.sessionExists(sessionName);
+      log.info('Session existence check', {
+        sessionName,
+        attempt,
+        exists,
+        allSessions: this.tmuxCompat.listSessions(),
+      });
+
+      if (exists) {
+        log.info(`Session ${sessionName} found on attempt ${attempt}`);
+        return true;
+      }
+
+      if (attempt < maxAttempts) {
+        log.info(
+          `Session ${sessionName} not ready, retrying in ${delay}ms ` +
+          `(attempt ${attempt}/${maxAttempts})`
+        );
+        await sleep(delay);
+        // Exponential backoff: 200ms → 400ms → 800ms → 1600ms → 3200ms
+        delay = Math.min(delay * 2, 5000);
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Clean up orphaned session
+   */
+  private cleanupOrphanedSession(sessionName: string): void {
+    try {
+      this.tmuxCompat.killSession(sessionName);
+      log.debug(`Cleaned up orphaned session: ${sessionName}`);
+    } catch {
+      // Session doesn't exist, fine
+    }
   }
 
   /**
@@ -643,15 +793,48 @@ export class SessionManager extends EventEmitter {
   }
 
   private async healthCheck(port: number, timeoutMs: number): Promise<void> {
+    const session = this.findSessionByPort(port);
+    const sessionName = session?.name ?? 'unknown';
+
+    this.emit('session:health:start', {
+      name: sessionName,
+      port,
+      timeoutMs,
+    });
+
     try {
       await agentClient(port).waitUntilReady(
         timeoutMs,
         500,
         () => this.isStartupProcessAlive(port),
+        // Progress callback
+        (elapsed, lastError) => {
+          this.emit('session:health:tick', {
+            name: sessionName,
+            port,
+            elapsed,
+            lastError,
+            timeoutMs,
+          });
+        },
       );
     } finally {
       this.startupProcesses.delete(port);
     }
+
+    this.emit('session:health:done', { name: sessionName, port });
+  }
+
+  /**
+   * Find session by port
+   */
+  private findSessionByPort(port: number): Session | undefined {
+    for (const session of this.sessions.values()) {
+      if (session.port === port) {
+        return session;
+      }
+    }
+    return undefined;
   }
 
   /**
@@ -745,13 +928,13 @@ export class SessionManager extends EventEmitter {
   }
 
   /**
-   * Kill tmux session by name
+   * Kill tmux session by name (now uses tmuxCompat)
    */
   private killTmuxSession(port: number): void {
     const sessionName = `agentapi-${port}`;
     try {
-      safeTmuxExec(['kill-session', '-t', sessionName], 1000);
-      log.debug(`Killed tmux session: ${sessionName}`);
+      this.tmuxCompat.killSession(sessionName);
+      log.debug(`Killed session: ${sessionName}`);
     } catch {
       // Session doesn't exist or already killed
     }
@@ -1525,5 +1708,31 @@ export class SessionManager extends EventEmitter {
     void this.onStateChanged().catch((err) => {
       log.error('State persistence hook failed', { reason, error: String(err) });
     });
+  }
+
+  /**
+   * Get the ProcessManager instance
+   */
+  getProcessManager(): ProcessManager {
+    return this.processManager;
+  }
+
+  /**
+   * Get the TmuxCompatibility instance
+   */
+  getTmuxCompat(): TmuxCompatibility {
+    return this.tmuxCompat;
+  }
+
+  /**
+   * Clean up all resources
+   */
+  destroy(): void {
+    log.info('Destroying SessionManager');
+    this.stopAllSessions().catch((err) => {
+      log.error('Failed to stop all sessions during destroy', { error: String(err) });
+    });
+    this.processManager.cleanup();
+    this.tmuxCompat.cleanup();
   }
 }

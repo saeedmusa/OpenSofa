@@ -107,8 +107,8 @@ export function SessionView() {
 
   // Initialize autoApprove from server state
   useEffect(() => {
-    if (selectedSession && 'autoApprove' in selectedSession) {
-      setAutoApprove(!!(selectedSession as unknown as Record<string, unknown>).autoApprove);
+    if (selectedSession) {
+      setAutoApprove(!!selectedSession.autoApprove);
     }
   }, [selectedSession]);
 
@@ -190,6 +190,79 @@ export function SessionView() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-void">
         <div className="w-10 h-10 border-2 border-matrix-green border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  // Handle 'creating' state — show progress indicator
+  if (selectedSession.status === 'creating') {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-void">
+        <div className="w-full max-w-sm mx-auto p-8 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 border border-matrix-green/30 bg-matrix-green/5 animate-pulse">
+            <Loader2 size={28} className="text-matrix-green animate-spin" />
+          </div>
+          <h2 className="text-sm font-mono font-bold text-matrix-green uppercase tracking-wider mb-2">
+            CREATING SESSION
+          </h2>
+          <p className="text-xs font-mono text-muted mb-4">
+            {decodedName}
+          </p>
+          <p className="text-[10px] font-mono text-muted/60">
+            Setting up workspace and starting agent...
+          </p>
+          <button
+            onClick={() => navigate('/')}
+            className="mt-8 px-4 py-2 border border-matrix-green/30 text-matrix-green font-mono text-xs hover:bg-matrix-green/10 transition-colors"
+          >
+            ← Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle 'error' state — show error with retry option
+  if (selectedSession.status === 'error') {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-void">
+        <div className="w-full max-w-sm mx-auto p-8 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 border border-neon-red/30 bg-neon-red/5">
+            <AlertCircle size={28} className="text-neon-red" />
+          </div>
+          <h2 className="text-sm font-mono font-bold text-neon-red uppercase tracking-wider mb-2">
+            SESSION FAILED
+          </h2>
+          <p className="text-xs font-mono text-muted mb-2">
+            {decodedName}
+          </p>
+          <p className="text-[10px] font-mono text-muted/60 mb-6">
+            Session creation failed. Check server logs for details.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              onClick={() => navigate('/')}
+              className="px-4 py-2 border border-matrix-green/30 text-matrix-green font-mono text-xs hover:bg-matrix-green/10 transition-colors"
+            >
+              ← Go Back
+            </button>
+            <button
+              onClick={async () => {
+                try {
+                  await api.sessions.stop(decodedName);
+                  toast.success('Session cleaned up');
+                  navigate('/');
+                } catch {
+                  toast.error('Failed to clean up session');
+                }
+              }}
+              className="px-4 py-2 border border-neon-red/30 text-neon-red font-mono text-xs hover:bg-neon-red/10 transition-colors flex items-center gap-2"
+            >
+              <Square size={12} />
+              Clean Up
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

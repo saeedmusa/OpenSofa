@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { api } from '../utils/api';
 import type { ModelProvider, DiscoveredModel } from '../types';
 import { useToast } from './Toast';
-import { X, Folder, GitBranch, ChevronRight, Loader2, Cpu, FolderPlus, Send, Sparkles, AlertTriangle, Layout } from 'lucide-react';
+import { useSessionCreation } from '../hooks/useSessionCreation';
+import { X, Folder, GitBranch, ChevronRight, Loader2, Cpu, FolderPlus, Send, Sparkles, AlertTriangle, Layout, RefreshCw, AlertCircle } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface BrowseEntry {
@@ -42,6 +43,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   const [templatesLoading, setTemplatesLoading] = useState(false);
   const toast = useToast();
   const queryClient = useQueryClient();
+  const [sessionCreationState, sessionCreationActions] = useSessionCreation();
 
   // Auto-save token from URL on component mount
   useEffect(() => {
@@ -69,16 +71,21 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   // Auto-generate session name from initial message
   const generateSessionName = (message: string): string => {
     if (!message.trim()) return '';
-    // Take first few words, lowercase, replace spaces with hyphens, max 30 chars
+    // Take first few words, lowercase, replace spaces with hyphens, max 20 chars
     const words = message.trim().split(/\s+/).slice(0, 4);
-    const name = words.join('-').toLowerCase().replace(/[^a-z0-9-]/g, '').substring(0, 28);
-    return name || `session-${Date.now()}`;
+    const baseName = words.join('-').toLowerCase().replace(/[^a-z0-9-]/g, '').substring(0, 20);
+    // Add random suffix to avoid conflicts (4 chars = 1.6M combinations)
+    const suffix = Math.random().toString(36).substring(2, 6);
+    return `${baseName}-${suffix}` || `session-${Date.now()}`;
   };
 
-  // State for unified model discovery
+  // State for unified model discovery with timeout handling
   const [modelProviders, setModelProviders] = useState<ModelProvider[]>([]);
   const [modelsLoading, setModelsLoading] = useState(false);
   const [modelsError, setModelsError] = useState<string | null>(null);
+  const [modelsTimedOut, setModelsTimedOut] = useState(false);
+  const [modelsRetryCount, setModelsRetryCount] = useState(0);
+  const modelsAbortRef = useRef<AbortController | null>(null);
 
   // Get current selected model info for vision warning
   const selectedModelInfo: DiscoveredModel | undefined = modelProviders
@@ -86,42 +93,89 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
     .find(m => m.id === selectedModel);
   const isNonVisionModel = selectedModelInfo && !selectedModelInfo.supportsVision;
 
+  // Fetch models with timeout and retry
+  const fetchModels = useCallback(async (agent: string, retryCount: number = 0) => {
+    // Cancel any existing request
+    if (modelsAbortRef.current) {
+      modelsAbortRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    modelsAbortRef.current = controller;
+
+    setModelsLoading(true);
+    setModelsError(null);
+    setModelsTimedOut(false);
+    setModelsRetryCount(retryCount);
+
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+      setModelsLoading(false);
+      setModelsTimedOut(true);
+      setModelsError('Model discovery timed out');
+    }, 15000);
+
+    try {
+      const result = await api.models.discover([agent], controller.signal);
+      clearTimeout(timeoutId);
+
+      if (controller.signal.aborted) return;
+
+      if (result.success && result.providers) {
+        setModelProviders(result.providers);
+        setModelsError(null);
+        setModelsTimedOut(false);
+      } else {
+        setModelProviders([]);
+        setModelsError(result.errors?.[0] || 'Failed to load models');
+      }
+    } catch (err) {
+      clearTimeout(timeoutId);
+
+      if (controller.signal.aborted) return;
+
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load models';
+
+      // Auto-retry with exponential backoff (max 2 retries)
+      if (retryCount < 2) {
+        const delay = 1000 * Math.pow(2, retryCount);
+        setTimeout(() => fetchModels(agent, retryCount + 1), delay);
+        return;
+      }
+
+      setModelsError(errorMessage);
+      setModelProviders([]);
+    } finally {
+      if (!controller.signal.aborted) {
+        setModelsLoading(false);
+      }
+    }
+  }, []);
+
   // Fetch models using unified discovery API
   useEffect(() => {
     if (!selectedAgent) {
       setModelProviders([]);
+      setModelsError(null);
+      setModelsTimedOut(false);
       return;
     }
 
-    let cancelled = false;
-    setModelsLoading(true);
-    setModelsError(null);
-
-    api.models.discover([selectedAgent])
-      .then(result => {
-        if (cancelled) return;
-        if (result.success && result.providers) {
-          setModelProviders(result.providers);
-        } else {
-          setModelProviders([]);
-          setModelsError(result.errors?.[0] || 'Failed to load models');
-        }
-      })
-      .catch(err => {
-        if (cancelled) return;
-        setModelsError(err instanceof Error ? err.message : 'Failed to load models');
-        setModelProviders([]);
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setModelsLoading(false);
-        }
-      });
+    fetchModels(selectedAgent);
 
     return () => {
-      cancelled = true;
+      if (modelsAbortRef.current) {
+        modelsAbortRef.current.abort();
+      }
     };
-  }, [selectedAgent]);
+  }, [selectedAgent, fetchModels]);
+
+  // Retry model discovery
+  const handleRetryModels = useCallback(() => {
+    if (selectedAgent) {
+      fetchModels(selectedAgent, 0);
+    }
+  }, [selectedAgent, fetchModels]);
 
   // Update selected model when agent changes and models are loaded
   useEffect(() => {
@@ -152,74 +206,31 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
     enabled: isOpen && step === 'directory',
   });
 
-  const createMutation = useMutation({
-    mutationFn: async (data: { name: string; dir: string; agent: string; model?: string; message?: string }) => {
-      // Create session
-      const token = api.getToken();
-      const res = await fetch('/api/sessions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify(data),
-      });
-      const result = await res.json();
+  const handleConfirmCreate = async () => {
+    const name = generateSessionName(initialMessage);
+    if (!name) {
+      toast.error('Please enter a message');
+      return;
+    }
 
-      // If there's an initial message, wait for session to be ready then send it
-      if (data.message && result.success) {
-        // Poll session status until it's active (max 120 seconds)
-        const maxAttempts = 60;
-        const pollInterval = 2000; // 2 seconds
-        let attempts = 0;
+    const sessionId = await sessionCreationActions.create({
+      name,
+      dir: selectedDir,
+      agent: selectedAgent,
+      model: selectedModel,
+      message: initialMessage.trim(),
+    });
 
-        while (attempts < maxAttempts) {
-          try {
-            const statusRes = await fetch(`/api/sessions/${data.name}`, {
-              headers: { ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
-            });
-            if (statusRes.ok) {
-              const statusData = await statusRes.json();
-              if (statusData.data?.status === 'active') {
-                // Session is ready, send the initial message
-                await fetch(`/api/sessions/${data.name}/message`, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-                  },
-                  body: JSON.stringify({ content: data.message }),
-                });
-                break;
-              }
-            }
-          } catch {
-            // Ignore errors during polling, keep trying
-          }
-          attempts++;
-          await new Promise(resolve => setTimeout(resolve, pollInterval));
-        }
-      }
-
-      return { ...result, name: data.name };
-    },
-    onSuccess: (data) => {
-      const sessionName = typeof data === 'object' && data !== null && 'name' in data
-        ? (data as { name: string }).name
-        : name;
+    if (sessionId) {
       toast.success('Session created! Navigating to chat...');
       queryClient.invalidateQueries({ queryKey: ['sessions'] });
       onClose();
       resetForm();
-      // Navigate to the session view
-      if (sessionName) {
-        navigate(`/session/${encodeURIComponent(sessionName)}`);
-      }
-    },
-    onError: (err: Error) => {
-      toast.error(err.message || 'Failed to create session');
-    },
-  });
+      navigate(`/session/${encodeURIComponent(sessionId)}`);
+    } else if (sessionCreationState.error) {
+      toast.error(sessionCreationState.error);
+    }
+  };
 
   const resetForm = () => {
     setStep('agent');
@@ -228,21 +239,6 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
     setSelectedDir('');
     setInitialMessage('');
     setCurrentPath('');
-  };
-
-  const handleConfirmCreate = () => {
-    const name = generateSessionName(initialMessage);
-    if (!name) {
-      toast.error('Please enter a message');
-      return;
-    }
-    createMutation.mutate({
-      name,
-      dir: selectedDir,
-      agent: selectedAgent,
-      model: selectedModel,
-      message: initialMessage.trim(),
-    });
   };
 
   const handleCreateFolder = async () => {
@@ -432,18 +428,42 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                 <label className="flex items-center gap-2 text-xs font-mono text-[#00FFFF] uppercase tracking-widest mb-2">
                   <Cpu size={14} />
                   Model
-                  {modelsLoading && <span className="text-[#00FF41]/60">(loading...)</span>}
-                  {modelsError && <span className="text-[#FF003C]">({modelsError})</span>}
+                  {modelsLoading && !modelsTimedOut && (
+                    <span className="text-[#00FF41]/60 flex items-center gap-1">
+                      <Loader2 size={10} className="animate-spin" />
+                      loading{modelsRetryCount > 0 ? ` (retry ${modelsRetryCount})` : ''}...
+                    </span>
+                  )}
                 </label>
+
+                {/* Error/Timeout state */}
+                {(modelsError || modelsTimedOut) && !modelsLoading && (
+                  <div className="mb-2 px-3 py-2 bg-[#FF003C]/10 border border-[#FF003C]/30 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <AlertCircle size={12} className="text-[#FF003C] shrink-0" />
+                      <span className="text-[10px] font-mono text-[#FF003C]">
+                        {modelsTimedOut ? 'Model discovery timed out' : modelsError}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleRetryModels}
+                      className="flex items-center gap-1 px-2 py-1 text-[10px] font-mono text-[#00FF41] bg-[#00FF41]/10 border border-[#00FF41]/30 hover:bg-[#00FF41]/20 transition-colors"
+                    >
+                      <RefreshCw size={10} />
+                      Retry
+                    </button>
+                  </div>
+                )}
+
                 <select
                   value={selectedModel}
                   onChange={(e) => setSelectedModel(e.target.value)}
                   className="w-full bg-[#1b1b1b] border border-[#00FF41]/30 text-[#00FF41] font-mono px-3 py-2 text-sm focus:border-[#00FF41] focus:outline-none"
-                  disabled={modelsLoading || !!modelsError}
+                  disabled={modelsLoading || (!!modelsError && !modelsTimedOut)}
                 >
                   {modelsLoading ? (
                     <option value="">Loading models...</option>
-                  ) : modelsError ? (
+                  ) : modelsError && !modelsTimedOut ? (
                     <option value="">No models available</option>
                   ) : modelProviders.length === 0 ? (
                     <option value="">No models available for {selectedAgent}</option>
@@ -628,19 +648,19 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
             <button
               onClick={() => { onClose(); resetForm(); }}
               className="flex-1 py-3 border border-[#00FF41]/30 text-[#00FF41] font-mono text-xs uppercase tracking-wider hover:bg-[#00FF41]/10 transition-colors disabled:opacity-40"
-              disabled={createMutation.isPending}
+              disabled={sessionCreationState.isCreating}
             >
               Cancel
             </button>
             <button
               onClick={handleConfirmCreate}
-              disabled={createMutation.isPending || !initialMessage.trim()}
+              disabled={sessionCreationState.isCreating || !initialMessage.trim()}
               className="flex-1 py-3 bg-[#00FF41] text-black font-mono font-bold text-xs uppercase tracking-wider hover:bg-[#00FF41]-fixed transition-colors disabled:opacity-40 flex items-center justify-center gap-2"
             >
-              {createMutation.isPending ? (
+              {sessionCreationState.isCreating ? (
                 <>
                   <Loader2 size={14} className="animate-spin" />
-                  Creating...
+                  {sessionCreationState.phase || 'Creating...'}
                 </>
               ) : (
                 <>

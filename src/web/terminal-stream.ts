@@ -23,14 +23,18 @@ const TMUX_SESSION_PREFIX = 'agentapi-';
 /**
  * Get the log file path for a port
  */
-export const getLogPath = (port: number): string =>
-  `${LOG_FILE_DIR}/terminal-${port}.log`;
+export const getLogPath = (port: number): string => {
+  const sanitizedPort = String(port).replace(/[^0-9]/g, '');
+  return `${LOG_FILE_DIR}/terminal-${sanitizedPort}.log`;
+};
 
 /**
  * Get the tmux session name for a port
  */
-export const getTmuxSessionName = (port: number): string =>
-  `${TMUX_SESSION_PREFIX}${port}`;
+export const getTmuxSessionName = (port: number): string => {
+  const sanitizedPort = String(port).replace(/[^0-9]/g, '');
+  return `${TMUX_SESSION_PREFIX}${sanitizedPort}`;
+};
 
 /**
  * Build tmux pipe-pane command arguments

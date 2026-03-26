@@ -31,7 +31,7 @@ export function safeExec(command: string, args: string[], options: { cwd?: strin
 /**
  * Execute a git command safely with array arguments
  */
-export function safeGitExec(cwd: string, args: string[], timeout = 30000): string {
+export function safeGitExec(cwd: string, args: string[], timeout = 60000): string {
   return safeExec('git', ['-C', cwd, ...args], { timeout });
 }
 

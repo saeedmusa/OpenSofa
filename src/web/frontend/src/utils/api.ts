@@ -2,6 +2,9 @@ import type { Session, SessionDetail, Agent, SystemStatus, FileListResponse, Fil
 import { useSessionStore, canAcceptMessages, canQueueMessages } from '../stores/sessionStore';
 
 const API_BASE = '/api';
+const DEFAULT_TIMEOUT_MS = 15000;
+const DEFAULT_MAX_RETRIES = 3;
+const BASE_RETRY_DELAY_MS = 1000;
 
 function getToken(): string | null {
   return localStorage.getItem('opensofa_token') ||
@@ -15,23 +18,84 @@ function saveToken(token: string): void {
   window.history.replaceState({}, '', url.toString());
 }
 
-async function fetchAPI<T>(path: string, options?: RequestInit): Promise<T> {
+export interface FetchOptions extends RequestInit {
+  timeoutMs?: number;
+  maxRetries?: number;
+  signal?: AbortSignal;
+}
+
+async function fetchAPI<T>(path: string, options?: FetchOptions): Promise<T> {
+  const {
+    timeoutMs = DEFAULT_TIMEOUT_MS,
+    maxRetries = DEFAULT_MAX_RETRIES,
+    signal,
+    ...fetchOptions
+  } = options ?? {};
+
   const token = getToken();
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-    ...options?.headers,
+    ...fetchOptions.headers,
   };
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  let lastError: Error | null = null;
 
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw new APIError(error.error || `HTTP ${res.status}`, res.status);
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+    // Combine external signal with timeout signal
+    const combinedSignal = signal
+      ? AbortSignal.any([signal, controller.signal])
+      : controller.signal;
+
+    try {
+      const res = await fetch(`${API_BASE}${path}`, {
+        ...fetchOptions,
+        headers,
+        signal: combinedSignal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({ error: 'Request failed' }));
+        throw new APIError(error.error || `HTTP ${res.status}`, res.status);
+      }
+
+      const data = await res.json();
+      return data.data ?? data;
+    } catch (err) {
+      clearTimeout(timeoutId);
+
+      // Don't retry if aborted by external signal
+      if (signal?.aborted) {
+        throw err;
+      }
+
+      lastError = err instanceof Error ? err : new Error('Unknown error');
+
+      // Don't retry on client errors (4xx) except 408 (timeout) and 429 (rate limit)
+      if (lastError instanceof APIError) {
+        const status = lastError.status;
+        if (status >= 400 && status < 500 && status !== 408 && status !== 429) {
+          throw lastError;
+        }
+      }
+
+      // Don't retry on last attempt
+      if (attempt === maxRetries) {
+        break;
+      }
+
+      // Exponential backoff
+      const delay = BASE_RETRY_DELAY_MS * Math.pow(2, attempt);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
   }
 
-  const data = await res.json();
-  return data.data ?? data;
+  throw lastError ?? new Error('Request failed after retries');
 }
 
 function encodePathSegments(path: string): string {
@@ -246,9 +310,13 @@ export const api = {
   },
 
   models: {
-    discover: (agents?: string[]) => {
+    discover: (agents?: string[], signal?: AbortSignal) => {
       const query = agents?.length ? `?agents=${agents.join(',')}` : '';
-      return fetchAPI<ModelDiscoveryResult>(`/models/discover${query}`);
+      return fetchAPI<ModelDiscoveryResult>(`/models/discover${query}`, {
+        timeoutMs: 20000, // Model discovery can be slow
+        maxRetries: 2,
+        signal,
+      });
     },
   },
 

@@ -2,6 +2,7 @@
  * OpenSofa - Unified Model Discovery API
  * 
  * Aggregates model discovery from all coding agent adapters.
+ * Includes caching, refresh, and cache status endpoints.
  */
 
 import { Hono } from 'hono';
@@ -80,7 +81,7 @@ export function createModelDiscoveryRoutes(): Hono {
 
   const app = new Hono();
 
-  // GET /api/models/discover - Discover models from all adapters
+  // GET /api/models/discover - Discover models from all adapters (uses cache)
   app.get('/discover', async (c) => {
     const agentsParam = c.req.query('agents');
     const agents = parseAgentFilter(agentsParam);
@@ -110,6 +111,62 @@ export function createModelDiscoveryRoutes(): Hono {
         errors: [...(result?.errors ?? []), errorMsg],
       }, 500);
     }
+  });
+
+  // POST /api/models/discover/refresh - Force cache refresh
+  app.post('/discover/refresh', async (c) => {
+    const agentsParam = c.req.query('agents');
+    const agents = parseAgentFilter(agentsParam);
+
+    log.debug('Cache refresh request', { agents: agents ?? 'all' });
+
+    try {
+      const result = await AdapterRegistry.getInstance().refreshCache(agents);
+
+      log.info('Cache refresh completed', {
+        providerCount: result.providers.length,
+        errorCount: result.errors?.length ?? 0,
+      });
+
+      return c.json({
+        ...result,
+        refreshed: true,
+      });
+    } catch (err) {
+      const errorMsg = `Cache refresh failed: ${String(err)}`;
+      log.error(errorMsg);
+
+      return c.json({
+        success: false,
+        providers: [],
+        errors: [errorMsg],
+        refreshed: false,
+      }, 500);
+    }
+  });
+
+  // GET /api/models/discover/cache/status - Get cache status
+  app.get('/discover/cache/status', async (c) => {
+    const registry = AdapterRegistry.getInstance();
+    const cacheStats = registry.getCacheStats();
+    const cacheStatuses = registry.getAllCacheStatuses();
+    const progress = registry.getProgress();
+
+    return c.json({
+      cache: {
+        ...cacheStats,
+        entries: cacheStatuses,
+      },
+      progress,
+    });
+  });
+
+  // GET /api/models/discover/progress - Get discovery progress
+  app.get('/discover/progress', async (c) => {
+    const registry = AdapterRegistry.getInstance();
+    const progress = registry.getProgress();
+
+    return c.json({ progress });
   });
 
   return app;

@@ -9,6 +9,10 @@ import { execFileSync } from 'child_process';
 
 vi.mock('child_process', () => ({
   execFileSync: vi.fn(() => { throw new Error('not found'); }),
+  execFile: vi.fn((_cmd, _args, _opts, callback) => {
+    const cb = typeof _opts === 'function' ? _opts : callback;
+    if (cb) setTimeout(() => cb(null, { stdout: '', stderr: '' }), 0);
+  }),
 }));
 vi.mock('fs');
 vi.mock('os', () => ({

@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { existsSync } from 'fs';
 import { runPrerequisitesCheck } from '../src/prerequisites-check.js';
 import type { AgentRegistry } from '../src/agent-registry.js';
@@ -29,11 +29,8 @@ describe('Prerequisites Check', () => {
 
   describe('runPrerequisitesCheck()', () => {
     it('should return formatted check results', async () => {
-      (execSync as any).mockImplementation((cmd: string) => {
-        if (cmd.includes('--version') || cmd.includes('-V')) {
-          return 'version 1.0.0';
-        }
-        return '';
+      (execFileSync as any).mockImplementation(() => {
+        return 'version 1.0.0';
       });
       (existsSync as any).mockReturnValue(true);
 
@@ -45,7 +42,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should check Node.js version', async () => {
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(true);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -57,7 +54,7 @@ describe('Prerequisites Check', () => {
       const originalVersion = process.version;
       Object.defineProperty(process, 'version', { value: 'v16.0.0', writable: true });
 
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(true);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -69,7 +66,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should pass on Node.js 18+', async () => {
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(true);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -78,8 +75,8 @@ describe('Prerequisites Check', () => {
     });
 
     it('should check git', async () => {
-      (execSync as any).mockImplementation((cmd: string) => {
-        if (cmd.includes('git')) return 'git version 2.0.0';
+      (execFileSync as any).mockImplementation((cmd: string) => {
+        if (cmd === 'git') return 'git version 2.0.0';
         return '';
       });
       (existsSync as any).mockReturnValue(true);
@@ -90,8 +87,8 @@ describe('Prerequisites Check', () => {
     });
 
     it('should mark git as missing when not installed', async () => {
-      (execSync as any).mockImplementation((cmd: string) => {
-        if (cmd.includes('git')) throw new Error('Not found');
+      (execFileSync as any).mockImplementation((cmd: string) => {
+        if (cmd === 'git') throw new Error('Not found');
         return '';
       });
       (existsSync as any).mockReturnValue(true);
@@ -102,8 +99,8 @@ describe('Prerequisites Check', () => {
     });
 
     it('should check tmux', async () => {
-      (execSync as any).mockImplementation((cmd: string) => {
-        if (cmd.includes('tmux')) return 'tmux 3.0';
+      (execFileSync as any).mockImplementation((cmd: string) => {
+        if (cmd === 'tmux') return 'tmux 3.0';
         return '';
       });
       (existsSync as any).mockReturnValue(true);
@@ -114,8 +111,8 @@ describe('Prerequisites Check', () => {
     });
 
     it('should mark tmux as missing when not installed', async () => {
-      (execSync as any).mockImplementation((cmd: string) => {
-        if (cmd.includes('tmux')) throw new Error('Not found');
+      (execFileSync as any).mockImplementation((cmd: string) => {
+        if (cmd === 'tmux') throw new Error('Not found');
         return '';
       });
       (existsSync as any).mockReturnValue(true);
@@ -126,8 +123,8 @@ describe('Prerequisites Check', () => {
     });
 
     it('should check AgentAPI', async () => {
-      (execSync as any).mockImplementation((cmd: string) => {
-        if (cmd.includes('agentapi')) return 'agentapi version 0.11.0';
+      (execFileSync as any).mockImplementation((cmd: string) => {
+        if (cmd === 'agentapi') return 'agentapi version 0.11.0';
         return '';
       });
       (existsSync as any).mockReturnValue(true);
@@ -138,8 +135,8 @@ describe('Prerequisites Check', () => {
     });
 
     it('should mark AgentAPI as missing when not installed', async () => {
-      (execSync as any).mockImplementation((cmd: string) => {
-        if (cmd.includes('agentapi')) throw new Error('Not found');
+      (execFileSync as any).mockImplementation((cmd: string) => {
+        if (cmd === 'agentapi') throw new Error('Not found');
         return '';
       });
       (existsSync as any).mockReturnValue(true);
@@ -150,7 +147,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should list all agents with status', async () => {
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(true);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -160,7 +157,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should show ✅ for installed agents', async () => {
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(true);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -171,8 +168,8 @@ describe('Prerequisites Check', () => {
     it('should show ⬚ for missing agents', async () => {
       mockRegistry.discoverInstalled = () => ['claude']; // Only claude installed
       
-      (execSync as any).mockImplementation((cmd: string) => {
-        if (cmd.includes('claude')) return '';
+      (execFileSync as any).mockImplementation((cmd: string) => {
+        if (cmd === 'claude') return '';
         throw new Error('Not found');
       });
       (existsSync as any).mockReturnValue(true);
@@ -183,7 +180,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should check config directory', async () => {
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(true);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -192,7 +189,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should show warning when config missing', async () => {
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(false);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -201,7 +198,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should include summary', async () => {
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(true);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -213,11 +210,11 @@ describe('Prerequisites Check', () => {
     it('should warn when no agents installed (but core tools present)', async () => {
       mockRegistry.discoverInstalled = () => [];
       
-      (execSync as any).mockImplementation((cmd: string) => {
+      (execFileSync as any).mockImplementation((cmd: string) => {
         // Core tools are present
-        if (cmd.includes('git')) return 'git version 2.0.0';
-        if (cmd.includes('tmux')) return 'tmux 3.0';
-        if (cmd.includes('agentapi')) return 'agentapi version 0.11.0';
+        if (cmd === 'git') return 'git version 2.0.0';
+        if (cmd === 'tmux') return 'tmux 3.0';
+        if (cmd === 'agentapi') return 'agentapi version 0.11.0';
         return '';
       });
       (existsSync as any).mockReturnValue(true);
@@ -228,7 +225,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should show success message when all pass', async () => {
-      (execSync as any).mockReturnValue('');
+      (execFileSync as any).mockReturnValue('');
       (existsSync as any).mockReturnValue(true);
 
       const result = await runPrerequisitesCheck(mockRegistry);
@@ -237,7 +234,7 @@ describe('Prerequisites Check', () => {
     });
 
     it('should handle timeout on slow commands', async () => {
-      (execSync as any).mockImplementation(() => {
+      (execFileSync as any).mockImplementation(() => {
         throw new Error('ETIMEDOUT');
       });
       (existsSync as any).mockReturnValue(true);

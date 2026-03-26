@@ -88,7 +88,7 @@ export interface SessionDetailResponse extends SessionSummary {
   workDir: string;
   repoDir: string;
   port: number;
-  autoApprove?: boolean;
+  autoApprove: boolean;
   pendingApproval: {
     detectedAt: number;
     command: string | null;
@@ -241,7 +241,7 @@ export const sessionToDetail = (session: Session): SessionDetailResponse => ({
   workDir: session.workDir,
   repoDir: session.repoDir,
   port: session.port,
-  autoApprove: !!((session as unknown as Record<string, unknown>).autoApprove),
+  autoApprove: session.autoApprove,
   pendingApproval: session.pendingApproval
     ? {
         detectedAt: session.pendingApproval.detectedAt,

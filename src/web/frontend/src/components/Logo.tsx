@@ -21,8 +21,9 @@ export function Logo({ size = 'md', showText = true, className }: LogoProps) {
       {showText && (
         <span className={clsx('font-mono font-bold tracking-tight select-none', config.text)}>
           <span className="text-matrix-green">O</span>
+          <span className="text-cyan-accent">pen</span>
           <span className="text-neon-red">S</span>
-          <span className="text-cyan-accent">penofa</span>
+          <span className="text-cyan-accent">ofa</span>
         </span>
       )}
     </div>

@@ -12,7 +12,8 @@ import { createLogger } from '../../utils/logger.js';
 import { success, error } from '../types.js';
 import { createAuthMiddleware } from '../middleware/auth.js';
 import crypto from 'crypto';
-import fs from 'fs';
+import fs from 'fs/promises';
+import { existsSync, mkdirSync } from 'fs'; // Still need sync for initial check or switch to async
 import path from 'path';
 
 const log = createLogger('web:routes:totp');
@@ -95,12 +96,12 @@ function getSecretPath(): string {
     return path.join(configDir, 'opensofa', 'totp.enc');
 }
 
-function loadSecret(): string | null {
+async function loadSecret(): Promise<string | null> {
     try {
         const secretPath = getSecretPath();
-        if (!fs.existsSync(secretPath)) return null;
+        if (!existsSync(secretPath)) return null;
 
-        const data = fs.readFileSync(secretPath);
+        const data = await fs.readFile(secretPath);
         if (data.length < IV_LENGTH + AUTH_TAG_LENGTH) return null;
 
         const iv = data.subarray(0, IV_LENGTH);
@@ -118,11 +119,11 @@ function loadSecret(): string | null {
     }
 }
 
-function saveSecret(secret: string): void {
+async function saveSecret(secret: string): Promise<void> {
     const secretPath = getSecretPath();
     const dir = path.dirname(secretPath);
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
+    if (!existsSync(dir)) {
+        mkdirSync(dir, { recursive: true });
     }
 
     const key = getEncryptionKey();
@@ -134,7 +135,7 @@ function saveSecret(secret: string): void {
 
     // Store as: IV (16 bytes) + auth tag (16 bytes) + ciphertext
     const payload = Buffer.concat([iv, authTag, encrypted]);
-    fs.writeFileSync(secretPath, payload, { mode: 0o600 });
+    await fs.writeFile(secretPath, payload, { mode: 0o600 });
 }
 
 // ──────────────────────────────────────
@@ -148,20 +149,20 @@ export const createTOTPRoutes = (expectedToken: string): Hono => {
     app.use('*', createAuthMiddleware({ expectedToken }));
 
     // GET /api/totp/status — Check if TOTP is configured
-    app.get('/status', (c) => {
-        const secret = loadSecret();
+    app.get('/status', async (c) => {
+        const secret = await loadSecret();
         return c.json(success({ configured: secret !== null }));
     });
 
     // POST /api/totp/setup — Generate new TOTP secret + QR URI
-    app.post('/setup', (c) => {
-        const existing = loadSecret();
+    app.post('/setup', async (c) => {
+        const existing = await loadSecret();
         if (existing) {
             return c.json(error('TOTP already configured. Delete existing secret first.', 'ALREADY_CONFIGURED'), 409);
         }
 
         const secret = generateSecret();
-        saveSecret(secret);
+        await saveSecret(secret);
 
         const hostname = process.env.HOSTNAME || 'dev-machine';
         const qrUri = generateOTPAuthURI(secret, hostname);
@@ -173,7 +174,7 @@ export const createTOTPRoutes = (expectedToken: string): Hono => {
 
     // POST /api/totp/verify — Validate a 6-digit TOTP code
     app.post('/verify', async (c) => {
-        const secret = loadSecret();
+        const secret = await loadSecret();
         if (!secret) {
             return c.json(error('TOTP not configured', 'NOT_CONFIGURED'), 400);
         }

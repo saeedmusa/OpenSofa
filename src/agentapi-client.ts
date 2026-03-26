@@ -120,14 +120,18 @@ export class AgentAPIClient {
    * Poll /status until it responds OK, up to `timeoutMs`.
    * Optionally accepts a process-liveness probe so callers can fail fast
    * if AgentAPI exits before becoming ready.
+   * Supports progress callback and exponential backoff.
    */
   async waitUntilReady(
     timeoutMs = 30_000,
     intervalMs = 500,
     isProcessAlive?: () => boolean,
+    onProgress?: (elapsedMs: number, lastError: string) => void,
   ): Promise<void> {
     const deadline = Date.now() + timeoutMs;
+    const startTime = Date.now();
     let lastError = '';
+    let currentInterval = intervalMs;
 
     while (Date.now() < deadline) {
       if (isProcessAlive && !isProcessAlive()) {
@@ -149,7 +153,14 @@ export class AgentAPIClient {
       } catch (err) {
         lastError = String(err);
       }
-      await new Promise(r => setTimeout(r, intervalMs));
+
+      // Report progress
+      onProgress?.(Date.now() - startTime, lastError);
+
+      await new Promise(r => setTimeout(r, currentInterval));
+
+      // Exponential backoff: 500ms → 1s → 2s → 5s (cap)
+      currentInterval = Math.min(currentInterval * 2, 5000);
     }
 
     throw new AgentAPIError(

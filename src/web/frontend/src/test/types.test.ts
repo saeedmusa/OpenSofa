@@ -6,16 +6,16 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import type { Session, SessionDetail, Agent, SystemStatus } from '../types';
+import type { Session, SessionDetail, Agent, SystemStatus, AgentType } from '../types';
 
 // Mock API response shapes based on backend types
 type BackendSessionSummary = {
   name: string;
   status: 'creating' | 'active' | 'stopping' | 'stopped' | 'error';
-  agentType: string;
+  agentType: AgentType;
   model: string;
   branch: string;
-  agentStatus: 'stable' | 'running';
+  agentStatus: 'stable' | 'running' | 'awaiting_human_input';
   hasPendingApproval: boolean;
   createdAt: number;
   lastActivityAt: number;
@@ -25,6 +25,7 @@ type BackendSessionDetail = BackendSessionSummary & {
   workDir: string;
   repoDir: string;
   port: number;
+  autoApprove: boolean;
   pendingApproval: {
     detectedAt: number;
     command: string | null;
@@ -32,7 +33,7 @@ type BackendSessionDetail = BackendSessionSummary & {
 };
 
 type BackendAgentSummary = {
-  type: string;
+  type: AgentType;
   displayName: string;
   installed: boolean;
   description: string;
@@ -95,6 +96,7 @@ describe('Type Compatibility', () => {
         workDir: '/tmp/work',
         repoDir: '/tmp/repo',
         port: 3284,
+        autoApprove: false,
         pendingApproval: {
           detectedAt: Date.now(),
           command: 'npm test',
@@ -114,6 +116,7 @@ describe('Type Compatibility', () => {
         workDir: backendDetail.workDir,
         repoDir: backendDetail.repoDir,
         port: backendDetail.port,
+        autoApprove: backendDetail.autoApprove,
         pendingApproval: backendDetail.pendingApproval,
       };
 

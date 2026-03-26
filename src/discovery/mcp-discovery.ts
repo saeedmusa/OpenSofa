@@ -28,6 +28,7 @@ export interface MCPServer {
   args?: string[];
   url?: string;
   envKeys: string[]; // Env var NAMES only (values redacted)
+  envValues?: Record<string, string>; // Env var VALUES (for spawning servers)
   status: 'configured' | 'error';
   configPath: string;
 }
@@ -182,6 +183,7 @@ async function discoverOpenCodeMCP(): Promise<MCPServer[]> {
       args: server.command?.slice(1),
       url: server.url,
       envKeys: Object.keys(server.environment || {}),
+      envValues: server.environment,
       status: server.enabled === false ? 'error' : 'configured',
       configPath,
     });

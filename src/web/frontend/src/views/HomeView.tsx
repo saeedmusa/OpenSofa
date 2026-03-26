@@ -62,6 +62,7 @@ export function HomeView() {
     const unsubs = [
       subscribe('session_created', () => loadSessions()),
       subscribe('session_stopped', () => loadSessions()),
+      subscribe('session_updated', () => loadSessions()),
       subscribe('approval_needed', () => loadSessions()),
       subscribe('approval_cleared', () => loadSessions()),
     ];

@@ -6,7 +6,7 @@
  */
 
 import { IncomingMessage } from 'http';
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 import { WebSocketServer, WebSocket } from 'ws';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
@@ -131,7 +131,7 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
           if (session) {
             try {
               const sessionName = `agentapi-${session.port}`;
-              execSync(`tmux set-option -t ${sessionName} default-size ${cols}x${rows} 2>/dev/null`, { stdio: 'pipe' });
+              execFileSync('tmux', ['set-option', '-t', sessionName, 'default-size', `${cols}x${rows}`], { stdio: 'pipe' });
               log.debug('Terminal resized', { sessionId, cols, rows });
             } catch {
               // Ignore resize errors - session may not exist
@@ -474,104 +474,61 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
       const clientId = randomUUID();
       let authenticated = false;
 
-      // Handle message-based auth (new secure method)
+      // Handle message-based auth (secure method)
       const authTimeout = setTimeout(() => {
         if (!authenticated) {
           log.warn('WebSocket auth timeout', { clientId });
           ws.close(1008, 'Authentication timeout');
         }
-      }, 5000); // 5 second timeout for auth
+      }, 10000); // 10 second timeout for auth
 
-      ws.once('message', (data) => {
+      ws.on('message', (data) => {
         try {
           const message = JSON.parse(data.toString());
-          if (message.type === 'auth' && message.token) {
-            if (validateToken(message.token, token)) {
-              authenticated = true;
-              clearTimeout(authTimeout);
-              
-              // Complete connection setup
-              storeClientSocket(clientId, ws);
-              broadcaster!.addClient(ws, clientId);
-              log.debug('WebSocket client connected (message auth)', { clientId });
-              
-              // Send auth success
-              ws.send(JSON.stringify({ type: 'auth_success' }));
-              
-              // Set up close handler
-              ws.on('close', () => {
-                removeClientSocket(clientId);
-                broadcaster!.removeClient(clientId);
-                log.debug('WebSocket client disconnected', { clientId });
-              });
-              
-              ws.on('error', (err) => {
-                log.warn('WebSocket error', { clientId, error: String(err) });
-              });
-            } else {
-              recordIpStrike(ip);
-              log.warn('WebSocket connection rejected - invalid token (message auth)');
-              ws.close(1008, 'Unauthorized');
-            }
-          } else {
-            // Fall back to URL token validation for backward compatibility
-            if (validateWebSocketAuth(url, ip, token)) {
-              authenticated = true;
-              clearTimeout(authTimeout);
-              
-              storeClientSocket(clientId, ws);
-              broadcaster!.addClient(ws, clientId);
-              log.debug('WebSocket client connected (URL auth)', { clientId });
-              
-              ws.on('close', () => {
-                removeClientSocket(clientId);
-                broadcaster!.removeClient(clientId);
-                log.debug('WebSocket client disconnected', { clientId });
-              });
-              
-              ws.on('error', (err) => {
-                log.warn('WebSocket error', { clientId, error: String(err) });
-              });
-              
-              // Process the message as normal - forward to any handlers
-              // Note: Client messages are handled by the broadcaster's message handler
-              try {
-                const msg = JSON.parse(data.toString());
-                if (msg.type && msg.type !== 'auth') {
-                  // Handle non-auth messages (sync_request, etc.)
-                  // The broadcaster manages its own message handlers
-                }
-              } catch {
-                // Binary or non-JSON message - ignore or handle as needed
+          
+          if (!authenticated) {
+            if (message.type === 'auth' && message.token) {
+              if (validateToken(message.token, token)) {
+                authenticated = true;
+                clearTimeout(authTimeout);
+                
+                // Complete connection setup
+                storeClientSocket(clientId, ws);
+                broadcaster!.addClient(ws, clientId);
+                log.debug('WebSocket client connected (message auth)', { clientId });
+                
+                // Send auth success
+                ws.send(JSON.stringify({ type: 'auth_success' }));
+                
+                // Set up handlers
+                ws.on('close', () => {
+                  removeClientSocket(clientId);
+                  broadcaster!.removeClient(clientId);
+                  log.debug('WebSocket client disconnected', { clientId });
+                });
+                
+                ws.on('error', (err) => {
+                  log.warn('WebSocket error', { clientId, error: String(err) });
+                });
+              } else {
+                recordIpStrike(ip);
+                log.warn('WebSocket connection rejected - invalid token (message auth)');
+                ws.close(1008, 'Unauthorized');
               }
             } else {
               recordIpStrike(ip);
-              log.warn('WebSocket connection rejected - invalid auth');
+              log.warn('WebSocket connection rejected - unauthorized (message required)');
               ws.close(1008, 'Unauthorized');
             }
+            return;
           }
+
+          // Process normal messages after authentication
+          // Handled by broadcaster via event listeners usually, but we can forward here if needed
         } catch {
-          // Invalid JSON - treat as URL auth attempt
-          if (validateWebSocketAuth(url, ip, token)) {
-            authenticated = true;
-            clearTimeout(authTimeout);
-            
-            storeClientSocket(clientId, ws);
-            broadcaster!.addClient(ws, clientId);
-            log.debug('WebSocket client connected (URL auth - binary)', { clientId });
-            
-            ws.on('close', () => {
-              removeClientSocket(clientId);
-              broadcaster!.removeClient(clientId);
-              log.debug('WebSocket client disconnected', { clientId });
-            });
-            
-            ws.on('error', (err) => {
-              log.warn('WebSocket error', { clientId, error: String(err) });
-            });
-          } else {
+          if (!authenticated) {
             recordIpStrike(ip);
-            log.warn('WebSocket connection rejected - invalid auth');
+            log.warn('WebSocket connection rejected - invalid JSON');
             ws.close(1008, 'Unauthorized');
           }
         }
@@ -603,19 +560,16 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
         const tunnelUrl = await tunnelManager.start();
         log.info('Tunnel established', { url: tunnelUrl });
 
-        // Generate and display QR code with token for auto-authentication
-        const token = tokenManager.getOrGenerate();
-        const qrUrl = `${tunnelUrl}?token=${token}`;
+        // Generate and display QR code (no token in URL for security)
+        const qrUrl = `${tunnelUrl}`;
         await displayQRCode(qrUrl);
       } catch (err) {
         log.error('Failed to start tunnel', { error: String(err) });
 
         // Show local URL with QR code as fallback
-        const localUrl = `http://localhost:${WEB_PORT}`;
-        const token = tokenManager.getOrGenerate();
-        const localQrUrl = `${localUrl}?token=${token}`;
+        const localUrl = `http://localhost:${webConfig.port}`;
         console.log('\n  [TUNNEL UNAVAILABLE - Using local access]\n');
-        await displayQRCode(localQrUrl);
+        await displayQRCode(localUrl);
       }
     } else {
       log.info('Tunnel disabled or cloudflared not available');
@@ -685,7 +639,7 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     const tunnelUrl = getTunnelUrl();
     if (!tunnelUrl || !tokenManager) return null;
     const token = tokenManager.getOrGenerate();
-    return `${tunnelUrl}?token=${token}`;
+    return tunnelUrl;
   };
 
   const broadcastTunnelUrl = (url: string) => {
@@ -787,7 +741,7 @@ function wireSessionEvents(
         },
       };
       
-      if (event.role === 'agent' && event.content) {
+      if (event.content) {
         envelope.params.SessionUpdate.AgentMessageChunk = {
           Content: {
             Text: {

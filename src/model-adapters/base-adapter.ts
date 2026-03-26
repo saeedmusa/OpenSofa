@@ -7,10 +7,18 @@
 import { execFileSync } from 'child_process';
 import { createLogger } from '../utils/logger.js';
 import { getEnrichedPath, getEnrichedEnv } from '../utils/expand-path.js';
+import { asyncExecutor } from '../utils/async-executor.js';
 import type { AgentType } from '../types.js';
 import type { ModelAdapter, ModelProvider, DiscoveredModel } from './types.js';
 
 const log = createLogger('model-adapter');
+
+// Timeout constants
+const TIMEOUTS = {
+  isAvailable: 5_000,     // 5s for `which`
+  authList: 10_000,       // 10s for `opencode auth list`
+  models: 30_000,         // 30s for `opencode models`
+} as const;
 
 /**
  * Base class for model discovery adapters.
@@ -26,7 +34,30 @@ export abstract class BaseAdapter implements ModelAdapter {
   }
   
   /**
-   * Check if the agent binary is available on PATH
+   * Check if the agent binary is available on PATH (async version).
+   * Uses timeout to prevent blocking on slow systems.
+   */
+  async isAvailableAsync(): Promise<boolean> {
+    try {
+      const result = await asyncExecutor.execute('which', [this.getBinaryName()], {
+        timeout: TIMEOUTS.isAvailable,
+        env: { ...process.env as Record<string, string>, PATH: getEnrichedPath() },
+      });
+      
+      if (result) {
+        log.debug(`Agent binary found: ${this.getBinaryName()}`);
+        return true;
+      }
+      return false;
+    } catch {
+      log.debug(`Agent binary not found: ${this.getBinaryName()}`);
+      return false;
+    }
+  }
+  
+  /**
+   * Check if the agent binary is available on PATH (sync version - deprecated).
+   * @deprecated Use isAvailableAsync() instead for non-blocking execution
    */
   isAvailable(): boolean {
     try {
@@ -75,6 +106,22 @@ export abstract class BaseAdapter implements ModelAdapter {
       });
       return '';
     }
+  }
+  
+  /**
+   * Execute a command asynchronously with timeout handling.
+   * Uses AsyncExecutor for non-blocking execution.
+   * 
+   * @param command - The command to execute
+   * @param args - Arguments to pass
+   * @param timeout - Timeout in ms (default 30000)
+   * @returns Promise resolving to stdout output, or empty string on error
+   */
+  protected async executeCommandAsync(command: string, args: string[], timeout = 30000): Promise<string> {
+    return asyncExecutor.execute(command, args, {
+      timeout,
+      env: getEnrichedEnv(),
+    });
   }
   
   /**

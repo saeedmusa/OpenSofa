@@ -29,13 +29,11 @@ export const createAuthMiddleware = (deps: AuthMiddlewareDeps) => {
     const authHeader = c.req.header('Authorization');
     const headerToken = parseAuthHeader(authHeader);
 
-    const providedToken = headerToken;
-
-    if (!providedToken) {
+    if (!headerToken) {
       return c.json(error('Authentication required', 'UNAUTHORIZED'), 401);
     }
 
-    if (!validateToken(providedToken, deps.expectedToken)) {
+    if (!validateToken(headerToken, deps.expectedToken)) {
       recordIpStrike(ip);
       return c.json(error('Invalid authentication token', 'FORBIDDEN'), 403);
     }
@@ -76,4 +74,3 @@ export const validateWebSocketAuth = (
     return false;
   }
 };
-
