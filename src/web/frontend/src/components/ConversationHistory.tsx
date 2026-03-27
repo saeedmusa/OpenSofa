@@ -164,7 +164,21 @@ export function ConversationHistory({ sessionName }: ConversationHistoryProps) {
       // When session updates (agent status change, etc.), refetch messages
       subscribe('session_updated', (event) => {
         if (event.sessionName === sessionName) {
-          debouncedRefetch();
+          const payload = event.payload as { agentMessage?: string } | undefined;
+          if (payload?.agentMessage) {
+            // Add a synthetic message for the slash command output
+            const newMessage: AgentAPIMessage = {
+              id: Date.now(),
+              role: 'agent',
+              content: payload.agentMessage,
+              time: new Date().toISOString()
+            };
+            setMessages(prev => [...prev, newMessage]);
+            // Auto-scroll after render
+            requestAnimationFrame(scrollToBottom);
+          } else {
+            debouncedRefetch();
+          }
         }
       }),
       // When activity events arrive, capture streaming text and trigger refetch

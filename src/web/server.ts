@@ -138,11 +138,24 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
             }
           }
         } else if (message.type === 'terminal_input' && message.payload) {
-          // Handle terminal input - send to agent
+          // Handle terminal input - send to agent or handle slash commands
           const { sessionId, content } = message.payload as { sessionId: string; content: string };
           const session = sessionManager.getByName(sessionId);
           if (session) {
-            await sessionManager.sendToAgent(session, content);
+            const trimmed = content.trim();
+            
+            // Intercept OpenSofa-specific slash commands
+            const slashResult = await sessionManager.handleSlashCommand(session, content);
+            if (slashResult) {
+              broadcaster!.broadcast(createEvent('session_updated', { 
+                agentMessage: slashResult 
+              }, session.name));
+              return;
+            }
+            
+            // Pass through to agent (with escaping if needed)
+            const finalContent = trimmed.startsWith('//') ? trimmed.substring(1) : content;
+            await sessionManager.sendToAgent(session, finalContent);
           }
         } else if (message.type === 'terminal_command' && message.payload) {
           // Handle quick command palette commands
@@ -215,14 +228,35 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     // Create Hono app
     const app = new Hono();
 
+    // Global error handler
+    app.onError((err, c) => {
+      log.error('Hono App Error', { 
+        method: c.req.method,
+        url: c.req.url,
+        error: String(err),
+        stack: err.stack 
+      });
+      return c.json({ 
+        success: false, 
+        error: 'Internal Server Error', 
+        message: String(err) 
+      }, 500);
+    });
+
+    // Request logger
+    app.use('*', async (c, next) => {
+      log.debug('Hono Request', { method: c.req.method, url: c.req.url });
+      await next();
+    });
+
     // Payload size limiter (2MB max)
     app.use('*', bodyLimit({
       maxSize: 2 * 1024 * 1024,
       onError: (c) => c.json({ success: false, error: 'Payload size exceeds 2MB limit' }, 413)
     }));
 
-    // Rate limiter (100 req per minute)
-    app.use('*', createRateLimiter({ windowMs: 60000, max: 100 }));
+    // Rate limiter (500 req per minute for local dev/polling)
+    app.use('*', createRateLimiter({ windowMs: 60000, max: 500 }));
 
     // Strict CORS for PWA
     app.use('*', cors({
@@ -308,6 +342,8 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
       getUptime,
       getSystemResources,
       revokeToken,
+      getBroadcaster: () => broadcaster,
+      createEvent,
       token,
     });
     app.route('/api', apiRoutes);
@@ -444,6 +480,7 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     httpServer = serve({
       fetch: app.fetch,
       port: webConfig.port,
+      hostname: '0.0.0.0', // Force IPv4 to ensure connection from Vite proxy 
     });
 
     // Create WebSocket server attached to HTTP server
@@ -524,6 +561,11 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
           }
 
           // Process normal messages after authentication
+          if (message.type === 'ping') {
+            ws.send(JSON.stringify({ type: 'pong', timestamp: Date.now() }));
+            return;
+          }
+
           // Handled by broadcaster via event listeners usually, but we can forward here if needed
         } catch {
           if (!authenticated) {

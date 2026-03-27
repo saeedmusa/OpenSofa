@@ -1,9 +1,27 @@
 import { NavLink } from 'react-router-dom';
 import { clsx } from 'clsx';
 import { useSessionStore } from '../stores/sessionStore';
+import { api } from '../utils/api';
+import { useToast } from '../components/Toast';
+import { safeVibrate } from '../utils/haptics';
 
 export function Sidebar() {
   const sessions = useSessionStore((s) => s.sessions);
+  const { setSessions } = useSessionStore();
+  const toast = useToast();
+
+  const handleTerminateAll = async () => {
+    if (!window.confirm('Are you sure you want to terminate ALL active sessions?')) return;
+    
+    try {
+      await api.sessions.stopAll();
+      setSessions([]);
+      safeVibrate([50, 100, 50]);
+      toast.success('All sessions terminated');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to terminate sessions');
+    }
+  };
 
   return (
     <aside className="sidebar-terminal pt-14 hidden lg:flex flex-col">
@@ -28,20 +46,44 @@ export function Sidebar() {
           <span>ACTIVE_SESSIONS</span>
         </NavLink>
         
-        <a href="#" className="sidebar-nav-item text-cyan-accent">
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            clsx(
+              'sidebar-nav-item',
+              isActive ? 'sidebar-nav-item-active' : 'text-cyan-accent'
+            )
+          }
+        >
           <span className="material-symbols-outlined">receipt_long</span>
           <span>KERNEL_LOGS</span>
-        </a>
+        </NavLink>
         
-        <a href="#" className="sidebar-nav-item text-cyan-accent">
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            clsx(
+              'sidebar-nav-item',
+              isActive ? 'sidebar-nav-item-active' : 'text-cyan-accent'
+            )
+          }
+        >
           <span className="material-symbols-outlined">lan</span>
           <span>SSH_CONFIG</span>
-        </a>
+        </NavLink>
         
-        <a href="#" className="sidebar-nav-item text-cyan-accent">
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            clsx(
+              'sidebar-nav-item',
+              isActive ? 'sidebar-nav-item-active' : 'text-cyan-accent'
+            )
+          }
+        >
           <span className="material-symbols-outlined">vpn_key</span>
           <span>API_KEYS</span>
-        </a>
+        </NavLink>
 
         {/* Session list */}
         {sessions.length > 0 && (
@@ -69,7 +111,10 @@ export function Sidebar() {
 
         {/* Terminate all button */}
         <div className="mt-auto pt-4 border-t border-surface-container-high">
-          <button className="sidebar-nav-item sidebar-nav-item-danger w-full text-neon-red hover:bg-neon-red/10">
+          <button 
+            onClick={handleTerminateAll}
+            className="sidebar-nav-item sidebar-nav-item-danger w-full text-neon-red hover:bg-neon-red/10"
+          >
             <span className="material-symbols-outlined">terminal</span>
             <span>TERMINATE_ALL</span>
           </button>

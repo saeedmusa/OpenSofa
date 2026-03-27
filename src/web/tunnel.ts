@@ -81,8 +81,19 @@ export const createTunnelManager = (deps: TunnelManagerDeps): TunnelManager => {
   let status: TunnelStatus = 'stopped';
   const statusHandlers = new Set<(status: TunnelStatus, url?: string) => void>();
 
+  /**
+   * Tunnel State for Auto-restart
+   */
+  let restartAttempts = 0;
+  const MAX_RESTARTS = 10;
+  const RESTART_DELAY_BASE = 2000;
+  let lastSuccessfulRunAt = 0;
+
   const setStatus = (newStatus: TunnelStatus, newUrl?: string): void => {
     status = newStatus;
+    if (status === 'running') {
+      lastSuccessfulRunAt = Date.now();
+    }
     for (const handler of statusHandlers) {
       try {
         handler(status, newUrl);
@@ -154,17 +165,53 @@ export const createTunnelManager = (deps: TunnelManagerDeps): TunnelManager => {
       process.on('exit', (code, signal) => {
         clearTimeout(timeout);
         const previousUrl = url;
+        const wasRunning = status === 'running';
+        
         url = null;
         process = null;
         setStatus('stopped');
-        log.info('Tunnel process exited', { code, signal });
+        log.info('Tunnel process exited', { code, signal, wasRunning });
         
-        // If we were running and exited unexpectedly, log it
-        if (status === 'running') {
-          log.warn('Tunnel exited unexpectedly', { code, signal, previousUrl });
+        // Auto-restart logic
+        if (wasRunning) {
+          handleUnexpectedExit(previousUrl);
         }
       });
     });
+  };
+
+  const handleUnexpectedExit = (previousUrl: string | null): void => {
+    // If we've been running for more than 5 minutes, reset restart attempts
+    const now = Date.now();
+    if (now - lastSuccessfulRunAt > 5 * 60 * 1000) {
+      restartAttempts = 0;
+    }
+
+    if (restartAttempts >= MAX_RESTARTS) {
+      log.error('Max tunnel restarts reached. Manual intervention required.', {
+        attempts: restartAttempts,
+        previousUrl
+      });
+      setStatus('error');
+      return;
+    }
+
+    const delay = RESTART_DELAY_BASE * Math.pow(2, restartAttempts);
+    restartAttempts++;
+
+    log.warn(`Tunnel exited unexpectedly. Restarting in ${delay}ms...`, {
+      attempt: restartAttempts,
+      maxAttempts: MAX_RESTARTS,
+      previousUrl
+    });
+
+    setTimeout(() => {
+      if (status === 'stopped') {
+        start().catch(err => {
+          log.error('Auto-restart failed', { error: String(err) });
+        });
+      }
+    }, delay);
   };
 
   const stop = (): void => {

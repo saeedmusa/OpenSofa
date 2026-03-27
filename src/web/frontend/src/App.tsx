@@ -16,6 +16,7 @@ import { safeVibrate } from './utils/haptics';
 
 const HomeView = lazy(() => import('./views/HomeView').then(m => ({ default: m.HomeView })));
 const SessionView = lazy(() => import('./views/SessionView').then(m => ({ default: m.SessionView })));
+const SettingsView = lazy(() => import('./views/SettingsView').then(m => ({ default: m.SettingsView })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -140,6 +141,14 @@ function RouterApp({ pendingApproval, setPendingApproval, setHasToken }: { pendi
                       element={
                         <Suspense fallback={<PageLoader />}>
                           <SessionView />
+                        </Suspense>
+                      }
+                    />
+                    <Route
+                      path="/settings"
+                      element={
+                        <Suspense fallback={<PageLoader />}>
+                          <SettingsView />
                         </Suspense>
                       }
                     />

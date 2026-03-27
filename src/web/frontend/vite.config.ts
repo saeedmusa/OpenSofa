@@ -28,15 +28,15 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3285',
+        target: 'http://127.0.0.1:3285',
         changeOrigin: true,
       },
       '/ws': {
-        target: 'ws://localhost:3285',
+        target: 'ws://127.0.0.1:3285',
         ws: true,
       },
       '/health': {
-        target: 'http://localhost:3285',
+        target: 'http://127.0.0.1:3285',
         changeOrigin: true,
       },
     },

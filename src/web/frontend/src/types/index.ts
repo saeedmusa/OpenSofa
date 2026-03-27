@@ -56,7 +56,9 @@ export type WebSocketEventType =
   | 'feedback'
   | 'catch_up_summary'
   | 'session_state_snapshot'
-  | 'sync_response';
+  | 'sync_response'
+  | 'ping'
+  | 'pong';
 
 export interface WebSocketEvent {
   type: WebSocketEventType;

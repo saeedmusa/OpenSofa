@@ -35,6 +35,8 @@ export interface RoutesDeps {
   getUptime: () => number;
   getSystemResources: () => { cpu: string; freeMem: string };
   revokeToken: () => void;
+  getBroadcaster: () => import('../broadcaster.js').Broadcaster | null;
+  createEvent: typeof import('../broadcaster.js').createEvent;
   token: string;
 }
 
@@ -48,6 +50,8 @@ export const createApiRoutes = (deps: RoutesDeps): Hono => {
   // Mount sessions routes
   const sessionsDeps: SessionsRoutesDeps = {
     sessionManager: deps.sessionManager,
+    getBroadcaster: deps.getBroadcaster,
+    createEvent: deps.createEvent,
   };
   app.route('/sessions', createSessionsRoutes(sessionsDeps));
 

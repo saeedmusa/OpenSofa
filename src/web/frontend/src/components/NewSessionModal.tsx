@@ -356,7 +356,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {agents.filter(a => a.installed).map((agent) => (
+                  {agents.filter(a => a.installed || ['opencode', 'claude', 'codex'].includes(a.type)).map((agent) => (
                     <button
                       key={agent.type}
                       onClick={() => {

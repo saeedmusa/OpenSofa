@@ -111,7 +111,20 @@ export const createFilesRoutes = (deps: FilesRoutesDeps): Hono => {
         .slice(0, 100) // Limit to 100 entries
         .map(dirent => {
           const fullPath = path.join(targetDir, dirent.name);
-          const stats = dirent.isFile() ? fs.statSync(fullPath) : null;
+          let stats: fs.Stats | null = null;
+          
+          if (dirent.isFile()) {
+            try {
+              stats = fs.statSync(fullPath);
+            } catch (err) {
+              log.warn('Failed to stat file during directory listing', { 
+                file: dirent.name, 
+                error: String(err) 
+              });
+              // Continue with null stats - fields will be undefined
+            }
+          }
+
           return {
             name: dirent.name,
             type: dirent.isDirectory() ? 'directory' as const : 'file' as const,

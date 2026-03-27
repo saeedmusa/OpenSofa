@@ -25,6 +25,7 @@ export interface AgentDefinition {
   modelFlag?: string;          // CLI flag to pass model (e.g. "--model")
   modelEnvVar?: string;        // env var for model selection
   defaultModel?: string;       // default model if none specified
+  agentFlag?: string;          // CLI flag to pass sub-agent/mode (e.g. "--agent")
   knownModels: string[];       // informational — known supported models
   description: string;
 }
@@ -56,15 +57,17 @@ const AGENT_DEFINITIONS: AgentDefinition[] = [
     displayName: 'OpenCode',
     binary: 'opencode',
     agentApiType: 'opencode',
-    modelFlag: undefined,       // opencode uses its own config file
-    modelEnvVar: undefined,
+    modelFlag: '--model',
+    modelEnvVar: 'CLAUDE_MODEL',
+    agentFlag: '--agent',
     defaultModel: undefined,    // uses whatever opencode is configured with
     knownModels: [
-      'anthropic/claude-sonnet-4-20250514',
-      'anthropic/claude-opus-4-20250514',
+      'anthropic/claude-3-5-sonnet',
+      'anthropic/claude-3-opus',
       'openai/gpt-4o',
       'openai/o3',
-      'google/gemini-2.5-pro',
+      'google/gemini-2.0-flash',
+      'openrouter/minimax-2.7',
     ],
     description: 'OpenCode CLI agent (model configured via opencode config)',
   },
@@ -97,6 +100,7 @@ const AGENT_DEFINITIONS: AgentDefinition[] = [
     defaultModel: 'o3',
     knownModels: ['o3', 'o4-mini', 'gpt-4.1'],
     description: 'OpenAI Codex CLI agent',
+    agentFlag: '--agent', // Added support for sub-agent switching
   },
   {
     type: 'goose',
@@ -267,6 +271,7 @@ export class AgentRegistry {
     type: AgentType,
     port: number,
     model?: string,
+    subAgent?: string, // Added subAgent parameter
     termWidth: number = 120,
     termHeight: number = 36,
     options?: { jsonStream?: boolean },
@@ -308,6 +313,11 @@ export class AgentRegistry {
         env[def.modelEnvVar] = effectiveModel;
       }
       // If neither modelFlag nor modelEnvVar, agent handles model via its own config
+    }
+
+    // Add sub-agent if supported (e.g. opencode --agent plan)
+    if (subAgent && def.agentFlag) {
+      args.push(def.agentFlag, subAgent);
     }
 
     return { args, env };
@@ -388,29 +398,26 @@ export class AgentRegistry {
    * Format a status summary of all agents for display (e.g. /agents command)
    */
   formatAgentList(): string {
-    const lines: string[] = ['*Available Coding Agents*', ''];
+    const lines: string[] = [];
 
     for (const def of this.definitions.values()) {
       const installed = this.isInstalled(def.type);
-      const status = installed ? '✅' : '⬚';
-      const modelInfo = def.defaultModel
-        ? ` (default: ${def.defaultModel})`
-        : def.knownModels.length > 0
-          ? ` (configure via ${def.binary} config)`
-          : '';
+      if (!installed) continue; // Only show installed agents in compact list
 
-      lines.push(`${status} *${def.displayName}* (\`${def.type}\`)${modelInfo}`);
-      lines.push(`   ${def.description}`);
+      const modelInfo = def.defaultModel
+        ? ` (default: \`${def.defaultModel}\`)`
+        : '';
+
+      lines.push(`• **${def.displayName}** (\`${def.type}\`)${modelInfo}`);
+      lines.push(`  _${def.description}_`);
       
       if (def.knownModels.length > 0) {
-        lines.push(`   Models: ${def.knownModels.slice(0, 4).join(', ')}${def.knownModels.length > 4 ? '...' : ''}`);
+        const models = def.knownModels.slice(0, 5).join(', ');
+        const extra = def.knownModels.length > 5 ? '...' : '';
+        lines.push(`  > Models: \`${models}${extra}\``);
       }
       lines.push('');
     }
-
-    lines.push('✅ = installed, ⬚ = not found on PATH');
-    lines.push('');
-    lines.push('Send /new to start the guided session wizard.');
 
     return lines.join('\n');
   }

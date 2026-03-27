@@ -30,6 +30,7 @@ export interface Session {
   status: SessionStatus;
   agentType: AgentType;
   model: string;                   // model identifier (e.g. "sonnet", "gpt-4o") or '' for agent default
+  agentMode?: string;              // sub-agent or mode (e.g. "plan", "build")
   port: number;                    // AgentAPI port (3284+N)
   pid: number;                     // AgentAPI child process PID
   repoDir: string;                 // original repo path (e.g. "~/projects/myapp")
@@ -180,6 +181,7 @@ export interface PersistedSession {
   status: SessionStatus;
   agentType: AgentType;
   model: string;
+  agentMode?: string;
   port: number;
   pid: number;
   repoDir: string;

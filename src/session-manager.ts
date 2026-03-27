@@ -37,6 +37,7 @@ import { globalMessageQueue } from './message-queue.js';
 import type { Notifier } from './web/notifier.js';
 import { ProcessManager, getProcessManager } from './process-manager.js';
 import { TmuxCompatibility, createTmuxCompat } from './tmux-compat.js';
+import { AdapterRegistry } from './model-adapters/registry.js';
 
 const log = createLogger('session');
 
@@ -107,18 +108,35 @@ export class SessionManager extends EventEmitter {
     return normalized !== 'off' && normalized !== 'false' && normalized !== 'no' && normalized !== '0';
   }
 
-  private parseAgentSwitchValue(value: string):
-    | { ok: true; agent: AgentType; model: string }
+  private parseAgentSwitchValue(value: string, currentAgent?: AgentType):
+    | { ok: true; agent: AgentType; model: string; mode?: string }
     | { ok: false; error: string } {
     const trimmed = value.trim();
     if (!trimmed) {
       return {
         ok: false,
-        error: "Usage: /set <session> agent <agent> [model]. Example: /set frontend agent opencode",
+        error: "Usage: /agent <name> [model] or /agent <mode>. Example: /agent aider or /agent plan",
       };
     }
 
-    const [agentRaw, ...modelParts] = trimmed.split(/\s+/);
+    const [agentRaw, ...remaining] = trimmed.split(/\s+/);
+    const opencodeModes = ['plan', 'build', 'opencoder', 'openagent'];
+    const modeCandidate = agentRaw?.toLowerCase() || '';
+    const currentAgentLower = currentAgent?.toLowerCase();
+    const isOpencodeMode = opencodeModes.includes(modeCandidate);
+
+    log.debug('parseAgentSwitchValue debug', { agentRaw, currentAgent, modeCandidate, currentAgentLower, isOpencodeMode });
+
+    if (isOpencodeMode) {
+      log.info('Detected opencode mode switch (auto-detected)', { mode: modeCandidate });
+      return {
+        ok: true,
+        agent: 'opencode', // Always target opencode for these modes
+        mode: modeCandidate,
+        model: remaining.join(' ').trim(),
+      };
+    }
+
     if (!agentRaw || !this.agentRegistry.isValidType(agentRaw)) {
       return {
         ok: false,
@@ -126,10 +144,11 @@ export class SessionManager extends EventEmitter {
       };
     }
 
+    // Standard switch: agent [model]
     return {
       ok: true,
-      agent: agentRaw,
-      model: modelParts.join(' ').trim(),
+      agent: agentRaw as AgentType,
+      model: remaining.join(' ').trim(),
     };
   }
 
@@ -385,10 +404,11 @@ export class SessionManager extends EventEmitter {
     }
     const startupTimeoutMs = this.getStartupTimeoutMs(agent);
 
-    // 5. Spawn AgentAPI
+    // --- Start spawning ---
     let pid: number;
     try {
       pid = await this.spawnAgentAPI(port, agent, model, workDir);
+      placeholderSession.pid = pid;
     } catch (err) {
       const error = err as Error;
       log.error('Failed to spawn AgentAPI', { error: error.message });
@@ -601,7 +621,7 @@ export class SessionManager extends EventEmitter {
   /**
    * Spawn AgentAPI process using node-pty via ProcessManager
    */
-  private async spawnAgentAPI(port: number, agent: AgentType, model: string, workDir: string): Promise<number> {
+  private async spawnAgentAPI(port: number, agent: AgentType, model: string, workDir: string, agentMode?: string): Promise<number> {
     // --- Pre-flight checks ---
     if (!this.agentRegistry.isAgentApiInstalled()) {
       throw new Error(
@@ -621,7 +641,7 @@ export class SessionManager extends EventEmitter {
 
     const tmuxSessionName = `agentapi-${port}`;
     const { args, env: agentEnv } = this.agentRegistry.buildSpawnArgs(
-      agent, port, model || undefined,
+      agent, port, model || undefined, agentMode
     );
 
     const agentCmd = `agentapi ${args.join(' ')}`;
@@ -996,6 +1016,67 @@ export class SessionManager extends EventEmitter {
   /**
    * Send a message to the agent
    */
+  /**
+   * Intercept and handle OpenSofa slash commands
+   * Returns a response string if handled, or null if it's a normal message
+   */
+  async handleSlashCommand(session: Session, content: string): Promise<string | null> {
+    const trimmed = content.trim();
+    log.debug('handleSlashCommand check', { session: session.name, content, trimmed });
+    if (!trimmed.startsWith('/') || trimmed.startsWith('//')) {
+      return null;
+    }
+
+    const [cmd, ...args] = trimmed.substring(1).split(/\s+/);
+    const argString = args.join(' ').trim();
+
+    if (cmd === 'model' || cmd === 'models') {
+      if (!argString) {
+        try {
+          const models = await this.listAvailableModels(session);
+          if (models.length === 0) {
+            return `No specific models discovered for \`${session.agentType}\`. You can still try setting one manually using \`/model <name>\`.`;
+          }
+          
+          return `### 🤖 Available Models for ${session.agentType}\n\n` +
+            models.map(m => `• **${m}**`).join('\n') +
+            `\n\nType \`/model <name>\` to switch models. _Session will restart._`;
+        } catch (err) {
+          return `❌ Failed to list models: ${String(err)}`;
+        }
+      } else {
+        try {
+          await this.switchSessionAgent(session, `${session.agentType} ${argString}`);
+          return `✅ Switched to model \`${argString}\`. Agent restarted.`;
+        } catch (err) {
+          return `❌ Failed to switch model: ${String(err)}`;
+        }
+      }
+    } else if (cmd === 'agent' || cmd === 'agents') {
+      if (!argString) {
+        const list = this.agentRegistry.formatAgentList();
+        return `### 👥 Available Agents\n\n${list}\n\nType \`/agent <name>\` to switch. _Session will restart._`;
+      } else {
+        try {
+          await this.switchSessionAgent(session, argString);
+          return `✅ Switched to agent \`${argString}\`. Session restarted.`;
+        } catch (err) {
+          return `❌ Failed to switch agent: ${String(err)}`;
+        }
+      }
+    } else if (cmd === 'help') {
+      return `### 🛠️ OpenSofa Commands\n\n` +
+        `• \`/models\` - List models for current agent\n` +
+        `• \`/model <name>\` - Switch to a specific model\n` +
+        `• \`/agents\` - List all installed agents\n` +
+        `• \`/agent <name>\` - Switch to a different agent\n` +
+        `• \`/help\` - Show this manual\n\n` +
+        `_Note: Switching agents or models restarts the background process._`;
+    }
+
+    return null;
+  }
+
   async sendToAgent(session: Session, text: string): Promise<void> {
     session.lastActivityAt = Date.now();
     const client = agentClient(session.port);
@@ -1152,10 +1233,31 @@ export class SessionManager extends EventEmitter {
   }
 
   /**
+   * List available models for a session's current agent
+   */
+  async listAvailableModels(session: Session): Promise<string[]> {
+    try {
+      const registry = AdapterRegistry.getInstance();
+      const results = await registry.discoverAll([session.agentType]);
+      
+      const models: string[] = [];
+      for (const provider of results.providers) {
+        for (const model of provider.models) {
+          models.push(model.id);
+        }
+      }
+      return models.sort();
+    } catch (err) {
+      log.warn('Failed to list models for session', { session: session.name, error: String(err) });
+      return [];
+    }
+  }
+
+  /**
    * Switch session agent
    */
   async switchSessionAgent(session: Session, value: string): Promise<void> {
-    const parsed = this.parseAgentSwitchValue(value);
+    const parsed = this.parseAgentSwitchValue(value, session.agentType);
     if (!parsed.ok) {
       throw new Error(parsed.error);
     }
@@ -1164,25 +1266,33 @@ export class SessionManager extends EventEmitter {
       throw new Error(`Agent '${parsed.agent}' is not installed on this machine.`);
     }
 
-    if (session.agentType === parsed.agent && (session.model || '') === (parsed.model || '')) {
-      throw new Error(`Already using agent '${parsed.agent}'${parsed.model ? ` (${parsed.model})` : ''}.`);
+    if (session.agentType === parsed.agent && 
+        (session.model || '') === (parsed.model || '') &&
+        (session.agentMode || '') === (parsed.mode || '')) {
+      throw new Error(`Already using agent '${parsed.agent}'${parsed.mode ? ` in ${parsed.mode} mode` : ''}${parsed.model ? ` with ${parsed.model}` : ''}.`);
     }
 
     const previousAgent = session.agentType;
     const previousModel = session.model;
     const previousPid = session.pid;
+    
+    // Update session state promptly
+    const newAgent = parsed.agent;
+    const newModel = parsed.model || this.agentRegistry.getDefinition(newAgent)?.defaultModel || '';
+    const newMode = parsed.mode;
 
     this.clearRuntime(session);
     this.killProcess(previousPid);
     await sleep(1000);
 
     try {
-      const pid = await this.spawnAgentAPI(session.port, parsed.agent, parsed.model, session.workDir);
-      await this.healthCheck(session.port, this.getStartupTimeoutMs(parsed.agent));
+      const pid = await this.spawnAgentAPI(session.port, newAgent, newModel, session.workDir, newMode);
+      await this.healthCheck(session.port, this.getStartupTimeoutMs(newAgent));
 
       session.pid = pid;
-      session.agentType = parsed.agent;
-      session.model = parsed.model;
+      session.agentType = newAgent;
+      session.model = newModel;
+      session.agentMode = newMode;
       session.status = 'active';
       session.agentStatus = 'stable';
       session.lastActivityAt = Date.now();

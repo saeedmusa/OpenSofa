@@ -47,6 +47,11 @@ type ConnectionStatus = 'connected' | 'disconnected' | 'reconnecting';
 
 type EventHandler = (event: WebSocketEvent) => void;
 
+interface SystemStatus {
+  connected: boolean;
+  tunnelUrl: string | null;
+}
+
 interface WSContextValue {
   connected: boolean;
   connectionStatus: ConnectionStatus;
@@ -54,6 +59,7 @@ interface WSContextValue {
   pendingCount: number;
   missedEvents: number;
   showOfflineBanner: boolean;
+  systemStatus: SystemStatus | null;
   subscribe: (eventType: string, handler: EventHandler) => () => void;
   subscribeTerminal: (sessionName: string) => void;
   unsubscribeTerminal: () => void;
@@ -78,11 +84,16 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
   const [pendingCount, setPendingCount] = useState(0);
   const [missedEvents, setMissedEvents] = useState(0);
   const [showOfflineBanner, setShowOfflineBanner] = useState(false);
+  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<number | undefined>(undefined);
   const reconnectDelayRef = useRef(1000);
   const reconnectAttemptsRef = useRef(0);
   const MAX_RECONNECT_ATTEMPTS = 5;
+  const HEARTBEAT_INTERVAL = 20000; // 20s
+  const PONG_TIMEOUT = 20000; // 20s
+  const heartbeatTimerRef = useRef<number | undefined>(undefined);
+  const pongTimerRef = useRef<number | undefined>(undefined);
   const handlersRef = useRef<Map<string, Set<EventHandler>>>(new Map());
   const addSession = useSessionStore((s) => s.addSession);
   const updateSession = useSessionStore((s) => s.updateSession);
@@ -122,6 +133,32 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
     // Initial pending count
     updatePendingCount();
+    
+    const startHeartbeat = () => {
+      stopHeartbeat();
+      if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
+
+      heartbeatTimerRef.current = window.setInterval(() => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          // console.debug('[WS] Sending ping');
+          wsRef.current.send(JSON.stringify({ type: 'ping' }));
+          
+          // Set pong timeout
+          if (pongTimerRef.current) clearTimeout(pongTimerRef.current);
+          pongTimerRef.current = window.setTimeout(() => {
+            console.warn('[WS] Pong timeout - reconnecting');
+            wsRef.current?.close(); // Trigger onclose/reconnect
+          }, PONG_TIMEOUT);
+        }
+      }, HEARTBEAT_INTERVAL);
+    };
+
+    const stopHeartbeat = () => {
+      if (heartbeatTimerRef.current) clearInterval(heartbeatTimerRef.current);
+      if (pongTimerRef.current) clearTimeout(pongTimerRef.current);
+      heartbeatTimerRef.current = undefined;
+      pongTimerRef.current = undefined;
+    };
 
     const handleEvent = (event: WebSocketEvent) => {
       // Idempotency check
@@ -180,9 +217,12 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
           updateSession(cleared.sessionName, { hasPendingApproval: false });
           break;
         }
-        case 'system_status':
-          console.log('[WS] System status:', event.payload);
+        case 'system_status': {
+          const payload = event.payload as SystemStatus;
+          setSystemStatus(payload);
+          // console.log('[WS] System status:', payload);
           break;
+        }
         case 'kill_session': {
           const payload = event.payload as { reason: string };
           console.warn('[WS] Session killed:', payload.reason);
@@ -216,6 +256,8 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
           setConnectionStatus('connected');
           setReconnectError(false);
           console.log('[WS] Connected');
+          
+          startHeartbeat();
 
           // Show connected briefly then hide
           setTimeout(() => {
@@ -239,6 +281,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       };
 
       ws.onclose = () => {
+        stopHeartbeat();
         if (mountedRef.current) {
           setConnected(false);
           setConnectionStatus('disconnected');
@@ -267,6 +310,15 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       ws.onmessage = (event) => {
         try {
           const msg: WebSocketEvent = JSON.parse(event.data);
+          
+          // Clear pong timeout on any message from server (implicit pong)
+          if (pongTimerRef.current) {
+            clearTimeout(pongTimerRef.current);
+            pongTimerRef.current = undefined;
+          }
+          
+          if (msg.type === 'pong') return; // Ignore explicit pong response if server sends it
+
           handleEvent(msg);
 
           // Handle sync_response to track missed events
@@ -330,6 +382,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('pagehide', handlePageHide);
       window.removeEventListener('pageshow', handlePageShow);
       if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
+      stopHeartbeat();
       wsRef.current?.close();
     };
   }, [addSession, removeSession, updateSession, flushQueue, updatePendingCount]);
@@ -395,6 +448,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       pendingCount, 
       missedEvents,
       showOfflineBanner,
+      systemStatus,
       subscribe, 
       subscribeTerminal, 
       unsubscribeTerminal, 

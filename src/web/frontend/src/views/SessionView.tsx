@@ -21,6 +21,7 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
 import { useToast } from '../components/Toast';
 import { clsx } from 'clsx';
+import { CommandPalette } from '../components/CommandPalette';
 
 export function SessionView() {
   const { name, tab } = useParams<{ name: string; tab?: string }>();
@@ -31,6 +32,7 @@ export function SessionView() {
   const [showTerminal, setShowTerminal] = useState(false);
   const [showModelPicker, setShowModelPicker] = useState(false);
   const [message, setMessage] = useState('');
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const toast = useToast();
 
   // Swipe right to go back (mobile only)
@@ -158,6 +160,9 @@ export function SessionView() {
   const handleSend = async () => {
     if (!decodedName || !message.trim() || sending) return;
     
+    // Hide palette if open
+    setShowCommandPalette(false);
+
     setSending(true);
     setSendError(null);
     
@@ -178,12 +183,39 @@ export function SessionView() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // If command palette is open, let it handle ArrowUp/Down and Enter/Tab
+    if (showCommandPalette && (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'Enter' || e.key === 'Tab')) {
+      // CommandPalette handles its own keydown in its useEffect, 
+      // but we might need to prevent default here if we want to stop cursor movement
+      if (e.key === 'Enter' || e.key === 'Tab') {
+        // Let CommandPalette handle selection
+        return;
+      }
+    }
+
     // Send on Enter (without Shift)
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
     // Shift+Enter allows newline (default behavior)
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const val = e.target.value;
+    setMessage(val);
+    
+    // Show palette if value starts with /
+    if (val.startsWith('/') && !val.includes(' ')) {
+      setShowCommandPalette(true);
+    } else {
+      setShowCommandPalette(false);
+    }
+  };
+
+  const handleCommandSelect = (cmd: string) => {
+    setMessage(`/${cmd} `);
+    setShowCommandPalette(false);
   };
 
   if (!selectedSession) {
@@ -399,9 +431,15 @@ export function SessionView() {
           <div className="flex gap-3 max-w-2xl mx-auto items-end">
             <div className="flex-1 relative">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 text-matrix-green font-mono font-bold">&gt;</span>
+              <CommandPalette
+                inputValue={message}
+                isOpen={showCommandPalette}
+                onSelect={handleCommandSelect}
+                onClose={() => setShowCommandPalette(false)}
+              />
               <textarea
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 placeholder="instruct agent..."
                 className="w-full bg-surface-container-lowest border-b-2 border-surface-container-high focus:border-matrix-green text-matrix-green font-mono pl-10 pr-4 py-3 resize-none min-h-[48px] max-h-32 placeholder:opacity-30 placeholder:text-muted"
@@ -552,9 +590,15 @@ export function SessionView() {
         <div className="flex gap-3 max-w-3xl mx-auto items-end">
           <div className="flex-1 relative">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-matrix-green font-mono font-bold text-lg">&gt;</span>
+            <CommandPalette
+              inputValue={message}
+              isOpen={showCommandPalette}
+              onSelect={handleCommandSelect}
+              onClose={() => setShowCommandPalette(false)}
+            />
             <textarea
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder="instruct agent..."
               className="w-full bg-surface-container-lowest border-b-2 border-surface-container-high focus:border-matrix-green text-matrix-green font-mono text-sm pl-9 pr-4 py-2.5 resize-none min-h-[44px] max-h-32 placeholder:opacity-30 placeholder:text-muted"

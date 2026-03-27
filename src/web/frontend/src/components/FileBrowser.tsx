@@ -217,9 +217,9 @@ function FileEntryRow({
   };
 
   return (
-    <button
+    <div
       className={clsx(
-        'flex items-center gap-3 w-full py-2.5 px-3 rounded-xl text-sm',
+        'flex items-center gap-3 w-full py-2.5 px-3 rounded-xl text-sm cursor-pointer',
         'transition-all duration-200 animate-fade-in',
         isSelected 
           ? 'bg-accent-soft text-accent border border-accent/30' 
@@ -227,6 +227,14 @@ function FileEntryRow({
       )}
       onClick={handleClick}
       style={style}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleClick();
+        }
+      }}
     >
       {entry.type === 'directory' ? (
         <>
@@ -261,6 +269,6 @@ function FileEntryRow({
           {formatSize(entry.size)}
         </span>
       )}
-    </button>
+    </div>
   );
 }

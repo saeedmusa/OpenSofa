@@ -15,8 +15,8 @@ const log = createLogger('opencode-adapter');
 
 // Timeout constants
 const TIMEOUTS = {
-  authList: 10_000,       // 10s for `opencode auth list`
-  models: 30_000,         // 30s for `opencode models`
+  authList: 20_000,       // 20s for `opencode auth list`
+  models: 45_000,         // 45s for `opencode models`
 } as const;
 
 /**
@@ -25,13 +25,17 @@ const TIMEOUTS = {
  */
 const PROVIDER_PREFIX_MAP: Record<string, string> = {
   'openrouter': 'openrouter/',
+  'minimax': 'openrouter/minimax',
   'z.ai coding plan': 'huggingface/zai-org',
   'zai': 'huggingface/zai-org',
   'z.ai': 'huggingface/zai-org',
   'hugging face': 'huggingface/',
+  'huggingface': 'huggingface/',
   'zeabur': 'huggingface/zeabur',
   'zhipu ai': 'huggingface/zhipuai',
+  'zhipu': 'huggingface/zhipuai',
   'openai': 'openai/',
+  'anthropic': 'anthropic/',
 };
 
 /**
@@ -167,8 +171,9 @@ export class OpenCodeAdapter extends BaseAdapter {
       const lines = output.split('\n');
 
       for (const line of lines) {
-        // Look for provider names with ● or ✓ marker
-        const match = line.match(/^[●✓]\s+(\S+)/);
+        // Look for provider names with ● or ✓ or * or even just names at the start of the line
+        // Some versions of opencode use different markers
+        const match = line.match(/^[●✓*]\s+(\S+)/) || line.match(/^([a-zA-Z0-9.-]+)\s+.*(active|configured)/i);
         if (match && match[1]) {
           const name = match[1].toLowerCase();
           const prefix = PROVIDER_PREFIX_MAP[name];
@@ -178,8 +183,15 @@ export class OpenCodeAdapter extends BaseAdapter {
         }
       }
 
+      // Fallback: If no providers were explicitly marked but we see 'openrouter' in the list,
+      // assume it might be available if we're in a desktop context.
+      if (prefixes.size === 0 && output.toLowerCase().includes('openrouter')) {
+        prefixes.add('openrouter/');
+      }
+
       log.debug('Configured provider prefixes', {
         prefixes: Array.from(prefixes),
+        foundInOutput: output.length > 0,
       });
 
       return prefixes;

@@ -27,11 +27,13 @@ const log = createLogger('web:routes:sessions');
 
 export interface SessionsRoutesDeps {
   sessionManager: SessionManager;
+  getBroadcaster: () => import('../broadcaster.js').Broadcaster | null;
+  createEvent: typeof import('../broadcaster.js').createEvent;
 }
 
 export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
   const app = new Hono();
-  const { sessionManager } = deps;
+  const { sessionManager, getBroadcaster, createEvent } = deps;
 
   // GET /api/sessions - List all sessions (includes creating, active, error, etc.)
   app.get('/', (c) => {
@@ -102,6 +104,19 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
     }
   });
 
+  // DELETE /api/sessions/stop-all - Terminate all active sessions
+  app.delete('/stop-all', async (c) => {
+    try {
+      await sessionManager.stopAllSessions();
+      log.info('All sessions terminated via web');
+      return c.json(success({ ok: true, message: 'All sessions terminated' }));
+    } catch (err) {
+      const errMsg = err instanceof Error ? err.message : 'Failed to terminate all sessions';
+      log.error('Failed to terminate all sessions', { error: errMsg });
+      return c.json(error(errMsg, 'TERMINATE_ERROR'), 500);
+    }
+  });
+
   // GET /api/sessions/:name - Get session details
   app.get('/:name', (c) => {
     const name = c.req.param('name');
@@ -160,6 +175,20 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
     }
 
     try {
+      // Intercept slash commands
+      const slashResult = await sessionManager.handleSlashCommand(session, body.content);
+      if (slashResult) {
+        // Broadcast the result to all clients
+        const broadcaster = getBroadcaster();
+        if (broadcaster) {
+          broadcaster.broadcast(createEvent('session_updated', { 
+            agentMessage: slashResult 
+          }, session.name));
+        }
+        log.info('Slash command handled via web', { session: name, content: body.content.trim() });
+        return c.json(success({ ok: true, message: 'Slash command handled', handled: true }));
+      }
+
       await sessionManager.sendToAgent(session, body.content);
       log.info('Message sent to agent via web', { session: name });
       return c.json(success({ ok: true, message: 'Message sent successfully' }));

@@ -264,6 +264,8 @@ export const api = {
       }),
     stop: (name: string) => 
       fetchAPI<{ ok: boolean }>(`/sessions/${encodeURIComponent(name)}`, { method: 'DELETE' }),
+    stopAll: () => 
+      fetchAPI<{ ok: boolean }>('/sessions/stop-all', { method: 'DELETE' }),
     messages: (name: string) =>
       fetchAPI<{ messages: AgentAPIMessage[] }>(`/sessions/${encodeURIComponent(name)}/messages`),
     restart: (name: string) =>

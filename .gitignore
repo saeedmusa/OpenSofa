@@ -36,3 +36,11 @@ workDir/
 
 # Coverage
 coverage/
+
+# Local PID files
+.backend.pid
+.frontend.pid
+
+# Test results
+test-results/
+test_output.txt

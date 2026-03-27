@@ -133,10 +133,10 @@ describe('AgentRegistry', () => {
       expect(args).toContain('sonnet');
     });
 
-    it('should return env vars for model when no flag', () => {
-      const { env } = registry.buildSpawnArgs('aider', 3284, 'gpt-4');
-      // Aider uses env vars for model
-      expect(env).toBeDefined();
+    it('should include model flag for opencode when model provided', () => {
+      const { args } = registry.buildSpawnArgs('opencode', 3284, 'huggingface/zai-org/zai-coder-7b');
+      expect(args).toContain('--model');
+      expect(args).toContain('huggingface/zai-org/zai-coder-7b');
     });
 
     it('should throw for unknown agent', () => {

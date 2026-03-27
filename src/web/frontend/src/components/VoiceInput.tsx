@@ -24,6 +24,7 @@ const SpeechRecognition =
 
 export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
     const [isListening, setIsListening] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [isSupported] = useState(() => !!SpeechRecognition);
     const recognitionRef = useRef<any>(null);
 
@@ -37,6 +38,7 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
 
     const startListening = useCallback(() => {
         if (!SpeechRecognition || disabled) return;
+        setError(null);
 
         const recognition = new SpeechRecognition();
         recognition.continuous = false;
@@ -52,7 +54,17 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
         };
 
         recognition.onerror = (event: any) => {
-            console.warn('Speech recognition error:', event.error);
+            const errType = event.error;
+            console.warn('Speech recognition error:', errType);
+            
+            if (errType === 'network') {
+                setError('Network error: Speech recognition requires an internet connection.');
+            } else if (errType === 'not-allowed') {
+                setError('Microphone access denied.');
+            } else {
+                setError(`Speech error: ${errType}`);
+            }
+            
             stopListening();
         };
 
@@ -81,30 +93,37 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
     if (!isSupported) return null;
 
     return (
-        <button
-            type="button"
-            onClick={isListening ? stopListening : startListening}
-            disabled={disabled}
-            className={clsx(
-                'relative flex items-center justify-center',
-                'w-12 h-12 min-w-[48px] min-h-[48px]', // Touch target ≥ 48px
-                'rounded-xl transition-all duration-200',
-                isListening
-                    ? 'bg-red-500/20 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.3)]'
-                    : 'btn-ghost text-[rgba(255,255,255,0.5)] hover:text-fg-strong',
-                disabled && 'opacity-40 pointer-events-none',
+        <div className="relative">
+            {error && (
+                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-red-500 text-white text-xs rounded shadow-lg animate-in fade-in slide-in-from-bottom-1 z-50 text-center">
+                    {error}
+                </div>
             )}
-            aria-label={isListening ? 'Stop recording' : 'Voice input'}
-        >
-            {isListening ? <MicOff size={20} /> : <Mic size={20} />}
+            <button
+                type="button"
+                onClick={isListening ? stopListening : startListening}
+                disabled={disabled}
+                className={clsx(
+                    'relative flex items-center justify-center',
+                    'w-12 h-12 min-w-[48px] min-h-[48px]', // Touch target ≥ 48px
+                    'rounded-xl transition-all duration-200',
+                    isListening
+                        ? 'bg-red-500/20 text-red-400 shadow-[0_0_20px_rgba(239,68,68,0.3)]'
+                        : 'btn-ghost text-[rgba(255,255,255,0.5)] hover:text-fg-strong',
+                    disabled && 'opacity-40 pointer-events-none',
+                )}
+                aria-label={isListening ? 'Stop recording' : 'Voice input'}
+            >
+                {isListening ? <MicOff size={20} /> : <Mic size={20} />}
 
-            {/* Pulsing ring while recording */}
-            {isListening && (
-                <span
-                    className="absolute inset-0 rounded-xl border-2 border-red-400 animate-ping opacity-40"
-                    aria-hidden="true"
-                />
-            )}
-        </button>
+                {/* Pulsing ring while recording */}
+                {isListening && (
+                    <span
+                        className="absolute inset-0 rounded-xl border-2 border-red-400 animate-ping opacity-40"
+                        aria-hidden="true"
+                    />
+                )}
+            </button>
+        </div>
     );
 }
