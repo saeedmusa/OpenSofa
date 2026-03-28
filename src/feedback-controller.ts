@@ -215,6 +215,55 @@ export class FeedbackController extends EventEmitter {
         agentMessageId: data.id,
       });
     }
+
+    // --- Premium Diff Detection (AG UI) ---
+    // Detect code changes from terminal output/messages
+    this.detectAndEmitDiffs(data.message, data.id);
+  }
+
+  /**
+   * Parse agent output for diff strings or "Writing to..." patterns
+   * and emit structured events for UI visualization.
+   */
+  private detectAndEmitDiffs(fullMessage: string, messageId: number): void {
+    // 1. Tool Call check - if we have ACP data, it's easier
+    // But opencode often outputs diffs directly to the terminal/message chunk.
+    
+    // 2. Regular Expression detection for unified diffs
+    // Pattern: --- filename (followed by +++ filename and optional @@)
+    const diffRegex = /---\s+([^\n\s]+)\s*\n\+\+\+\s+([^\n\s]+)\s*\n(@@[\s\S]*?)(?=\n\n|\n---|\n[a-zA-Z]|$)/g;
+    let match;
+    while ((match = diffRegex.exec(fullMessage)) !== null) {
+      const filePath = match[2]; // Use the +++ part
+      const diffContent = match[0];
+      
+      this.emitEvent({
+        type: 'code_change',
+        priority: 'p1',
+        content: `Modified: ${filePath}`,
+        details: {
+          filePath,
+          diff: diffContent
+        },
+        agentMessageId: messageId
+      });
+    }
+
+    // 3. Simple "Writing to file" detection for full file replacement
+    const writingRegex = /(?:Writing|Creating|Updated|Saved)\s+(?:to\s+)?([^\n\s]+\.[a-zA-Z0-9]+)/gi;
+    while ((match = writingRegex.exec(fullMessage)) !== null) {
+      const filePath = match[1];
+      // If we don't have a diff, we still emit a change event (lower priority p2)
+      if (!fullMessage.includes('--- ' + filePath)) {
+        this.emitEvent({
+          type: 'code_change',
+          priority: 'p2',
+          content: `Writing: ${filePath}`,
+          details: { filePath },
+          agentMessageId: messageId
+        });
+      }
+    }
   }
 
   /**

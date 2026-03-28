@@ -28,6 +28,7 @@ export interface Agent {
   description: string;
   knownModels: string[];
   defaultModel?: string;
+  subModes?: string[];
 }
 
 export interface SystemStatus {
@@ -121,7 +122,7 @@ export interface ActivityEvent {
   id: string;
   type: 'agent_message' | 'file_created' | 'file_edited' | 'file_deleted'
      | 'test_result' | 'build_result' | 'approval_needed' | 'error' | 'command_run'
-     | 'information_requested';
+     | 'information_requested' | 'code_change';
   timestamp: number;
   sessionName: string;
   summary: string;

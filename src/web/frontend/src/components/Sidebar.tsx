@@ -33,6 +33,7 @@ export function Sidebar() {
       {/* Navigation */}
       <nav className="flex-1 font-mono text-sm py-4">
         <button
+          data-testid="new-session-btn"
           onClick={() => window.dispatchEvent(new CustomEvent('open-new-session-modal'))}
           className="sidebar-nav-item text-matrix-green hover:bg-matrix-green/10 w-full text-left"
         >
@@ -119,7 +120,8 @@ export function Sidebar() {
 
         {/* Terminate all button */}
         <div className="mt-auto pt-4 border-t border-surface-container-high">
-          <button 
+          <button
+            data-testid="terminate-all-btn"
             onClick={handleTerminateAll}
             className="sidebar-nav-item sidebar-nav-item-danger w-full text-neon-red hover:bg-neon-red/10"
           >

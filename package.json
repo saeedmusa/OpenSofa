@@ -2,13 +2,16 @@
   "name": "opensofa",
   "version": "0.1.0",
   "type": "module",
-  "main": "dist/main.js",
+  "bin": {
+    "opensofa": "src/main.ts"
+  },
   "scripts": {
     "build": "tsc",
     "build:frontend": "cd src/web/frontend && npm run build",
     "build:all": "npm run build && npm run build:frontend",
     "start": "node --max-old-space-size=512 dist/main.js",
     "dev": "tsx src/main.ts",
+    "web": "tsx src/main.ts",
     "dev:frontend": "cd src/web/frontend && npm run dev",
     "test": "vitest",
     "test:run": "vitest run",

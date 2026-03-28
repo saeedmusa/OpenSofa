@@ -280,7 +280,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   const entries: BrowseEntry[] = browseData?.data?.entries || [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+    <div data-testid="new-session-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div className="w-full max-w-md bg-[#0e0e0e] border border-[#00FF41]/30 shadow-[0_0_20px_rgba(0,255,65,0.15)] animate-scale-in">
 
         {/* Header - Kinetic Terminal Style */}

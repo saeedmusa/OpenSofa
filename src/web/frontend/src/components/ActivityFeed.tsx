@@ -16,7 +16,11 @@ export function ActivityFeed({ sessionName }: ActivityFeedProps) {
   useEffect(() => {
     return subscribe('activity', (msg) => {
       const payload = msg.payload as { events?: ActivityEvent[] } | undefined;
-      if (msg.sessionName === sessionName && payload?.events) {
+      // Normalize names for comparison (handle potential encoding/case diffs)
+      const msgSession = msg.sessionName?.toLowerCase().trim();
+      const currentSession = sessionName.toLowerCase().trim();
+      
+      if ((!msgSession || msgSession === currentSession) && payload?.events) {
         setEvents(prev => [...payload.events!, ...prev].slice(0, 100));
       }
     });
@@ -76,6 +80,7 @@ function ActivityCard({ event, style }: ActivityCardProps) {
 
   const isError = event.type === 'error';
   const isApproval = event.type === 'approval_needed';
+  const isCodeChange = event.type === 'code_change';
 
   return (
     <div
@@ -94,11 +99,14 @@ function ActivityCard({ event, style }: ActivityCardProps) {
           'w-8 h-8 flex items-center justify-center flex-shrink-0 transition-transform',
           isError ? 'bg-danger-soft border border-neon-red/20' : 
           isApproval ? 'bg-warning-soft border border-warning/20' : 
+          isCodeChange ? 'bg-cyan-accent/10 border border-cyan-accent/20' :
           event.mcpServer ? 'bg-cyan-accent/10 border border-cyan-accent/20' :
           'bg-accent-soft border border-matrix-green/20',
           'group-hover:scale-110'
         )}>
-          <span className="text-sm">{event.icon}</span>
+          <span className="text-sm">
+            {isCodeChange ? 'diff' : event.icon}
+          </span>
         </div>
         
         <div className="flex-1 min-w-0">

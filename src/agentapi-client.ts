@@ -49,8 +49,8 @@ export class AgentAPIClient {
    * Send a user-typed prompt to the agent.
    * Agent **must** be stable; AgentAPI returns an error otherwise.
    */
-  async sendUserMessage(content: string): Promise<AgentAPIMessageResponse> {
-    return this.postMessage({ content, type: 'user' });
+  async sendUserMessage(content: string, timeoutMs?: number): Promise<AgentAPIMessageResponse> {
+    return this.postMessage({ content, type: 'user' }, timeoutMs);
   }
 
   /**
@@ -174,6 +174,7 @@ export class AgentAPIClient {
 
   private async postMessage(
     body: AgentAPIMessageRequest,
+    timeoutMs: number = DEFAULT_TIMEOUT_MS,
   ): Promise<AgentAPIMessageResponse> {
     let res: Response;
     try {
@@ -181,7 +182,7 @@ export class AgentAPIClient {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
-        signal: AbortSignal.timeout(DEFAULT_TIMEOUT_MS),
+        signal: AbortSignal.timeout(timeoutMs),
       });
     } catch (err) {
       throw AgentAPIError.fromFetchError(err);

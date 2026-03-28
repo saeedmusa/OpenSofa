@@ -1,65 +1,70 @@
 import { test, expect } from '@playwright/test';
-import { BASE_URL, TEST_TOKEN } from './fixtures';
+import { TEST_TOKEN } from './fixtures';
 
 test.describe('Authentication', () => {
-  // These tests are challenging because the app's auth flow involves:
-  // 1. Initial render with localStorage check
-  // 2. useEffect that extracts token from URL and saves to localStorage
-  // 3. Re-render with updated hasToken state
-  // The timing of these renders can cause flakiness in tests
-  
-  test.skip('should show authentication required screen when no token', async ({ page }) => {
-    // Navigate to the app without any token
+  test('should show auth required screen when no token', async ({ page }) => {
+    // Navigate without any token in URL or localStorage
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    
-    // Wait for any content to appear
-    await page.waitForTimeout(3000);
-    
-    // The app should show the auth screen or some content
-    const bodyText = await page.evaluate(() => document.body.innerText);
-    expect(bodyText.length).toBeGreaterThan(0);
+
+    // Should show the auth screen
+    const authScreen = page.getByTestId('auth-screen');
+    await expect(authScreen).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText('Authentication Required')).toBeVisible();
   });
 
-  test.skip('should accept token from URL and authenticate', async ({ page }) => {
+  test('should authenticate via URL token parameter', async ({ page }) => {
     // Navigate with token in URL
     await page.goto(`/?token=${TEST_TOKEN}`);
     await page.waitForLoadState('networkidle');
-    
-    // Wait for auth to process
-    await page.waitForTimeout(3000);
-    
-    // Should show some content
-    const bodyText = await page.evaluate(() => document.body.innerText);
-    expect(bodyText.length).toBeGreaterThan(0);
+
+    // Auth screen should disappear
+    await expect(page.getByText('Authentication Required')).not.toBeVisible({ timeout: 10000 });
+
+    // App content should be visible
+    const appRoot = page.getByTestId('app-root');
+    await expect(appRoot).toBeVisible({ timeout: 10000 });
   });
 
-  test.skip('should persist token in localStorage', async ({ page }) => {
-    // Navigate with token
+  test('should persist token in localStorage after URL extraction', async ({ page }) => {
     await page.goto(`/?token=${TEST_TOKEN}`);
-    await page.waitForLoadState('networkidle');
-    
-    // Wait for the token to be saved
+
+    // Wait for token to be saved to localStorage
     await page.waitForFunction(
       (expectedToken) => localStorage.getItem('opensofa_token') === expectedToken,
       TEST_TOKEN,
-      { timeout: 30000 }
+      { timeout: 15000 }
     );
-    
+
     const storedToken = await page.evaluate(() => localStorage.getItem('opensofa_token'));
     expect(storedToken).toBe(TEST_TOKEN);
   });
 
-  test.skip('should show QR code scanning instructions', async ({ page }) => {
-    // Navigate to the app without any token
+  test('should clean token from URL after saving', async ({ page }) => {
+    await page.goto(`/?token=${TEST_TOKEN}`);
+    await page.waitForLoadState('networkidle');
+
+    // Wait for token to be extracted and saved
+    await page.waitForFunction(
+      (t) => localStorage.getItem('opensofa_token') === t,
+      TEST_TOKEN,
+      { timeout: 15000 }
+    );
+
+    // URL should no longer contain the token param
+    await page.waitForFunction(() => !window.location.search.includes('token'), { timeout: 5000 });
+  });
+
+  test('should auto-authenticate when token is in localStorage', async ({ page }) => {
+    // Pre-inject token
+    await page.addInitScript((token) => {
+      localStorage.setItem('opensofa_token', token);
+    }, TEST_TOKEN);
+
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    
-    // Wait for content
-    await page.waitForTimeout(3000);
-    
-    // Check for QR code instructions
-    const bodyText = await page.evaluate(() => document.body.innerText);
-    expect(bodyText.length).toBeGreaterThan(0);
+
+    // Should NOT show auth screen
+    await expect(page.getByText('Authentication Required')).not.toBeVisible({ timeout: 10000 });
   });
 });

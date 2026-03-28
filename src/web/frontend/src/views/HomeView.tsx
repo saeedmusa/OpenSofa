@@ -126,7 +126,7 @@ export function HomeView() {
 
   if (isDesktop) {
     return (
-      <div className="h-full overflow-y-auto p-8 bg-void custom-scrollbar">
+      <div data-testid="desktop-home" className="h-full overflow-y-auto p-8 bg-void custom-scrollbar">
         <div className="mb-8 flex items-center justify-between border-b border-matrix-green/20 pb-6">
           <div>
             <h2 className="text-2xl font-bold text-matrix-green font-mono tracking-tighter uppercase">DASHBOARD_MAIN</h2>
@@ -190,7 +190,7 @@ export function HomeView() {
 
   // Mobile layout
   return (
-    <div className="min-h-screen bg-[#000000]" {...handlers}>
+    <div data-testid="mobile-home" className="min-h-screen bg-[#000000]" {...handlers}>
       <Header connected={connected} />
 
       {/* Pull to refresh indicator */}

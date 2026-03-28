@@ -24,7 +24,9 @@ interface CommandPaletteProps {
 
 const COMMON_COMMANDS: Command[] = [
   { name: 'models', description: 'Switch model' },
+  { name: 'model', description: 'Switch model (alias)' },
   { name: 'agents', description: 'Switch agent' },
+  { name: 'agent', description: 'Switch agent or mode (alias)' },
   { name: 'help', description: 'Show all commands' },
   { name: 'reflection', description: 'Toggle reflection mode on/off' },
   { name: 'optimize', description: 'Analyze and optimize code' },
@@ -110,7 +112,7 @@ export function CommandPalette({ inputValue, onSelect, onClose, isOpen, options 
     }
   }, [selectedIndex, filtered.length]);
 
-  if (!isOpen || !isSlash || filtered.length === 0) return null;
+  if (!isOpen || !isSlash) return null;
 
   return (
     <div className="absolute bottom-full left-0 right-0 mb-2 z-50 animate-in slide-in-from-bottom-2 duration-200">
@@ -118,7 +120,11 @@ export function CommandPalette({ inputValue, onSelect, onClose, isOpen, options 
         ref={scrollRef}
         className="max-h-64 overflow-y-auto bg-void border border-matrix-green/30 shadow-[0_0_15px_rgba(0,255,65,0.1)] custom-scrollbar"
       >
-        {filtered.map((item, idx) => {
+        {filtered.length === 0 ? (
+          <div className="px-4 py-3 text-muted/50 font-mono text-[10px] text-center italic">
+            No matching commands or modes found
+          </div>
+        ) : filtered.map((item, idx) => {
           const isOption = 'value' in item;
           const name = isOption ? (item as CommandOption).name : (item as Command).name;
           const description = item.description;

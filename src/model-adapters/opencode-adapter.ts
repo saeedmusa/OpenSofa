@@ -85,7 +85,7 @@ export class OpenCodeAdapter extends BaseAdapter {
 
   /**
    * Discover all available models from OpenCode
-   * Groups models by provider
+   * Groups models by the configured provider prefix they match
    */
   async discoverModels(): Promise<ModelProvider[]> {
     const [configuredPrefixes, allModels] = await Promise.all([
@@ -98,31 +98,22 @@ export class OpenCodeAdapter extends BaseAdapter {
       totalModels: allModels.length,
     });
 
-    // Group models by provider
+    // Group models by matching configured prefix
     const providerMap = new Map<string, DiscoveredModel[]>();
 
     for (const modelId of allModels) {
-      const prefix = this.extractPrefix(modelId);
-      if (!prefix) continue;
-
-      // Check if this model is from a configured provider
-      const isConfigured = Array.from(configuredPrefixes).some(
-        (p) => prefix === p || prefix.startsWith(p)
-      );
-
-      if (!isConfigured) {
-        // Skip models from unconfigured providers
-        continue;
-      }
+      // Find the longest matching configured prefix for this model
+      const matchingPrefix = this.findMatchingPrefix(modelId, configuredPrefixes);
+      if (!matchingPrefix) continue;
 
       const displayName = this.extractDisplayName(modelId);
-      const providerName = getDisplayNameForPrefix(prefix);
+      const providerName = getDisplayNameForPrefix(matchingPrefix);
 
-      if (!providerMap.has(prefix)) {
-        providerMap.set(prefix, []);
+      if (!providerMap.has(matchingPrefix)) {
+        providerMap.set(matchingPrefix, []);
       }
 
-      providerMap.get(prefix)!.push(this.createModel(
+      providerMap.get(matchingPrefix)!.push(this.createModel(
         modelId,
         displayName,
         providerName,
@@ -136,14 +127,13 @@ export class OpenCodeAdapter extends BaseAdapter {
 
     for (const [prefix, models] of providerMap) {
       const displayName = getDisplayNameForPrefix(prefix);
-      const isConfigured = configuredPrefixes.has(prefix);
 
       providers.push(
         this.createProvider(
           displayName,
           this.normalizeProviderId(prefix),
           models,
-          isConfigured
+          true // All grouped providers are from configured prefixes
         )
       );
     }
@@ -167,25 +157,35 @@ export class OpenCodeAdapter extends BaseAdapter {
     try {
       const output = await this.executeCommandAsync('opencode', ['auth', 'list'], TIMEOUTS.authList);
 
+      // Strip ANSI escape sequences for reliable parsing
+      const cleanOutput = output.replace(/\x1b\[[0-9;]*m/g, '');
       const prefixes = new Set<string>();
-      const lines = output.split('\n');
 
-      for (const line of lines) {
-        // Look for provider names with ● or ✓ or * or even just names at the start of the line
-        // Some versions of opencode use different markers
-        const match = line.match(/^[●✓*]\s+(\S+)/) || line.match(/^([a-zA-Z0-9.-]+)\s+.*(active|configured)/i);
-        if (match && match[1]) {
-          const name = match[1].toLowerCase();
-          const prefix = PROVIDER_PREFIX_MAP[name];
+      // Try matching each known provider name against each line
+      for (const line of cleanOutput.split('\n')) {
+        // Look for lines with bullet markers: ● ProviderName or ✓ ProviderName
+        const bulletMatch = line.match(/^[│ ]*[●✓*]\s+(.+?)(?:\s{2,}|$)/);
+        if (bulletMatch) {
+          const rawName = (bulletMatch[1] ?? '').trim().toLowerCase();
+          // Try exact match first
+          const prefix = PROVIDER_PREFIX_MAP[rawName];
           if (prefix) {
             prefixes.add(prefix);
+            continue;
+          }
+          // Try matching each known provider key against the full line text
+          for (const [key, mappedPrefix] of Object.entries(PROVIDER_PREFIX_MAP)) {
+            if (rawName.includes(key) || key.includes(rawName)) {
+              prefixes.add(mappedPrefix);
+              break;
+            }
           }
         }
       }
 
       // Fallback: If no providers were explicitly marked but we see 'openrouter' in the list,
       // assume it might be available if we're in a desktop context.
-      if (prefixes.size === 0 && output.toLowerCase().includes('openrouter')) {
+      if (prefixes.size === 0 && cleanOutput.toLowerCase().includes('openrouter')) {
         prefixes.add('openrouter/');
       }
 
@@ -217,28 +217,21 @@ export class OpenCodeAdapter extends BaseAdapter {
   }
 
   /**
-   * Extract the provider prefix from a model ID
-   * e.g., "anthropic/claude-sonnet-4-20250514" → undefined
-   * e.g., "openrouter/anthropic/claude-sonnet-4-20250514" → "openrouter/"
+   * Find the longest matching configured prefix for a model ID.
+   * Returns the prefix from configuredPrefixes that matches, or undefined.
    */
-  private extractPrefix(modelId: string): string | undefined {
-    // Check each known prefix
-    for (const prefix of Object.keys(PROVIDER_PREFIX_MAP)) {
-      // Normalize prefix for comparison (ensure it ends with /)
-      const normalizedPrefix = prefix.endsWith('/') ? prefix : prefix + '/';
-      if (modelId.startsWith(normalizedPrefix)) {
-        return prefix.endsWith('/') ? prefix : prefix + '/';
+  private findMatchingPrefix(modelId: string, configuredPrefixes: Set<string>): string | undefined {
+    let bestMatch: string | undefined;
+    let bestLen = 0;
+
+    for (const prefix of configuredPrefixes) {
+      if (modelId.startsWith(prefix) && prefix.length > bestLen) {
+        bestMatch = prefix;
+        bestLen = prefix.length;
       }
     }
 
-    // Check for prefixes in PREFIX_DISPLAY_NAME_MAP too
-    for (const prefix of Object.keys(PREFIX_DISPLAY_NAME_MAP)) {
-      if (modelId.startsWith(prefix)) {
-        return prefix;
-      }
-    }
-
-    return undefined;
+    return bestMatch;
   }
 
   /**

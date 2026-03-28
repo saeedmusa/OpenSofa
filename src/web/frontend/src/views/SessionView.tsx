@@ -21,7 +21,7 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
 import { useToast } from '../components/Toast';
 import { clsx } from 'clsx';
-import type { Session, Agent, DiscoveredModel } from '../types';
+import type { Agent, DiscoveredModel } from '../types';
 import { CommandPalette } from '../components/CommandPalette';
 import type { CommandOption } from '../components/CommandPalette';
 
@@ -229,7 +229,9 @@ export function SessionView() {
     // Show palette if value starts with /
     if (val.startsWith('/')) {
       const parts = val.split(' ');
-      if (parts.length === 1 || (parts.length > 1 && (parts[0] === '/models' || parts[0] === '/agents'))) {
+      const cmd = parts[0].toLowerCase();
+      // Show palette for /model, /models, /agent, /agents or just /
+      if (parts.length === 1 || (parts.length > 1 && (cmd === '/models' || cmd === '/model' || cmd === '/agents' || cmd === '/agent'))) {
         setShowCommandPalette(true);
       } else {
         setShowCommandPalette(false);
@@ -240,37 +242,96 @@ export function SessionView() {
   };
 
   const handleCommandSelect = (value: string) => {
-    const parts = message.split(' ');
+    const parts = message.trim().split(/\s+/);
+    
     if (parts.length === 1) {
-      // Top-level command select
-      setMessage(`/${value} `);
-      // Stay open if it has sub-options
-      if (value === 'models' || value === 'agents') {
-        setShowCommandPalette(true);
-      } else {
-        setShowCommandPalette(false);
-      }
+      // Top-level command select (e.g. /agent or /model)
+      // Standardize to plural form for consistency in some areas, 
+      // but keep the user's chosen singular if we want.
+      // Let's keep it as is but ensure a space is added.
+      setMessage(`${parts[0]} ${value} `);
     } else {
       // Sub-option select
-      setMessage(`${parts[0]} ${value}`);
-      setShowCommandPalette(false);
+      setMessage(`${parts[0]} ${value} `);
     }
+    setShowCommandPalette(false);
   };
 
-  const commandOptions: CommandOption[] = message.startsWith('/models') 
-    ? availableModels.map(m => ({
+  const getCommandOptions = (): CommandOption[] => {
+    const lowerMsg = message.toLowerCase();
+    const parts = message.split(' ');
+    
+    if (lowerMsg.startsWith('/model')) {
+      // If we typed exactly '/model' or '/models', show all models
+      // If we typed '/model <id>', it's already filtered by handleInputChange closing the palette?
+      // No, handleInputChange keeps it open. We should show all if parts.length <= 2
+      return availableModels.map(m => ({
         name: m.name,
         value: m.id,
         description: `Model for ${m.agent}`,
         metadata: { provider: m.provider }
-      }))
-    : message.startsWith('/agents')
-    ? availableAgents.map(a => ({
-        name: a.displayName,
-        value: a.type,
-        description: a.description
-      }))
-    : [];
+      }));
+    }
+    
+    if (lowerMsg.startsWith('/agent')) {
+      if (parts.length === 1 || (parts.length === 2 && parts[1] === '')) {
+         // Show all agents if they haven't started typing a second part
+         return availableAgents.map(a => ({
+           name: a.displayName,
+           value: a.type,
+           description: a.description
+         }));
+      }
+
+      if (parts.length >= 2) {
+        // Find if they typed an agent name or mode
+        const inputPart = parts[1].toLowerCase();
+        
+        // 1. Check if inputPart matches an agent type or display name exactly
+        const agent = availableAgents.find(a => 
+          a.type.toLowerCase() === inputPart || 
+          a.displayName.toLowerCase() === inputPart
+        );
+        
+        if (agent?.subModes) {
+          return agent.subModes.map(mode => ({
+            name: mode,
+            value: mode,
+            description: `Switch ${agent.displayName} to ${mode} mode`
+          }));
+        }
+
+        // 2. If it's a known agent without submodes (e.g. claude), or they are currently typing an agent name
+        const options: CommandOption[] = [];
+        
+        availableAgents.forEach(a => {
+          // Add the agent itself
+          options.push({
+            name: a.type,
+            value: a.type,
+            description: a.description
+          });
+          
+          // Add its modes
+          if (a.subModes) {
+            a.subModes.forEach(m => {
+              options.push({
+                name: m,
+                value: m,
+                description: `${a.displayName} mode: ${m}`
+              });
+            });
+          }
+        });
+        
+        return options;
+      }
+    }
+    
+    return [];
+  };
+
+  const commandOptions = getCommandOptions();
 
   if (!selectedSession) {
     return (
@@ -358,7 +419,7 @@ export function SessionView() {
 
   if (isDesktop) {
     return (
-      <div className="flex flex-col h-screen bg-void">
+      <div data-testid="session-view-desktop" className="flex flex-col h-screen bg-void">
         {/* Terminal-style header — HUD glassmorphism */}
         <header className="header-terminal px-6 py-3">
           <div className="flex items-center gap-4">
@@ -396,6 +457,34 @@ export function SessionView() {
                   </button>
                 )}
               </div>
+              
+              {/* Mode Selector for OpenCode */}
+              {session.agentType?.toLowerCase().includes('opencode') && (
+                <div className="flex gap-2 mt-2">
+                  {['plan', 'build', 'opencoder', 'openagent'].map((m) => {
+                    const isActive = message.toLowerCase().includes(`/agent ${m}`) || 
+                                   (m === 'plan' && !message.includes('/agent') && !message.includes('/model'));
+                    return (
+                      <button
+                        key={m}
+                        onClick={() => {
+                          safeVibrate(5);
+                          setMessage(`/agent ${m} `);
+                        }}
+                        className={clsx(
+                          "px-2 py-0.5 text-[9px] font-mono border transition-all",
+                          "hover:bg-cyan-accent/10 hover:border-cyan-accent/50",
+                          isActive 
+                            ? "bg-cyan-accent/20 border-cyan-accent text-on-surface" 
+                            : "bg-surface-container border-outline-variant/30 text-muted"
+                        )}
+                      >
+                        {m.toUpperCase()}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-3">
@@ -493,6 +582,7 @@ export function SessionView() {
                 options={commandOptions}
               />
               <textarea
+                data-testid="message-input"
                 value={message}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
@@ -511,6 +601,7 @@ export function SessionView() {
               disabled={sending}
             />
             <button
+              data-testid="send-message-btn"
               onClick={handleSend}
               disabled={!message.trim() || sending}
               className="bg-matrix-green text-void px-6 py-3 font-mono font-bold text-xs hover:bg-matrix-green-fixed active:translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
@@ -552,7 +643,7 @@ export function SessionView() {
 
   // Mobile layout
   return (
-    <div ref={swipeRef} className="flex flex-col h-screen bg-void">
+    <div ref={swipeRef} data-testid="session-view-mobile" className="flex flex-col h-screen bg-void">
       {/* Terminal-style header */}
       <header className="header-terminal px-4 py-2">
         <div className="flex items-center gap-3">
@@ -653,6 +744,7 @@ export function SessionView() {
               options={commandOptions}
             />
             <textarea
+              data-testid="message-input-mobile"
               value={message}
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}

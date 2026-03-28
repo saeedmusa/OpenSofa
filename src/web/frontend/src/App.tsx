@@ -37,7 +37,7 @@ export default function App() {
     return (
       <IonApp>
         <IonContent class="ion-bg-dark">
-          <div className="flex flex-col items-center justify-center min-h-full p-8">
+          <div data-testid="auth-screen" className="flex flex-col items-center justify-center min-h-full p-8">
             <div className="surface-floating p-10 text-center max-w-md animate-scale-in">
               <Logo size="xl" className="justify-center mb-6" />
               <h2 className="text-xl font-bold text-fg-strong font-mono mb-3 uppercase tracking-wider">Authentication Required</h2>
@@ -109,7 +109,7 @@ function RouterApp({ pendingApproval, setPendingApproval, setHasToken }: { pendi
     <IonContent fullscreen className="ion-bg-dark">
       <SkipLink />
       <ConnectionStatus onViewEvents={handleViewEvents} />
-      <div id="main-content" role="main" className="relative z-10">
+      <div data-testid="app-root" id="main-content" role="main" className="relative z-10">
                 {/* Deep link approval modal */}
                 {pendingApproval && (
                   <DeepLinkApprovalModal

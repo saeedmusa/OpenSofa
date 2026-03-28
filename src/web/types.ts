@@ -206,6 +206,7 @@ export interface AgentSummary {
   description: string;
   knownModels: string[];
   defaultModel?: string;
+  subModes?: string[];
 }
 
 export interface AgentListResponse {

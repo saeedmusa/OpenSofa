@@ -1119,7 +1119,7 @@ export class SessionManager extends EventEmitter {
     const client = agentClient(session.port);
     
     try {
-      await client.sendUserMessage(text);
+      await client.sendUserMessage(text, 30000); // 30s timeout for messages
       session.lastActivityAt = Date.now();
     } catch (err) {
       const friendlyMsg = err instanceof AgentAPIError && err.userFriendlyMessage
@@ -1676,9 +1676,13 @@ export class SessionManager extends EventEmitter {
 
   private async sendAutoApproval(session: Session, command: string | null): Promise<void> {
     try {
-      await agentClient(session.port).sendRaw('yes\n');
+      // Try both 'yes\n' and 'y\n' for broad compatibility
+      // Most agents accept 'y' for 'yes'
+      const response = command?.toLowerCase().includes('proceed') ? 'y\n' : 'yes\n';
+      await agentClient(session.port).sendRaw(response);
+      
       this.clearPendingApproval(session);
-      log.info(`Auto-approved${command ? `: ${command}` : ''}`, { session: session.name });
+      log.info(`Auto-approved${command ? `: ${command}` : ''} (sent: ${response.trim()})`, { session: session.name });
       this.emit('session:updated', session);
     } catch (err) {
       log.error('Auto-approve send failed', { session: session.name, error: String(err) });

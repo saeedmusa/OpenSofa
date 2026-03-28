@@ -99,7 +99,7 @@ export function ConnectionStatus({ onViewEvents }: ConnectionStatusProps) {
   return (
     <>
       {/* Connection Status Indicator (top-right) */}
-      <div className="fixed top-4 right-4 z-50">
+      <div data-testid="connection-status" className="fixed top-4 right-4 z-50">
         <div
           className={clsx(
             'flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium',

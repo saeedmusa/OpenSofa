@@ -30,10 +30,10 @@ function getConfiguredProviders(): Set<string> {
         const name = match[1].toLowerCase();
         // Map provider display names to model prefixes
         if (name === 'openrouter') providers.add('openrouter');
-        else if (name === 'z.ai coding plan' || name === 'zai' || name === 'z.ai') providers.add('huggingface/zai-org');
+        else if (name === 'z.ai coding plan' || name === 'zai' || name === 'z.ai' || name === 'z-ai') providers.add('huggingface/zai-org');
         else if (name === 'hugging face') providers.add('huggingface');
         else if (name === 'zeabur') providers.add('huggingface/zeabur');
-        else if (name === 'zhipu ai') providers.add('huggingface/zhipuai');
+        else if (name === 'zhipu ai' || name === 'zhipuai') providers.add('huggingface/zhipuai');
         else if (name === 'openai') providers.add('openai');
       }
     }

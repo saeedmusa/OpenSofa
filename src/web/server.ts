@@ -106,9 +106,16 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     }
 
     // Initialize token manager
-    tokenManager = createDefaultTokenManager(webConfig);
-    const token = tokenManager.getOrGenerate();
-    log.info('Auth token ready');
+    // In E2E test mode, bypass token generation and use a fixed test token
+    let token: string;
+    if (process.env.E2E_TEST === 'true' && process.env.NODE_ENV !== 'production') {
+      token = 'e2e0000000000000000000000000000000000000000000000000000000000000';
+      log.info('Using E2E test token');
+    } else {
+      tokenManager = createDefaultTokenManager(webConfig);
+      token = tokenManager.getOrGenerate();
+      log.info('Auth token ready');
+    }
 
     // Initialize broadcaster
     broadcaster = createBroadcaster({
@@ -349,7 +356,16 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     });
 
     // Serve static files from built frontend
-    const frontendDist = path.join(process.cwd(), 'dist', 'web', 'frontend');
+    // Use import.meta.dirname (available in Node 20.11+) for reliable path resolution
+    // regardless of process.cwd() at invocation time (e.g. Playwright running from tests/e2e/)
+    const serverDir = typeof import.meta.dirname === 'string'
+      ? import.meta.dirname
+      : path.dirname(new URL(import.meta.url).pathname);
+    let frontendDist = path.resolve(serverDir, '..', '..', 'dist', 'web', 'frontend');
+    if (!fs.existsSync(frontendDist)) {
+      // Fallback: try process.cwd() (original behavior)
+      frontendDist = path.join(process.cwd(), 'dist', 'web', 'frontend');
+    }
 
     // Serve static assets
     app.use('/assets/*', serveStatic({ root: frontendDist }));
@@ -359,10 +375,10 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
 
     // SPA fallback - serve index.html for non-API routes
     app.notFound(async (c) => {
-      const path = c.req.path;
+      const reqPath = c.req.path;
       
       // Never return SPA fallback for API, WebSocket, or health check routes
-      if (path.startsWith('/api') || path.startsWith('/ws') || path === '/health' || path === '/status') {
+      if (reqPath.startsWith('/api') || reqPath.startsWith('/ws') || reqPath === '/health' || reqPath === '/status') {
         return c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404);
       }
 
@@ -605,14 +621,14 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
         const tunnelUrl = await tunnelManager.start();
         log.info('Tunnel established', { url: tunnelUrl });
 
-        // Generate and display QR code (no token in URL for security)
-        const qrUrl = `${tunnelUrl}`;
+        // Generate and display QR code with token for instant access
+        const qrUrl = `${tunnelUrl}?token=${token}`;
         await displayQRCode(qrUrl);
       } catch (err) {
         log.error('Failed to start tunnel', { error: String(err) });
 
         // Show local URL with QR code as fallback
-        const localUrl = `http://localhost:${webConfig.port}`;
+        const localUrl = `http://localhost:${webConfig.port}?token=${token}`;
         console.log('\n  [TUNNEL UNAVAILABLE - Using local access]\n');
         await displayQRCode(localUrl);
       }
@@ -684,7 +700,7 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     const tunnelUrl = getTunnelUrl();
     if (!tunnelUrl || !tokenManager) return null;
     const token = tokenManager.getOrGenerate();
-    return tunnelUrl;
+    return `${tunnelUrl}?token=${token}`;
   };
 
   const broadcastTunnelUrl = (url: string) => {
@@ -750,19 +766,19 @@ function wireSessionEvents(
       acpParser.on('tool_call', (tool) => {
         const aguiEvent = mapACPToolCallToAGUI(tool);
         const activity = mapAGUIToActivityEvent(aguiEvent, session.name);
-        broadcaster.broadcast(createEvent('activity', { sessionName: session.name, events: [activity] }));
+        broadcaster.broadcast(createEvent('activity', { sessionName: session.name, events: [activity] }, session.name));
       });
 
       acpParser.on('text_chunk', (chunk) => {
         const aguiEvent = mapACPTextToAGUI(chunk);
         const activity = mapAGUIToActivityEvent(aguiEvent, session.name);
-        broadcaster.broadcast(createEvent('activity', { sessionName: session.name, events: [activity] }));
+        broadcaster.broadcast(createEvent('activity', { sessionName: session.name, events: [activity] }, session.name));
       });
 
       acpParser.on('tool_call_update', (update) => {
         const aguiEvent = mapACPToolResultToAGUI(update.status, update.toolName || 'unknown');
         const activity = mapAGUIToActivityEvent(aguiEvent, session.name);
-        broadcaster.broadcast(createEvent('activity', { sessionName: session.name, events: [activity] }));
+        broadcaster.broadcast(createEvent('activity', { sessionName: session.name, events: [activity] }, session.name));
       });
 
       acpParser.on('status_change', (change) => {
@@ -811,6 +827,32 @@ function wireSessionEvents(
       // Parse status from content (format: "Tool status")
       const status = event.content.replace(/^Tool\s*/i, '').trim();
       acpParser.emit('tool_call_update', { status, toolName: 'unknown' });
+    } else if (event.type === 'code_change' && event.content) {
+      // Direct broadcast for code changes detected by FeedbackController
+      // content is current formatted as "Modified: <file>\n\n<diff>"
+      const lines = event.content.split('\n');
+      const firstLine = lines[0] || '';
+      const filePath = firstLine.replace(/^Modified:\s*/i, '').trim();
+      const diff = lines.slice(2).join('\n').trim();
+
+      const activity = {
+        id: `code_${Date.now()}_${randomUUID().slice(0, 8)}`,
+        type: 'file_edited',
+        timestamp: Date.now(),
+        sessionName: session.name,
+        summary: `Edited: ${filePath}`,
+        icon: '✏️',
+        details: {
+          filePath,
+          diff
+        }
+      };
+      
+      log.info(`Broadcasting code_change activity for ${session.name}: ${filePath}`);
+      broadcaster.broadcast(createEvent('activity', { 
+        sessionName: session.name, 
+        events: [activity] 
+      }, session.name));
     }
   });
 

@@ -26,6 +26,7 @@ export interface AgentDefinition {
   modelEnvVar?: string;        // env var for model selection
   defaultModel?: string;       // default model if none specified
   agentFlag?: string;          // CLI flag to pass sub-agent/mode (e.g. "--agent")
+  subModes?: string[];         // available modes for this agent
   knownModels: string[];       // informational — known supported models
   description: string;
 }
@@ -60,6 +61,7 @@ const AGENT_DEFINITIONS: AgentDefinition[] = [
     modelFlag: '--model',
     modelEnvVar: 'CLAUDE_MODEL',
     agentFlag: '--agent',
+    subModes: ['plan', 'build', 'opencoder', 'openagent'],
     defaultModel: undefined,    // uses whatever opencode is configured with
     knownModels: [
       'anthropic/claude-3-5-sonnet',
@@ -103,6 +105,7 @@ const AGENT_DEFINITIONS: AgentDefinition[] = [
     knownModels: ['o3', 'o4-mini', 'gpt-4.1'],
     description: 'OpenAI Codex CLI agent',
     agentFlag: '--agent', // Added support for sub-agent switching
+    subModes: ['plan', 'build'],
   },
   {
     type: 'goose',

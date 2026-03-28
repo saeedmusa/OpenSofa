@@ -32,6 +32,7 @@ export const createAgentsRoutes = (deps: AgentsRoutesDeps): Hono => {
       description: def.description,
       knownModels: def.knownModels,
       defaultModel: def.defaultModel,
+      subModes: def.subModes,
     }));
 
     const response: AgentListResponse = { agents };
@@ -58,6 +59,7 @@ export const createAgentsRoutes = (deps: AgentsRoutesDeps): Hono => {
       description: def.description,
       knownModels: def.knownModels,
       defaultModel: def.defaultModel,
+      subModes: def.subModes,
     };
 
     return c.json(success(agent));
