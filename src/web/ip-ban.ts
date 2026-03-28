@@ -3,7 +3,19 @@ import { createLogger } from '../utils/logger.js';
 
 const log = createLogger('web:ip-ban');
 
+function isLocalhost(ip: string): boolean {
+  return (
+    ip === '127.0.0.1' || 
+    ip === '::1' || 
+    ip === '::ffff:127.0.0.1' || 
+    ip === 'localhost' || 
+    ip === '0.0.0.0' || 
+    ip === 'unknown-ip'
+  );
+}
+
 export function isIpBanned(ip: string): boolean {
+  if (isLocalhost(ip)) return false;
   try {
     const row = db.prepare('SELECT banned_until FROM ip_bans WHERE ip_address = ?').get(ip) as { banned_until: number } | undefined;
     if (!row) return false;
@@ -15,17 +27,18 @@ export function isIpBanned(ip: string): boolean {
 }
 
 export function recordIpStrike(
-  ip: string, 
-  maxStrikes: number = 5, 
-  banDurationMs: number = 24 * 60 * 60 * 1000, 
+  ip: string,
+  maxStrikes: number = 5,
+  banDurationMs: number = 24 * 60 * 60 * 1000,
   strikeWindowMs: number = 10 * 60 * 1000
 ): void {
+  if (isLocalhost(ip)) return;
   try {
     const now = Date.now();
-    
+
     // Check existing strikes
     const existing = db.prepare('SELECT strike_count, last_strike FROM ip_bans WHERE ip_address = ?').get(ip) as { strike_count: number, last_strike: number } | undefined;
-    
+
     let newStrikes = 1;
     if (existing) {
       // If the last strike was within the rolling window, increment the strike count
@@ -34,13 +47,13 @@ export function recordIpStrike(
       }
       // Otherwise, the window expired, so reset to 1 strike (handled by default `newStrikes = 1` above)
     }
-    
+
     let bannedUntil = 0;
     if (newStrikes >= maxStrikes) {
       bannedUntil = now + banDurationMs;
       log.warn('IP permanently banned for token guessing', { ip, bannedUntil, strikes: newStrikes });
     }
-    
+
     db.prepare(`
       INSERT INTO ip_bans (ip_address, banned_until, strike_count, last_strike)
       VALUES (?, ?, ?, ?)
@@ -54,4 +67,3 @@ export function recordIpStrike(
     log.error('Failed to record IP strike', { ip, error: String(err) });
   }
 }
-

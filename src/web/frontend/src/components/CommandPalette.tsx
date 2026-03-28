@@ -7,11 +7,19 @@ export interface Command {
   category?: string;
 }
 
+export interface CommandOption {
+  name: string;
+  description: string;
+  value: string;
+  metadata?: Record<string, any>;
+}
+
 interface CommandPaletteProps {
   inputValue: string;
-  onSelect: (command: string) => void;
+  onSelect: (value: string) => void;
   onClose: () => void;
   isOpen: boolean;
+  options?: CommandOption[]; // Additional options (e.g. models, agents)
 }
 
 const COMMON_COMMANDS: Command[] = [
@@ -28,39 +36,63 @@ const COMMON_COMMANDS: Command[] = [
 
 /**
  * Slash Command Palette (Autocomplete UI)
- * Replicates the terminal-style dropdown from user screenshots.
  */
-export function CommandPalette({ inputValue, onSelect, onClose, isOpen }: CommandPaletteProps) {
+export function CommandPalette({ inputValue, onSelect, onClose, isOpen, options = [] }: CommandPaletteProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Determine if we should show the palette based on input
   const isSlash = inputValue.startsWith('/');
-  const query = isSlash ? inputValue.substring(1).toLowerCase() : '';
-  
-  const filtered = COMMON_COMMANDS.filter(cmd => 
-    cmd.name.toLowerCase().includes(query) || 
-    cmd.description.toLowerCase().includes(query)
-  );
+
+  const parts = isSlash ? inputValue.split(' ') : [];
+  const commandPart = parts.length > 0 ? parts[0].substring(1).toLowerCase() : '';
+  const subQuery = parts.length > 1 ? parts.slice(1).join(' ').toLowerCase() : '';
+
+  let filtered: (Command | CommandOption)[] = [];
+  let displayType: 'command' | 'option' = 'command';
+
+  if (isSlash) {
+    if (parts.length === 1) {
+      // Top-level commands
+      filtered = COMMON_COMMANDS.filter(cmd => 
+        cmd.name.toLowerCase().includes(commandPart) || 
+        cmd.description.toLowerCase().includes(commandPart)
+      );
+      displayType = 'command';
+    } else if (options.length > 0) {
+      // Sub-options (e.g. models or agents)
+      filtered = options.filter(opt => 
+        opt.name.toLowerCase().includes(subQuery) || 
+        opt.description.toLowerCase().includes(subQuery) ||
+        opt.value.toLowerCase().includes(subQuery)
+      );
+      displayType = 'option';
+    }
+  }
 
   useEffect(() => {
     setSelectedIndex(0);
-  }, [query]);
+  }, [commandPart, subQuery, options.length]);
 
   useEffect(() => {
-    if (!isOpen || filtered.length === 0) return;
+    if (!isOpen || !isSlash || filtered.length === 0) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSelectedIndex(prev => (prev + 1) % filtered.length);
+        setSelectedIndex((prev: number) => (prev + 1) % filtered.length);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        setSelectedIndex(prev => (prev - 1 + filtered.length) % filtered.length);
+        setSelectedIndex((prev: number) => (prev - 1 + filtered.length) % filtered.length);
       } else if (e.key === 'Enter' || e.key === 'Tab') {
         if (filtered[selectedIndex]) {
           e.preventDefault();
-          onSelect(filtered[selectedIndex].name);
+          const item = filtered[selectedIndex];
+          if ('value' in item) {
+            onSelect(item.value);
+          } else {
+            onSelect(item.name);
+          }
         }
       } else if (e.key === 'Escape') {
         onClose();
@@ -71,13 +103,12 @@ export function CommandPalette({ inputValue, onSelect, onClose, isOpen }: Comman
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, filtered, selectedIndex, onSelect, onClose]);
 
-  // Ensure selected item is visible
   useEffect(() => {
     const selectedElement = scrollRef.current?.children[selectedIndex] as HTMLElement;
     if (selectedElement) {
       selectedElement.scrollIntoView({ block: 'nearest' });
     }
-  }, [selectedIndex]);
+  }, [selectedIndex, filtered.length]);
 
   if (!isOpen || !isSlash || filtered.length === 0) return null;
 
@@ -87,45 +118,57 @@ export function CommandPalette({ inputValue, onSelect, onClose, isOpen }: Comman
         ref={scrollRef}
         className="max-h-64 overflow-y-auto bg-void border border-matrix-green/30 shadow-[0_0_15px_rgba(0,255,65,0.1)] custom-scrollbar"
       >
-        {filtered.map((cmd, idx) => (
-          <div
-            key={cmd.name}
-            onClick={() => onSelect(cmd.name)}
-            className={clsx(
-              'group flex items-center justify-between px-4 py-2 cursor-pointer transition-colors font-mono text-xs border-b border-matrix-green/5 last:border-0',
-              idx === selectedIndex ? 'bg-matrix-green/20' : 'hover:bg-matrix-green/5'
-            )}
-          >
-            <div className="flex items-center gap-3">
+        {filtered.map((item, idx) => {
+          const isOption = 'value' in item;
+          const name = isOption ? (item as CommandOption).name : (item as Command).name;
+          const description = item.description;
+          const metadata = isOption ? (item as CommandOption).metadata : null;
+
+          return (
+            <div
+              key={isOption ? (item as CommandOption).value : (item as Command).name}
+              onClick={() => onSelect(isOption ? (item as CommandOption).value : (item as Command).name)}
+              className={clsx(
+                'group flex items-center justify-between px-4 py-2 cursor-pointer transition-colors font-mono text-xs border-b border-matrix-green/5 last:border-0',
+                idx === selectedIndex ? 'bg-matrix-green/20' : 'hover:bg-matrix-green/5'
+              )}
+            >
+              <div className="flex items-center gap-3">
+                <span className={clsx(
+                  'font-bold tracking-tight',
+                  idx === selectedIndex ? 'text-matrix-green' : 'text-matrix-green/70'
+                )}>
+                  {displayType === 'command' ? `/${name}` : name}
+                </span>
+                {metadata?.provider && (
+                  <span className="text-[10px] text-cyan-accent/60 bg-cyan-accent/5 px-1.5 py-0.5 border border-cyan-accent/20">
+                    {metadata.provider.toUpperCase()}
+                  </span>
+                )}
+              </div>
               <span className={clsx(
-                'font-bold tracking-tight',
-                idx === selectedIndex ? 'text-matrix-green' : 'text-matrix-green/70'
+                'text-[10px] truncate max-w-[60%] ml-4',
+                idx === selectedIndex ? 'text-cyan-accent' : 'text-muted/60'
               )}>
-                /{cmd.name}
+                {description}
               </span>
             </div>
-            <span className={clsx(
-              'text-[10px] truncate max-w-[60%]',
-              idx === selectedIndex ? 'text-cyan-accent' : 'text-muted/60'
-            )}>
-              {cmd.description}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
       
-      {/* Footer "Tip" style to match screenshots */}
-      <div className="bg-void/80 backdrop-blur-sm border-x border-b border-matrix-green/30 px-3 py-1 flex justify-between items-center">
+      <div className="bg-void/80 backdrop-blur-sm border-x border-b border-matrix-green/30 px-3 py-1 flex justify-between items-center text-[9px] font-mono text-muted/60">
         <div className="flex items-center gap-2">
-           <div className="w-2 h-2 rounded-full bg-cyan-accent animate-pulse" />
-           <span className="text-[9px] font-mono text-muted/60">
-             tab <span className="text-cyan-accent">agents</span>
+           <div className="w-1.5 h-1.5 rounded-full bg-cyan-accent animate-pulse" />
+           <span>
+             {displayType === 'command' ? 'tab to autocomplete' : 'enter to select'}
            </span>
         </div>
-        <span className="text-[9px] font-mono text-muted/60">
-           ctrl+p <span className="text-on-surface/40">commands</span>
+        <span>
+           {filtered.length} results
         </span>
       </div>
     </div>
   );
 }
+

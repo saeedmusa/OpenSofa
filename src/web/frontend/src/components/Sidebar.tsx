@@ -32,6 +32,14 @@ export function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 font-mono text-sm py-4">
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('open-new-session-modal'))}
+          className="sidebar-nav-item text-matrix-green hover:bg-matrix-green/10 w-full text-left"
+        >
+          <span className="material-symbols-outlined">add_circle</span>
+          <span>NEW_AGENT</span>
+        </button>
+
         <NavLink
           to="/"
           className={({ isActive }) =>
@@ -91,7 +99,7 @@ export function Sidebar() {
             <div className="px-4 py-2 text-[10px] text-muted uppercase tracking-widest font-mono">
               Active Sessions ({sessions.length})
             </div>
-            {sessions.slice(0, 5).map((session) => (
+            {sessions.map((session) => (
               <NavLink
                 key={session.name}
                 to={`/session/${encodeURIComponent(session.name)}`}
@@ -103,7 +111,7 @@ export function Sidebar() {
                 }
               >
                 <span className="material-symbols-outlined text-sm">smart_toy</span>
-                <span className="truncate">{session.name}</span>
+                <span className="truncate uppercase">{session.name}</span>
               </NavLink>
             ))}
           </div>

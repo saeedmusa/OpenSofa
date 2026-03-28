@@ -281,6 +281,21 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
     const authMiddleware = createAuthMiddleware({ expectedToken: token });
     app.use('/api/*', authMiddleware);
 
+    // Mount API routes BEFORE static assets to prevent shadowing
+    const apiRoutes = createApiRoutes({
+      sessionManager,
+      agentRegistry,
+      notifier,
+      getTunnelManager: () => tunnelManager,
+      getUptime,
+      getSystemResources,
+      revokeToken,
+      getBroadcaster: () => broadcaster,
+      createEvent,
+      token,
+    });
+    app.route('/api', apiRoutes);
+
     // Browse filesystem endpoint (for session creation)
     app.get('/api/browse', async (c) => {
       const queryPath = c.req.query('path') ?? '';
@@ -333,21 +348,6 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
       }
     });
 
-    // Mount API routes
-    const apiRoutes = createApiRoutes({
-      sessionManager,
-      agentRegistry,
-      notifier,
-      getTunnelManager: () => tunnelManager,
-      getUptime,
-      getSystemResources,
-      revokeToken,
-      getBroadcaster: () => broadcaster,
-      createEvent,
-      token,
-    });
-    app.route('/api', apiRoutes);
-
     // Serve static files from built frontend
     const frontendDist = path.join(process.cwd(), 'dist', 'web', 'frontend');
 
@@ -359,7 +359,10 @@ export const createWebServer = (deps: WebServerDeps): WebServer => {
 
     // SPA fallback - serve index.html for non-API routes
     app.notFound(async (c) => {
-      if (c.req.path.startsWith('/api')) {
+      const path = c.req.path;
+      
+      // Never return SPA fallback for API, WebSocket, or health check routes
+      if (path.startsWith('/api') || path.startsWith('/ws') || path === '/health' || path === '/status') {
         return c.json({ success: false, error: 'Not found', code: 'NOT_FOUND' }, 404);
       }
 

@@ -261,7 +261,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
 
           // Show connected briefly then hide
           setTimeout(() => {
-            if (mountedRef.current) {
+            if (mountedRef.current && wsRef.current?.readyState === WebSocket.OPEN) {
               setConnectionStatus('connected');
             }
           }, 2000);
@@ -310,6 +310,14 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       ws.onmessage = (event) => {
         try {
           const msg: WebSocketEvent = JSON.parse(event.data);
+          
+          if (msg.type === 'auth_success') {
+            console.log('[WS] Authentication successful');
+            setConnected(true);
+            setConnectionStatus('connected');
+            setReconnectError(false);
+            return;
+          }
           
           // Clear pong timeout on any message from server (implicit pong)
           if (pongTimerRef.current) {
@@ -376,6 +384,7 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
     window.addEventListener('pagehide', handlePageHide);
     window.addEventListener('pageshow', handlePageShow);
 
+    const currentWs = wsRef.current;
     return () => {
       mountedRef.current = false;
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -383,7 +392,9 @@ export function WebSocketProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('pageshow', handlePageShow);
       if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
       stopHeartbeat();
-      wsRef.current?.close();
+      if (currentWs && currentWs.readyState <= WebSocket.OPEN) {
+        currentWs.close();
+      }
     };
   }, [addSession, removeSession, updateSession, flushQueue, updatePendingCount]);
 

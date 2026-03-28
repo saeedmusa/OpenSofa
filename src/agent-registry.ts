@@ -68,6 +68,8 @@ const AGENT_DEFINITIONS: AgentDefinition[] = [
       'openai/o3',
       'google/gemini-2.0-flash',
       'openrouter/minimax-2.7',
+      'glm-4.7',
+      'bigscience/glm-4-9b-instruct',
     ],
     description: 'OpenCode CLI agent (model configured via opencode config)',
   },

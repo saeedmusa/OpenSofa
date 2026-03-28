@@ -96,12 +96,37 @@ export function getEnrichedPath(): string {
 }
 
 /**
+ * Filter out placeholder API keys that should not be passed to child processes.
+ * Examples: "sk-your-...", "sk-proj-placeholder", "AI...-placeholder"
+ */
+function isPlaceholder(value: string | undefined): boolean {
+  if (!value) return false;
+  const lower = value.toLowerCase();
+  return (
+    lower.includes('sk-your-') || 
+    lower.includes('api-key-here') || 
+    lower.includes('placeholder') ||
+    lower === 'sk-********'
+  );
+}
+
+/**
  * Get process.env with the enriched PATH applied.
- * Use this when spawning child processes that need access to Go/user binaries.
+ * Also filters out placeholder API keys to prevent them from interfering
+ * with an agent's internal configuration.
  */
 export function getEnrichedEnv(extra?: Record<string, string>): Record<string, string> {
+  const env: Record<string, string> = {};
+  
+  // Copy process.env but skip placeholders
+  for (const [key, val] of Object.entries(process.env)) {
+    if (val && !isPlaceholder(val)) {
+      env[key] = val;
+    }
+  }
+
   return {
-    ...process.env as Record<string, string>,
+    ...env,
     PATH: getEnrichedPath(),
     ...extra,
   };

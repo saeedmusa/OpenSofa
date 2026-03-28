@@ -21,7 +21,9 @@ import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { useSwipeGesture } from '../hooks/useSwipeGesture';
 import { useToast } from '../components/Toast';
 import { clsx } from 'clsx';
+import type { Session, Agent, DiscoveredModel } from '../types';
 import { CommandPalette } from '../components/CommandPalette';
+import type { CommandOption } from '../components/CommandPalette';
 
 export function SessionView() {
   const { name, tab } = useParams<{ name: string; tab?: string }>();
@@ -33,6 +35,8 @@ export function SessionView() {
   const [showModelPicker, setShowModelPicker] = useState(false);
   const [message, setMessage] = useState('');
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [availableModels, setAvailableModels] = useState<DiscoveredModel[]>([]);
+  const [availableAgents, setAvailableAgents] = useState<Agent[]>([]);
   const toast = useToast();
 
   // Swipe right to go back (mobile only)
@@ -66,6 +70,23 @@ export function SessionView() {
     loadSession();
     // WS events handle real-time updates — no polling needed
   }, [decodedName, setSelectedSession, navigate]);
+
+  // Fetch models and agents for CommandPalette
+  useEffect(() => {
+    async function loadResources() {
+      try {
+        const [modelsData, agentsData] = await Promise.all([
+          api.models.discover(),
+          api.agents.list()
+        ]);
+        setAvailableModels(modelsData.providers.flatMap(p => p.models));
+        setAvailableAgents(agentsData.agents);
+      } catch (err) {
+        console.warn('Failed to fetch models/agents for palette:', err);
+      }
+    }
+    loadResources();
+  }, []);
 
   // Real-time updates via WebSocket
   useEffect(() => {
@@ -206,17 +227,50 @@ export function SessionView() {
     setMessage(val);
     
     // Show palette if value starts with /
-    if (val.startsWith('/') && !val.includes(' ')) {
-      setShowCommandPalette(true);
+    if (val.startsWith('/')) {
+      const parts = val.split(' ');
+      if (parts.length === 1 || (parts.length > 1 && (parts[0] === '/models' || parts[0] === '/agents'))) {
+        setShowCommandPalette(true);
+      } else {
+        setShowCommandPalette(false);
+      }
     } else {
       setShowCommandPalette(false);
     }
   };
 
-  const handleCommandSelect = (cmd: string) => {
-    setMessage(`/${cmd} `);
-    setShowCommandPalette(false);
+  const handleCommandSelect = (value: string) => {
+    const parts = message.split(' ');
+    if (parts.length === 1) {
+      // Top-level command select
+      setMessage(`/${value} `);
+      // Stay open if it has sub-options
+      if (value === 'models' || value === 'agents') {
+        setShowCommandPalette(true);
+      } else {
+        setShowCommandPalette(false);
+      }
+    } else {
+      // Sub-option select
+      setMessage(`${parts[0]} ${value}`);
+      setShowCommandPalette(false);
+    }
   };
+
+  const commandOptions: CommandOption[] = message.startsWith('/models') 
+    ? availableModels.map(m => ({
+        name: m.name,
+        value: m.id,
+        description: `Model for ${m.agent}`,
+        metadata: { provider: m.provider }
+      }))
+    : message.startsWith('/agents')
+    ? availableAgents.map(a => ({
+        name: a.displayName,
+        value: a.type,
+        description: a.description
+      }))
+    : [];
 
   if (!selectedSession) {
     return (
@@ -436,6 +490,7 @@ export function SessionView() {
                 isOpen={showCommandPalette}
                 onSelect={handleCommandSelect}
                 onClose={() => setShowCommandPalette(false)}
+                options={commandOptions}
               />
               <textarea
                 value={message}
@@ -595,6 +650,7 @@ export function SessionView() {
               isOpen={showCommandPalette}
               onSelect={handleCommandSelect}
               onClose={() => setShowCommandPalette(false)}
+              options={commandOptions}
             />
             <textarea
               value={message}

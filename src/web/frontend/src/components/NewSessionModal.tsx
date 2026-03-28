@@ -85,6 +85,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   const [modelsError, setModelsError] = useState<string | null>(null);
   const [modelsTimedOut, setModelsTimedOut] = useState(false);
   const [modelsRetryCount, setModelsRetryCount] = useState(0);
+  const [sessionName, setSessionName] = useState('');
   const modelsAbortRef = useRef<AbortController | null>(null);
 
   // Get current selected model info for vision warning
@@ -113,7 +114,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
       setModelsLoading(false);
       setModelsTimedOut(true);
       setModelsError('Model discovery timed out');
-    }, 15000);
+    }, 30000);
 
     try {
       const result = await api.models.discover([agent], controller.signal);
@@ -207,14 +208,16 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
   });
 
   const handleConfirmCreate = async () => {
-    const name = generateSessionName(initialMessage);
-    if (!name) {
-      toast.error('Please enter a message');
+    // Priority: 1. Manual name, 2. Generated from message, 3. Random/Fallback
+    const finalName = sessionName.trim() || generateSessionName(initialMessage);
+    
+    if (!finalName) {
+      toast.error('Please enter a session name or message');
       return;
     }
 
     const sessionId = await sessionCreationActions.create({
-      name,
+      name: finalName,
       dir: selectedDir,
       agent: selectedAgent,
       model: selectedModel,
@@ -238,6 +241,7 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
     setSelectedModel('');
     setSelectedDir('');
     setInitialMessage('');
+    setSessionName('');
     setCurrentPath('');
   };
 
@@ -627,6 +631,17 @@ export function NewSessionModal({ isOpen, onClose }: NewSessionModalProps) {
               )}
 
               <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-mono text-[#00FFFF] uppercase tracking-widest mb-2">Session Name (Optional)</label>
+                  <input
+                    type="text"
+                    value={sessionName}
+                    onChange={(e) => setSessionName(e.target.value.replace(/[^a-zA-Z0-9-]/g, '').toLowerCase())}
+                    placeholder="e.g. my-new-feature"
+                    className="w-full bg-[#1b1b1b] border border-[#00FF41]/30 text-[#00FF41] font-mono px-3 py-2 text-sm placeholder:text-[#00FF41]/30 focus:border-[#00FF41] focus:outline-none mb-4"
+                  />
+                </div>
+
                 <div>
                   <label className="block text-xs font-mono text-[#00FFFF] uppercase tracking-widest mb-2">Your Request</label>
                   <textarea

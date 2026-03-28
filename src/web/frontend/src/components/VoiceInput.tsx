@@ -55,12 +55,21 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
 
         recognition.onerror = (event: any) => {
             const errType = event.error;
-            console.warn('Speech recognition error:', errType);
+            const isOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+            console.warn(`[VoiceInput] Speech recognition error: ${errType} (Offline: ${isOffline})`);
             
             if (errType === 'network') {
-                setError('Network error: Speech recognition requires an internet connection.');
+                if (isOffline) {
+                    setError('Offline: Voice input requires an internet connection.');
+                } else {
+                    setError('Network error: Speech engine unreachable. Check connection.');
+                }
             } else if (errType === 'not-allowed') {
                 setError('Microphone access denied.');
+            } else if (errType === 'no-speech') {
+                // Ignore no-speech errors to avoid annoying the user
+                setIsListening(false);
+                return;
             } else {
                 setError(`Speech error: ${errType}`);
             }
@@ -95,8 +104,17 @@ export function VoiceInput({ onTranscript, disabled }: VoiceInputProps) {
     return (
         <div className="relative">
             {error && (
-                <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-48 p-2 bg-red-500 text-white text-xs rounded shadow-lg animate-in fade-in slide-in-from-bottom-1 z-50 text-center">
-                    {error}
+                <div className="absolute bottom-full mb-2 left-0 right-0 p-3 bg-matrix-green/10 border border-matrix-green/20 rounded shadow-lg backdrop-blur-md z-50">
+                    <div className="flex items-center gap-2 text-matrix-green text-xs font-mono mb-2">
+                        <span className="material-symbols-outlined text-sm">error</span>
+                        {error}
+                    </div>
+                    <button 
+                        onClick={() => window.location.reload()}
+                        className="w-full py-1.5 bg-matrix-green/20 hover:bg-matrix-green/30 text-matrix-green text-[10px] font-mono uppercase tracking-wider transition-colors rounded"
+                    >
+                        Hard Reset App
+                    </button>
                 </div>
             )}
             <button

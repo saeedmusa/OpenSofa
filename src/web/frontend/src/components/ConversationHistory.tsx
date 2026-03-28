@@ -1,20 +1,88 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { api } from '../utils/api';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useWebSocket } from '../providers/WebSocketProvider';
+import { api } from '../utils/api';
 import type { AgentAPIMessage, ActivityEvent } from '../types';
-import { clsx } from 'clsx';
 import { ArrowDown, Loader2, AlertCircle } from 'lucide-react';
 
 interface ConversationHistoryProps {
   sessionName: string;
 }
 
+const MAX_VISIBLE_LINES = 50;
+
 /**
- * Clean terminal-formatted text from AgentAPI.
- * AgentAPI returns text with hard line breaks at ~80 chars.
- * We join lines that appear to be soft wraps (not code blocks, prompts, or blank lines).
+ * Formats message content, specifically handling 'thoughts' or 'plans'
+ * from agents like DeepSeek (which use <think> or direct Planning output).
  */
+function formatMessageContent(content: string, expandedThoughts: Set<string>, onToggleThought: (id: string) => void, messageId: number | string) {
+  const thinkRegex = /<think>([\s\S]*?)<\/think>/g;
+  const planRegex = /(▣ Plan · [\s\S]*?)(?=\n\n|\n[A-Z]|$)/g; 
+  
+  if (!content.includes('<think>') && !content.includes('▣')) {
+    return cleanTerminalText(content);
+  }
+
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  const specialBlocks: { type: 'think' | 'plan', start: number, end: number, content: string, header?: string }[] = [];
+  
+  let match;
+  while ((match = thinkRegex.exec(content)) !== null) {
+    specialBlocks.push({ type: 'think', start: match.index, end: thinkRegex.lastIndex, content: match[1].trim() });
+  }
+  
+  while ((match = planRegex.exec(content)) !== null) {
+    const lines = match[1].split('\n');
+    const header = lines[0];
+    const body = lines.slice(1).join('\n').trim();
+    specialBlocks.push({ type: 'plan', start: match.index, end: planRegex.lastIndex, content: body, header });
+  }
+
+  specialBlocks.sort((a, b) => a.start - b.start);
+
+  for (const block of specialBlocks) {
+    if (block.start > lastIndex) {
+      parts.push(cleanTerminalText(content.substring(lastIndex, block.start)));
+    }
+
+    const blockId = `${messageId}-${block.type}-${block.start}`;
+    const isExpanded = expandedThoughts.has(blockId);
+    const label = block.type === 'think' ? 'THOUGHTS' : (block.header || 'PLAN');
+
+    parts.push(
+      <div key={blockId} className="my-2 border-l-2 border-cyan-accent/30 bg-cyan-accent/5 overflow-hidden">
+        <button
+          onClick={() => onToggleThought(blockId)}
+          className="w-full text-left px-3 py-1.5 flex items-center gap-2 text-[10px] font-mono text-cyan-accent/70 hover:bg-cyan-accent/10 transition-colors"
+        >
+          <span className="material-symbols-outlined text-[14px]">
+            {isExpanded ? 'expand_more' : 'chevron_right'}
+          </span>
+          <span className="truncate">{label}</span>
+          <span className="text-muted/50 ml-auto flex-shrink-0">
+            {isExpanded ? 'Click to hide' : 'Click to show'}
+          </span>
+        </button>
+        {isExpanded && (
+          <div className="px-3 py-2 text-xs text-on-surface/70 italic border-t border-cyan-accent/10 whitespace-pre-wrap font-mono">
+            {cleanTerminalText(block.content)}
+          </div>
+        )}
+      </div>
+    );
+    lastIndex = block.end;
+  }
+
+  const remaining = content.substring(lastIndex);
+  if (remaining) {
+    parts.push(cleanTerminalText(remaining));
+  }
+
+  return parts;
+}
+
 function cleanTerminalText(text: string): string {
+  if (!text) return '';
   const lines = text.split('\n');
   const cleaned: string[] = [];
   let i = 0;
@@ -23,32 +91,26 @@ function cleanTerminalText(text: string): string {
     const line = lines[i];
     const trimmed = line.trim();
 
-    // Keep blank lines as intentional breaks
     if (trimmed === '') {
       cleaned.push('');
       i++;
       continue;
     }
 
-    // Keep lines that look like code/prompts (start with $, >, #, |, or are indented)
     if (/^[\s$>#|]/.test(line) || line.startsWith('```')) {
       cleaned.push(line);
       i++;
       continue;
     }
 
-    // Join with next line if current line doesn't end with punctuation
-    // and next line exists and isn't a special line
     let joined = line;
     while (i + 1 < lines.length) {
       const nextLine = lines[i + 1];
       const nextTrimmed = nextLine.trim();
 
-      // Stop joining if next line is blank, special, or current line ends with sentence-ending punctuation
       if (nextTrimmed === '' || /^[\s$>#|]/.test(nextLine) || nextLine.startsWith('```')) break;
       if (/[.!?;:]$/.test(trimmed)) break;
 
-      // Join the lines
       joined = `${joined} ${nextTrimmed}`;
       i++;
     }
@@ -60,29 +122,11 @@ function cleanTerminalText(text: string): string {
   return cleaned.join('\n');
 }
 
-/**
- * Format timestamp to relative time (e.g., "2m ago") or absolute on tap
- */
-function formatTime(isoTime: string, showAbsolute: boolean): string {
-  const date = new Date(isoTime);
-  if (showAbsolute) {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  const now = Date.now();
-  const diff = now - date.getTime();
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
-
-  if (minutes < 1) return 'now';
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  return `${days}d ago`;
+function formatTime(iso: string, absolute: boolean) {
+  const date = new Date(iso);
+  if (absolute) return date.toLocaleString();
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
-
-/** Max lines to show before truncating */
-const MAX_VISIBLE_LINES = 20;
 
 export function ConversationHistory({ sessionName }: ConversationHistoryProps) {
   const [messages, setMessages] = useState<AgentAPIMessage[]>([]);
@@ -90,83 +134,64 @@ export function ConversationHistory({ sessionName }: ConversationHistoryProps) {
   const [error, setError] = useState<string | null>(null);
   const [showAbsoluteTime, setShowAbsoluteTime] = useState(false);
   const [streamingText, setStreamingText] = useState('');
+  const [expandedThoughts, setExpandedThoughts] = useState<Set<string>>(new Set());
+  
+  const handleToggleThought = useCallback((id: string) => {
+    setExpandedThoughts(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const { subscribe } = useWebSocket();
-  const refetchTimerRef = useRef<number | null>(null);
-  const lastMessageCountRef = useRef(0);
+
+  const refetchTimerRef = useRef<any>(null);
 
   const scrollToBottom = useCallback(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, []);
 
-  // Fetch messages from API
-  const fetchMessages = useCallback(async () => {
-    try {
-      const data = await api.sessions.messages(sessionName);
-      setMessages(data.messages);
-      // If we got new messages, clear streaming text (it's now in the completed messages)
-      if (data.messages.length > lastMessageCountRef.current) {
-        setStreamingText('');
-      }
-      lastMessageCountRef.current = data.messages.length;
-      // Auto-scroll after render
-      requestAnimationFrame(scrollToBottom);
-    } catch {
-      // Silently fail on refetch — initial load error is already shown
-    }
-  }, [sessionName, scrollToBottom]);
-
-  // Debounced refetch — prevents hammering API on rapid events
   const debouncedRefetch = useCallback(() => {
-    if (refetchTimerRef.current) {
-      clearTimeout(refetchTimerRef.current);
-    }
-    refetchTimerRef.current = window.setTimeout(() => {
-      fetchMessages();
-      refetchTimerRef.current = null;
-    }, 500);
-  }, [fetchMessages]);
-
-  // Load messages on mount
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadMessages() {
-      setIsLoading(true);
-      setError(null);
+    if (refetchTimerRef.current) clearTimeout(refetchTimerRef.current);
+    refetchTimerRef.current = setTimeout(async () => {
       try {
         const data = await api.sessions.messages(sessionName);
-        if (!cancelled) {
-          setMessages(data.messages);
-          lastMessageCountRef.current = data.messages.length;
-          // Auto-scroll after render
-          requestAnimationFrame(scrollToBottom);
-        }
+        setMessages(data.messages);
+        setStreamingText('');
+        requestAnimationFrame(scrollToBottom);
       } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'Failed to load messages');
-        }
-      } finally {
-        if (!cancelled) setIsLoading(false);
+        console.error('Failed to refetch messages:', err);
       }
-    }
-
-    loadMessages();
-    return () => { cancelled = true; };
+    }, 100);
   }, [sessionName, scrollToBottom]);
 
-  // Subscribe to WS events for real-time updates
+  // Initial load + Event Subscriptions
   useEffect(() => {
+    async function init() {
+      try {
+        setIsLoading(true);
+        const data = await api.sessions.messages(sessionName);
+        setMessages(data.messages);
+      } catch (err) {
+        setError('Failed to load conversation history');
+      } finally {
+        setIsLoading(false);
+        requestAnimationFrame(scrollToBottom);
+      }
+    }
+    init();
+
     const unsubs = [
-      // When session updates (agent status change, etc.), refetch messages
-      subscribe('session_updated', (event) => {
-        if (event.sessionName === sessionName) {
-          const payload = event.payload as { agentMessage?: string } | undefined;
-          if (payload?.agentMessage) {
-            // Add a synthetic message for the slash command output
+      subscribe('agent_response', (event) => {
+        const payload = event.payload as { sessionName?: string; agentMessage?: string } | undefined;
+        if (payload?.sessionName === sessionName) {
+          if (payload.agentMessage) {
             const newMessage: AgentAPIMessage = {
               id: Date.now(),
               role: 'agent',
@@ -174,32 +199,27 @@ export function ConversationHistory({ sessionName }: ConversationHistoryProps) {
               time: new Date().toISOString()
             };
             setMessages(prev => [...prev, newMessage]);
-            // Auto-scroll after render
+            setStreamingText('');
             requestAnimationFrame(scrollToBottom);
           } else {
             debouncedRefetch();
           }
         }
       }),
-      // When activity events arrive, capture streaming text and trigger refetch
       subscribe('activity', (event) => {
         const payload = event.payload as { sessionName?: string; events?: ActivityEvent[] } | undefined;
         if (payload?.sessionName !== sessionName) return;
 
         if (payload.events) {
           for (const actEvent of payload.events) {
-            // agent_message type means text from the agent
             if (actEvent.type === 'agent_message' && actEvent.summary) {
               setStreamingText(prev => prev + actEvent.summary);
               requestAnimationFrame(scrollToBottom);
             }
           }
         }
-
-        // Refetch completed messages (debounced)
         debouncedRefetch();
       }),
-      // When approval is needed/cleared, refetch
       subscribe('approval_needed', (event) => {
         const payload = event.payload as { sessionName?: string };
         if (payload?.sessionName === sessionName) debouncedRefetch();
@@ -218,16 +238,13 @@ export function ConversationHistory({ sessionName }: ConversationHistoryProps) {
     };
   }, [subscribe, sessionName, debouncedRefetch, scrollToBottom]);
 
-  // Track scroll position for "scroll to bottom" button
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-
     const handleScroll = () => {
       const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
       setShowScrollButton(distanceFromBottom > 200);
     };
-
     el.addEventListener('scroll', handleScroll, { passive: true });
     return () => el.removeEventListener('scroll', handleScroll);
   }, []);
@@ -271,10 +288,11 @@ export function ConversationHistory({ sessionName }: ConversationHistoryProps) {
             message={msg}
             showAbsoluteTime={showAbsoluteTime}
             onToggleTime={() => setShowAbsoluteTime(prev => !prev)}
+            expandedThoughts={expandedThoughts}
+            onToggleThought={handleToggleThought}
           />
         ))}
 
-        {/* Streaming text — shows live agent output */}
         {streamingText && (
           <div className="flex justify-start">
             <div className="max-w-[85%] rounded-lg px-4 py-3 bg-surface-container-low border border-outline-variant/20">
@@ -288,14 +306,13 @@ export function ConversationHistory({ sessionName }: ConversationHistoryProps) {
                 </span>
               </div>
               <div className="text-sm font-mono whitespace-pre-wrap break-words text-on-surface/90">
-                {streamingText}
+                {formatMessageContent(streamingText, expandedThoughts, handleToggleThought, 'streaming')}
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Scroll to bottom button */}
       {showScrollButton && (
         <button
           onClick={scrollToBottom}
@@ -313,67 +330,70 @@ interface MessageBubbleProps {
   message: AgentAPIMessage;
   showAbsoluteTime: boolean;
   onToggleTime: () => void;
+  expandedThoughts: Set<string>;
+  onToggleThought: (id: string) => void;
 }
 
-function MessageBubble({ message, showAbsoluteTime, onToggleTime }: MessageBubbleProps) {
+function MessageBubble({ message, showAbsoluteTime, onToggleTime, expandedThoughts, onToggleThought }: MessageBubbleProps) {
   const isUser = message.role === 'user';
-  const cleanedContent = isUser ? message.content : cleanTerminalText(message.content);
   const [expanded, setExpanded] = useState(false);
 
-  const lines = cleanedContent.split('\n');
+  if (isUser) {
+    const lines = message.content.split('\n');
+    const isTruncated = lines.length > MAX_VISIBLE_LINES && !expanded;
+    const displayContent = isTruncated
+      ? lines.slice(0, MAX_VISIBLE_LINES).join('\n')
+      : message.content;
+
+    return (
+      <div className="flex justify-end">
+        <div className="max-w-[85%] rounded-lg px-4 py-3 bg-matrix-green/10 border border-matrix-green/30">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-matrix-green">YOU</span>
+            <button onClick={onToggleTime} className="text-[10px] text-muted font-mono hover:text-on-surface transition-colors">
+              {formatTime(message.time, showAbsoluteTime)}
+            </button>
+          </div>
+          <div className="text-sm font-mono whitespace-pre-wrap break-words text-on-surface">
+            {displayContent}
+          </div>
+          {isTruncated && (
+            <button onClick={() => setExpanded(true)} className="mt-2 text-xs text-matrix-green font-mono hover:underline">
+              Show more ({lines.length - MAX_VISIBLE_LINES} more lines)
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const content = formatMessageContent(message.content, expandedThoughts, onToggleThought, message.id);
+  const lines = message.content.split('\n');
   const isTruncated = lines.length > MAX_VISIBLE_LINES && !expanded;
-  const displayContent = isTruncated
-    ? lines.slice(0, MAX_VISIBLE_LINES).join('\n')
-    : cleanedContent;
 
   return (
-    <div className={clsx('flex', isUser ? 'justify-end' : 'justify-start')}>
-      <div
-        className={clsx(
-          'max-w-[85%] rounded-lg px-4 py-3',
-          isUser
-            ? 'bg-matrix-green/10 border border-matrix-green/30'
-            : 'bg-surface-container-low border border-outline-variant/20'
-        )}
-      >
-        {/* Role label + timestamp */}
+    <div className="flex justify-start">
+      <div className="max-w-[85%] rounded-lg px-4 py-3 bg-surface-container-low border border-outline-variant/20">
         <div className="flex items-center gap-2 mb-1">
-          <span className={clsx(
-            'text-[10px] font-mono uppercase tracking-wider',
-            isUser ? 'text-matrix-green' : 'text-cyan-accent'
-          )}>
-            {isUser ? 'YOU' : 'AGENT'}
-          </span>
-          <button
-            onClick={onToggleTime}
-            className="text-[10px] text-muted font-mono hover:text-on-surface transition-colors"
-          >
+          <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-accent">AGENT</span>
+          <button onClick={onToggleTime} className="text-[10px] text-muted font-mono hover:text-on-surface transition-colors">
             {formatTime(message.time, showAbsoluteTime)}
           </button>
         </div>
-
-        {/* Message content */}
-        <div className={clsx(
-          'text-sm font-mono whitespace-pre-wrap break-words',
-          isUser ? 'text-on-surface' : 'text-on-surface/90'
-        )}>
-          {displayContent}
+        <div className="text-sm font-mono break-words text-on-surface/90">
+          {isTruncated && !expanded ? (
+            <div className="whitespace-pre-wrap">{cleanTerminalText(lines.slice(0, MAX_VISIBLE_LINES).join('\n'))}</div>
+          ) : (
+            content
+          )}
         </div>
-
-        {/* Show more/less for long messages */}
-        {isTruncated && (
-          <button
-            onClick={() => setExpanded(true)}
-            className="mt-2 text-xs text-matrix-green font-mono hover:underline"
-          >
+        {isTruncated && !expanded && (
+          <button onClick={() => setExpanded(true)} className="mt-2 text-xs text-matrix-green font-mono hover:underline">
             Show more ({lines.length - MAX_VISIBLE_LINES} more lines)
           </button>
         )}
         {expanded && lines.length > MAX_VISIBLE_LINES && (
-          <button
-            onClick={() => setExpanded(false)}
-            className="mt-2 text-xs text-muted font-mono hover:underline"
-          >
+          <button onClick={() => setExpanded(false)} className="mt-2 text-xs text-muted font-mono hover:underline">
             Show less
           </button>
         )}

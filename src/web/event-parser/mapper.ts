@@ -114,6 +114,17 @@ function extractFilePath(input?: Record<string, unknown>): string | undefined {
 }
 
 /**
+ * Extract diff or content from tool call input
+ */
+function extractDiff(input?: Record<string, unknown>): string | undefined {
+  if (!input) return undefined;
+  return (input.diff as string) || 
+         (input.content as string) || 
+         (input.replacement as string) ||
+         undefined;
+}
+
+/**
  * Maps a tool call start to ActivityEvent using ACP Kind as primary categorization.
  * Falls back to tool name matching for non-ACP agents.
  */
@@ -152,6 +163,7 @@ function mapToolCallStart(event: ToolCallStartEvent, sessionName: string): Activ
     details: {
       command: command ?? undefined,
       filePath,
+      diff: extractDiff(event.input),
       toolCallId: event.toolCallId,
       input: event.input,
     },
@@ -234,6 +246,7 @@ function mapToolResult(event: ToolCallResultEvent, sessionName: string): Activit
     details: { 
       toolCallId: event.toolCallId,
       output: output?.slice(0, 100),
+      diff: typeof output === 'string' && output.includes('---') ? output : undefined,
     },
   };
 }

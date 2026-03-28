@@ -60,12 +60,28 @@ async function fetchAPI<T>(path: string, options?: FetchOptions): Promise<T> {
       clearTimeout(timeoutId);
 
       if (!res.ok) {
-        const error = await res.json().catch(() => ({ error: 'Request failed' }));
-        throw new APIError(error.error || `HTTP ${res.status}`, res.status);
+        let errorMsg = `HTTP ${res.status}`;
+        try {
+          const errorData = await res.json();
+          errorMsg = errorData.error || errorData.message || errorMsg;
+        } catch {
+          // If not JSON, try text
+          try {
+            const text = await res.text();
+            if (text && text.length < 200) errorMsg = text;
+          } catch {
+            // Ignore
+          }
+        }
+        throw new APIError(errorMsg, res.status);
       }
 
-      const data = await res.json();
-      return data.data ?? data;
+      try {
+        const data = await res.json();
+        return data.data ?? data;
+      } catch (err) {
+        throw new APIError('Invalid JSON response from server', res.status);
+      }
     } catch (err) {
       clearTimeout(timeoutId);
 

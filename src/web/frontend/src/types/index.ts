@@ -57,6 +57,8 @@ export type WebSocketEventType =
   | 'catch_up_summary'
   | 'session_state_snapshot'
   | 'sync_response'
+  | 'auth'
+  | 'auth_success'
   | 'ping'
   | 'pong';
 

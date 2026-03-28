@@ -126,46 +126,64 @@ export function HomeView() {
 
   if (isDesktop) {
     return (
-      <div className="h-full overflow-y-auto p-8">
-        <div className="mb-8 flex items-center justify-between">
+      <div className="h-full overflow-y-auto p-8 bg-void custom-scrollbar">
+        <div className="mb-8 flex items-center justify-between border-b border-matrix-green/20 pb-6">
           <div>
-            <h2 className="text-2xl font-bold text-[#e2e2e2] font-mono tracking-tight">ALL_SESSIONS</h2>
-            <p className="text-sm text-[rgba(255,255,255,0.5)] mt-1 font-mono">
-              {sessions.length} active session{sessions.length !== 1 ? 's' : ''}
-            </p>
+            <h2 className="text-2xl font-bold text-matrix-green font-mono tracking-tighter uppercase">DASHBOARD_MAIN</h2>
+            <div className="flex items-center gap-3 mt-1">
+              <p className="text-[10px] text-muted font-mono uppercase tracking-[0.2em]">
+                {sessions.length} ACTIVE_PROCESSES
+              </p>
+              <span className="w-1 h-1 bg-matrix-green rounded-full animate-pulse" />
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setShowNewSession(true)}
-              className="btn btn-primary flex items-center gap-2"
-            >
-              <Plus size={18} />
-              <span>NEW_SESSION</span>
-            </button>
-            <button
               onClick={loadSessions}
               disabled={isLoading}
-              className="btn btn-ghost flex items-center gap-2"
+              className="flex items-center gap-2 px-4 py-2 bg-matrix-green/5 border border-matrix-green/30 text-matrix-green font-mono text-xs hover:bg-matrix-green/10 transition-all uppercase tracking-widest"
             >
-              <RefreshCw size={18} className={clsx(isLoading && 'animate-spin')} />
-              <span>REFRESH</span>
+              <RefreshCw size={14} className={clsx(isLoading && 'animate-spin')} />
+              <span>REFRESH_SYSTEM</span>
             </button>
           </div>
         </div>
 
-        <SessionList
-          sessions={sessions}
-          isLoading={isLoading}
-          error={error}
-          onStop={handleStop}
-          onApprove={handleApprove}
-          onReject={handleReject}
-        />
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          <div className="xl:col-span-2">
+            <SessionList
+              sessions={sessions}
+              isLoading={isLoading}
+              error={error}
+              onStop={handleStop}
+              onApprove={handleApprove}
+              onReject={handleReject}
+            />
+          </div>
+          
+          <div className="space-y-8">
+            {/* System Status / Quick Info can go here */}
+            <div className="surface-container p-6 border border-matrix-green/10">
+              <h3 className="text-[10px] font-mono text-muted uppercase tracking-[0.3em] mb-4">SYSTEM_STATUS</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center text-xs font-mono">
+                  <span className="text-muted">HOST</span>
+                  <span className="text-matrix-green">{window.location.hostname}</span>
+                </div>
+                <div className="flex justify-between items-center text-xs font-mono">
+                  <span className="text-muted">PROTOCOL</span>
+                  <span className="text-cyan-accent">WSS://SECURE</span>
+                </div>
+                <div className="flex justify-between items-center text-xs font-mono">
+                  <span className="text-muted">UPTIME</span>
+                  <span className="text-matrix-green">99.9%</span>
+                </div>
+              </div>
+            </div>
 
-        <NewSessionModal
-          isOpen={showNewSession}
-          onClose={() => setShowNewSession(false)}
-        />
+            <MCPServerList />
+          </div>
+        </div>
       </div>
     );
   }

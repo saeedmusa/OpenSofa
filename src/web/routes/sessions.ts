@@ -153,11 +153,29 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
     // Only block if live API check confirms running status
     if (session.agentStatus === 'running') {
       try {
-        const client = new AgentAPIClient(session.port);
-        const liveStatus = await client.getStatus(2000);
-        if (liveStatus.status === 'stable') {
+        // If port is the web port (3285), use the /api/status endpoint.
+        // Otherwise, hit the AgentAPI directly.
+        const isWebPort = session.port === 3285;
+        const statusUrl = isWebPort 
+          ? `http://localhost:${session.port}/api/status` 
+          : `http://localhost:${session.port}/status`;
+
+        const res = await fetch(statusUrl, {
+          signal: AbortSignal.timeout(5000),
+        });
+        if (!res.ok) return;
+
+        const body = (await res.json()) as any;
+        const status = isWebPort ? body.data?.sessions?.find((s: any) => s.name === session.name)?.status : body.status;
+        
+        if (!status) return;
+
+        log.debug(`Status sync after reconnect: ${status}`, { session: session.name });
+
+        // Emit a synthetic status_change so session-manager updates agentStatus
+        if (status === 'stable') {
           session.agentStatus = 'stable';
-        } else if (liveStatus.status === 'running') {
+        } else if (status === 'running') {
           // Agent is truly busy - let the message queue
           // Don't block - messages will be queued by agentapi
           log.debug('Agent is running, message will be queued', { session: name });
@@ -194,7 +212,12 @@ export const createSessionsRoutes = (deps: SessionsRoutesDeps): Hono => {
       return c.json(success({ ok: true, message: 'Message sent successfully' }));
     } catch (err) {
       const errMsg = err instanceof Error ? err.message : 'Failed to send message';
-      log.error('Failed to send message', { session: name, error: errMsg });
+      log.error('Failed to send message to agent', { 
+        session: name, 
+        port: session.port,
+        error: errMsg,
+        stack: err instanceof Error ? err.stack : undefined 
+      });
       return c.json(error(errMsg, 'SEND_ERROR'), 500);
     }
   });

@@ -41,8 +41,18 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
 
   if (request.method !== 'GET') return;
+  
+  // Skip interception for ANY external domain (Google Speech API, etc)
+  if (url.origin !== self.location.origin) {
+    return;
+  }
 
   if (url.pathname.startsWith('/api/') || url.pathname === '/ws') {
+    return;
+  }
+
+  // Skip interception for speech recognition APIs (Chrome/Google)
+  if (url.hostname.includes('google') || url.protocol === 'chrome-extension:') {
     return;
   }
 
